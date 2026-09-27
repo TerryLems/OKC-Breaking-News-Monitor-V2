@@ -6,8 +6,50 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
+const FEED_URL =
+  "https://utility.arcgis.com/usrsvcs/servers/8699b8414ebd476e87db5486f116b00a/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
+
+app.get("/api/incidents", async (req, res) => {
+  try {
+    const params = new URLSearchParams({
+      where: "1=1",
+      outFields: "*",
+      returnGeometry: "false",
+      f: "json"
+    });
+
+    const response = await fetch(`${FEED_URL}?${params.toString()}`);
+
+    if (!response.ok) {
+      throw new Error(`Feed returned ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const incidents = (data.features || []).map((feature) => ({
+      ...feature.attributes
+    }));
+
+    res.json({
+      success: true,
+      count: incidents.length,
+      incidents
+    });
+  } catch (error) {
+    console.error("Feed error:", error);
+
+    res.status(500).json({
+      success: false,
+      error: "Unable to retrieve OKC incident feed."
+    });
+  }
+});
+
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.json({
+    status: "ok",
+    service: "OKC Breaking News Monitor V2"
+  });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
