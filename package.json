@@ -1,0 +1,12 @@
+{
+  "name": "okc-breaking-news-monitor-v2",
+  "version": "1.0.0",
+  "description": "OKC Breaking News Monitor V2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
