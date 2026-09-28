@@ -315,276 +315,34 @@ function escapeHTML(value) {
    FIND RAW DATE/TIME FIELD
 ========================================================= */
 
-function getRawIncidentDate(attributes) {
+function getIncidentDate(attributes) {
+  const raw = attributes.Reported_Time;
 
-  const preferredFields = [
-    "DateTime",
-    "Datetime",
-    "DATE_TIME",
-    "Date_Time",
-    "date_time",
-    "CallDateTime",
-    "Call_Date_Time",
-    "IncidentDateTime",
-    "Incident_Date_Time",
-    "CreateDate",
-    "CreatedDate",
-    "CreationDate",
-    "Date",
-    "DATE",
-    "CallDate",
-    "Call_Date",
-    "IncidentDate",
-    "Incident_Date",
-    "Time",
-    "TIME",
-    "CallTime",
-    "Call_Time"
-  ];
+  if (!raw) return null;
 
-  for (const field of preferredFields) {
+  const parsed = new Date(raw);
 
-    const value = attributes[field];
-
-    if (
-      value !== undefined &&
-      value !== null &&
-      value !== ""
-    ) {
-      return value;
-    }
-  }
-
-  for (const key of Object.keys(attributes)) {
-
-    if (/date|time/i.test(key)) {
-
-      const value = attributes[key];
-
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        return value;
-      }
-    }
-  }
-
-  return null;
-}
-
-
-/* =========================================================
-   SMART INCIDENT DATE DETECTOR
-========================================================= */
-
-function parseIncidentDate(value) {
-
-  if (
-    value === null ||
-    value === undefined ||
-    value === ""
-  ) {
+  if (isNaN(parsed.getTime())) {
     return null;
   }
 
-  let date = null;
-
-  /* ArcGIS millisecond timestamp */
-
-  if (typeof value === "number") {
-
-    if (value > 100000000000) {
-      date = new Date(value);
-    }
-
-    else if (value > 1000000000) {
-      date = new Date(value * 1000);
-    }
-
-  } else {
-
-    const text =
-      String(value).trim();
-
-    /* 13 digit millisecond timestamp */
-
-    if (/^\d{13}$/.test(text)) {
-
-      date =
-        new Date(Number(text));
-
-    }
-
-    /* 10 digit Unix timestamp */
-
-    else if (/^\d{10}$/.test(text)) {
-
-      date =
-        new Date(Number(text) * 1000);
-
-    }
-
-    /* Normal written date */
-
-    else if (
-      text.includes("/") ||
-      text.includes("-") ||
-      text.includes(":") ||
-      /AM|PM/i.test(text)
-    ) {
-
-      const possibleDate =
-        new Date(text);
-
-      if (!isNaN(possibleDate.getTime())) {
-        date = possibleDate;
-      }
-    }
-  }
-
-
-  if (
-    !date ||
-    isNaN(date.getTime())
-  ) {
-    return null;
-  }
-
-
-  /*
-     Ignore values that accidentally parse as dates
-     unless they fall within a realistic incident range.
-  */
-
-  const year =
-    date.getFullYear();
-
-  if (
-    year < 2020 ||
-    year > 2035
-  ) {
-    return null;
-  }
-
-
-  return date;
+  return parsed;
 }
 
-
-/* =========================================================
-   FIND ACTUAL DATE IN INCIDENT
-========================================================= */
-
-function findIncidentDate(attributes) {
-
-  /*
-     FIRST:
-     Check fields whose NAME suggests
-     a date or time.
-  */
-
-  for (const key of Object.keys(attributes)) {
-
-    if (
-      /date|time|created|updated|received|dispatch|call/i.test(key)
-    ) {
-
-      const date =
-        parseIncidentDate(
-          attributes[key]
-        );
-
-      if (date) {
-        return date;
-      }
-    }
-  }
-
-
-  /*
-     SECOND:
-     Scan ALL values.
-
-     This catches the OKC feed even if its
-     date field has an unusual field name.
-  */
-
-  let newestDate = null;
-
-
-  for (const key of Object.keys(attributes)) {
-
-    const date =
-      parseIncidentDate(
-        attributes[key]
-      );
-
-    if (date) {
-
-      if (
-        !newestDate ||
-        date.getTime() > newestDate.getTime()
-      ) {
-
-        newestDate = date;
-      }
-    }
-  }
-
-
-  return newestDate;
-}
-
-
-/* =========================================================
-   DATE/TIME SHOWN ON INCIDENT CARD
-========================================================= */
-
-function getIncidentDateTime(attributes) {
-
-  const date =
-    findIncidentDate(attributes);
-
+function formatIncidentDate(attributes) {
+  const date = getIncidentDate(attributes);
 
   if (!date) {
-
     return "Date/time unavailable";
   }
 
-
-  return date.toLocaleString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true
-    }
-  );
-}
-
-
-/* =========================================================
-   TIMESTAMP USED FOR NEWEST-FIRST SORTING
-========================================================= */
-
-function getIncidentTimestamp(attributes) {
-
-  const date =
-    findIncidentDate(attributes);
-
-
-  if (!date) {
-
-    return 0;
-  }
-
-
-  return date.getTime();
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
 }
 
 /* =========================================================
