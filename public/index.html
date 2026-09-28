@@ -193,7 +193,14 @@ function getPriority(title, callType) {
   const text =
     `${title || ""} ${callType || ""}`.toUpperCase();
 
-  // Highest-priority breaking incidents
+  // Explicitly keep routine non-injury crashes out of alerts
+  if (
+    text.includes("NON-INJURY ACCIDENT") ||
+    text.includes("NON INJURY ACCIDENT")
+  ) {
+    return "normal";
+  }
+
   const HIGH = [
     "STRUCTURE FIRE",
     "STRUC FIRE",
@@ -209,7 +216,6 @@ function getPriority(title, callType) {
     "OFFICER DOWN"
   ];
 
-  // Important, but not necessarily breaking news
   const MEDIUM = [
     "ACCIDENT WITH INJURIES",
     "INJURY ACCIDENT",
