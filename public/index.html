@@ -843,53 +843,28 @@ o<!DOCTYPE html>
           DATE/TIME
           */
 
-          const dateValue =
-            getField(
-              a,
-              [
-                "CallDate",
-                "Call_Date",
-                "CallDateTime",
-                "Call_Date_Time",
-                "IncidentDate",
-                "Incident_Date",
-                "IncidentDateTime",
-                "DateTime",
-                "Date_Time",
-                "CreateDate",
-                "CreatedDate",
-                "EntryDate",
-                "Entry_Date",
-                "ReceivedDate",
-                "Received_Date",
-                "DispatchDate",
-                "Dispatch_Date",
-                "LastUpdate",
-                "Last_Update",
-                "Time",
-                "Date"
-              ]
-            );
+          const dateValue = attributes.Reported_Time;
 
-
+              ${dateValue ? `
+  <div class="incident-time">
+    🕒 ${formatTime(dateValue)}
+  </div>
+` : ""}
           const searchableText =
             title +
             " " +
             description;
-
 
           const priority =
             isHighPriority(
               searchableText
             );
 
-
           const isNew =
             !firstLoad &&
             !knownBreakingIds.has(
               String(id)
             );
-
 
           if (
             isNew &&
@@ -900,7 +875,6 @@ o<!DOCTYPE html>
               true;
 
           }
-
 
           html += `
 
@@ -1009,9 +983,23 @@ o<!DOCTYPE html>
 
     setInterval(
       loadIncidents,
-      REFRESH_INTERVAL
-    );
+      REFRESH_function formatTime(value) {
+  if (!value) return "";
 
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
 
   </script>
 
