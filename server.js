@@ -7,41 +7,61 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 const FEED_URL =
-  "https://services2.arcgis.com/CyVvlIiUfRBmMQuu/arcgis/rest/services/Police_Calls_for_Service_/FeatureServer/0/query";
+ "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
 app.get("/api/incidents", async (req, res) => {
   try {
     const params = new URLSearchParams({
       where: "1=1",
-      outFields: "ObjectID,InfoTitle,Call_Type,Address,Reported_Time",
+      outFields: "*",
       returnGeometry: "false",
-      orderByFields: "Reported_Time DESC",
       resultRecordCount: "100",
       f: "json"
     });
 
-    const response = await fetch(`${FEED_URL}?${params.toString()}`);
+    const url = `${FEED_URL}?${params.toString()}`;
+
+    console.log("Requesting OKC feed:", url);
+
+    const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(`Feed returned ${response.status}`);
+      throw new Error(`ArcGIS HTTP error: ${response.status}`);
     }
 
     const data = await response.json();
 
-    const incidents = (data.features || []).map((feature) => ({
+    // IMPORTANT: show us an ArcGIS error instead of pretending
+    // there are simply zero incidents.
+    if (data.error) {
+      console.error("ArcGIS error:", data.error);
+
+      return res.status(500).json({
+        success: false,
+        error: data.error
+      });
+    }
+
+    let incidents = (data.features || []).map(feature => ({
       ...feature.attributes
     }));
+
+    // Sort newest calls first here instead of making ArcGIS do it.
+    incidents.sort((a, b) => {
+      return Number(b.Reported_Time || 0) - Number(a.Reported_Time || 0);
+    });
 
     res.json({
       success: true,
       count: incidents.length,
       incidents
     });
+
   } catch (error) {
     console.error("Feed error:", error);
 
     res.status(500).json({
       success: false,
-      error: "Unable to retrieve OKC incident feed."
+      error: error.message
     });
   }
 });
