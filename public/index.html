@@ -126,11 +126,30 @@
     .incident-card {
       background: #151515;
       border: 1px solid #333333;
-      border-left: 5px solid #ff6b5c;
       border-radius: 13px;
       margin-bottom: 16px;
       overflow: hidden;
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .priority-p1 {
+      border-left: 8px solid #ff2d2d;
+      background: #1d0d0d;
+    }
+
+    .priority-p2 {
+      border-left: 8px solid #ff8c1a;
+      background: #1b130b;
+    }
+
+    .priority-p3 {
+      border-left: 8px solid #ffd34d;
+      background: #1b190e;
+    }
+
+    .priority-p4 {
+      border-left: 6px solid #777777;
+      background: #151515;
     }
 
     .incident-top {
@@ -169,9 +188,41 @@
       line-height: 1.35;
     }
 
+    .priority-badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      margin-right: 6px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-p1 {
+      background: #ff2d2d;
+      color: #ffffff;
+    }
+
+    .badge-p2 {
+      background: #ff8c1a;
+      color: #111111;
+    }
+
+    .badge-p3 {
+      background: #ffd34d;
+      color: #111111;
+    }
+
+    .badge-p4 {
+      background: #333333;
+      color: #bdbdbd;
+    }
+
     .newest-badge {
       display: inline-block;
       margin-bottom: 10px;
+      margin-right: 6px;
       padding: 5px 8px;
       border-radius: 5px;
       background: #ff5b4d;
@@ -249,11 +300,9 @@
     <div id="errorBox" class="error-box"></div>
 
     <div id="incidentList">
-
       <div class="loading">
         Loading OKC incidents...
       </div>
-
     </div>
 
   </main>
@@ -261,7 +310,6 @@
   <div class="footer">
     Public safety information from Oklahoma City open data.
   </div>
-
 
 <script>
 
@@ -271,14 +319,12 @@ const FEED_URL =
 const REFRESH_INTERVAL = 30000;
 
 let previousIncidentIds = new Set();
-
 let firstLoad = true;
-
 let alertsEnabled = false;
 
 
 /* =========================================================
-   GET VALUE
+   BASIC FIELD HELPERS
    ========================================================= */
 
 function getValue(attributes, possibleNames) {
@@ -292,16 +338,11 @@ function getValue(attributes, possibleNames) {
     ) {
       return attributes[name];
     }
-
   }
 
   return null;
 }
 
-
-/* =========================================================
-   INCIDENT ID
-   ========================================================= */
 
 function getIncidentId(feature) {
 
@@ -315,10 +356,6 @@ function getIncidentId(feature) {
 }
 
 
-/* =========================================================
-   INCIDENT TYPE
-   ========================================================= */
-
 function getIncidentType(feature) {
 
   const a = feature.attributes || {};
@@ -330,10 +367,6 @@ function getIncidentType(feature) {
 }
 
 
-/* =========================================================
-   DESCRIPTION
-   ========================================================= */
-
 function getIncidentDescription(feature) {
 
   const a = feature.attributes || {};
@@ -344,10 +377,6 @@ function getIncidentDescription(feature) {
   ]) || "No additional description available.";
 }
 
-
-/* =========================================================
-   LOCATION
-   ========================================================= */
 
 function getIncidentLocation(feature) {
 
@@ -362,44 +391,31 @@ function getIncidentLocation(feature) {
 
 /* =========================================================
    DATE / TIME
-
-   OKC feed example:
-
+   OKC FORMAT:
    Sep 28 2026  4:02PM
-
    ========================================================= */
 
 function getIncidentTimestamp(feature) {
 
   const a = feature.attributes || {};
-
   const value = a.Reported_Time;
 
   if (!value) {
     return 0;
   }
 
-
   const text = String(value)
     .replace(/\s+/g, " ")
     .trim();
-
 
   const match = text.match(
     /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
   );
 
-
   if (!match) {
-
-    console.log(
-      "Could not read Reported_Time:",
-      value
-    );
-
+    console.log("Could not read Reported_Time:", value);
     return 0;
   }
-
 
   const months = {
     Jan: 0,
@@ -416,121 +432,70 @@ function getIncidentTimestamp(feature) {
     Dec: 11
   };
 
-
   const monthName =
     match[1].charAt(0).toUpperCase() +
     match[1].slice(1).toLowerCase();
 
+  const month = months[monthName];
+  const day = Number(match[2]);
+  const year = Number(match[3]);
 
-  const month =
-    months[monthName];
+  let hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const ampm = match[6].toUpperCase();
 
-
-  const day =
-    Number(match[2]);
-
-
-  const year =
-    Number(match[3]);
-
-
-  let hour =
-    Number(match[4]);
-
-
-  const minute =
-    Number(match[5]);
-
-
-  const ampm =
-    match[6].toUpperCase();
-
-
-  if (
-    ampm === "PM" &&
-    hour !== 12
-  ) {
+  if (ampm === "PM" && hour !== 12) {
     hour += 12;
   }
 
-
-  if (
-    ampm === "AM" &&
-    hour === 12
-  ) {
+  if (ampm === "AM" && hour === 12) {
     hour = 0;
   }
 
-
-  const date =
-    new Date(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      0,
-      0
-    );
-
-
-  return date.getTime();
+  return new Date(
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    0,
+    0
+  ).getTime();
 }
 
-
-/* =========================================================
-   FORMAT DATE / TIME
-   ========================================================= */
 
 function formatIncidentDate(timestamp) {
 
   if (!timestamp) {
-
     return "Date/time unavailable";
   }
 
+  const date = new Date(timestamp);
 
-  const date =
-    new Date(timestamp);
-
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
+  if (Number.isNaN(date.getTime())) {
     return "Date/time unavailable";
   }
 
-
-  return date.toLocaleString(
-    "en-US",
-    {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    }
-  );
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
 }
 
 
 /* =========================================================
-   ESCAPE HTML
+   HTML SAFETY
    ========================================================= */
 
 function escapeHTML(value) {
 
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null || value === undefined) {
     return "";
   }
-
 
   return String(value)
     .replace(/&/g, "&amp;")
@@ -542,10 +507,12 @@ function escapeHTML(value) {
 
 
 /* =========================================================
-   HIGH PRIORITY CHECK
+   PRIORITY RANKING
+   P1 = MOST URGENT
+   P4 = ROUTINE
    ========================================================= */
 
-function isHighPriority(feature) {
+function getPriority(feature) {
 
   const text =
     (
@@ -555,35 +522,90 @@ function isHighPriority(feature) {
     ).toLowerCase();
 
 
-  const priorityWords = [
+  const p1Words = [
     "shooting",
     "shots fired",
+    "person shot",
+    "stabbing",
+    "person stabbed",
     "structure fire",
     "house fire",
     "apartment fire",
     "commercial fire",
     "explosion",
-    "stabbing",
-    "armed robbery",
     "armed subject",
+    "armed robbery",
+    "homicide",
     "officer down",
     "officer involved",
-    "fatal",
-    "homicide",
-    "rescue",
-    "major accident"
+    "active shooter"
   ];
 
 
-  return priorityWords.some(
-    word =>
-      text.includes(word)
-  );
+  const p2Words = [
+    "injury accident",
+    "major accident",
+    "major crash",
+    "vehicle fire",
+    "rescue",
+    "traffic/trans. acc. fr",
+    "traffic accident with injury",
+    "rollover",
+    "entrapment"
+  ];
+
+
+  const p3Words = [
+    "alarm fire",
+    "fire alarm",
+    "suspicious",
+    "disturbance",
+    "burglary",
+    "welfare check",
+    "medical",
+    "traffic hazard",
+    "reckless driver"
+  ];
+
+
+  if (p1Words.some(word => text.includes(word))) {
+    return {
+      level: 1,
+      code: "P1",
+      label: "CRITICAL"
+    };
+  }
+
+
+  if (p2Words.some(word => text.includes(word))) {
+    return {
+      level: 2,
+      code: "P2",
+      label: "HIGH"
+    };
+  }
+
+
+  if (p3Words.some(word => text.includes(word))) {
+    return {
+      level: 3,
+      code: "P3",
+      label: "MEDIUM"
+    };
+  }
+
+
+  return {
+    level: 4,
+    code: "P4",
+    label: "ROUTINE"
+  };
 }
 
 
 /* =========================================================
    ALERT SOUND
+   ONLY P1 INCIDENTS SOUND
    ========================================================= */
 
 function playAlertSound() {
@@ -592,55 +614,37 @@ function playAlertSound() {
     return;
   }
 
-
   try {
 
     const AudioContextClass =
       window.AudioContext ||
       window.webkitAudioContext;
 
-
     const audioContext =
       new AudioContextClass();
-
 
     const oscillator =
       audioContext.createOscillator();
 
-
     const gain =
       audioContext.createGain();
 
-
     oscillator.connect(gain);
+    gain.connect(audioContext.destination);
 
-    gain.connect(
-      audioContext.destination
-    );
-
-
-    oscillator.frequency.value =
-      880;
-
-
-    oscillator.type =
-      "sine";
-
+    oscillator.frequency.value = 880;
+    oscillator.type = "sine";
 
     gain.gain.setValueAtTime(
       0.15,
       audioContext.currentTime
     );
 
-
     oscillator.start();
 
-
     oscillator.stop(
-      audioContext.currentTime +
-      0.35
+      audioContext.currentTime + 0.35
     );
-
 
   } catch (error) {
 
@@ -652,28 +656,20 @@ function playAlertSound() {
 }
 
 
-/* =========================================================
-   ENABLE ALERTS
-   ========================================================= */
-
 function enableAlerts() {
 
   alertsEnabled = true;
-
 
   const button =
     document.getElementById(
       "enableAlertsButton"
     );
 
-
   button.innerHTML =
     "🔊 ALERTS ENABLED";
 
-
   button.style.background =
     "#278f4b";
-
 
   playAlertSound();
 }
@@ -689,7 +685,6 @@ function setStatus(type) {
     document.getElementById(
       "statusText"
     );
-
 
   const dot =
     document.getElementById(
@@ -737,10 +732,6 @@ function setStatus(type) {
 }
 
 
-/* =========================================================
-   ERROR BOX
-   ========================================================= */
-
 function showError(message) {
 
   const box =
@@ -748,10 +739,8 @@ function showError(message) {
       "errorBox"
     );
 
-
   box.style.display =
     "block";
-
 
   box.innerHTML =
     "<strong>Feed error:</strong><br>" +
@@ -766,10 +755,8 @@ function hideError() {
       "errorBox"
     );
 
-
   box.style.display =
     "none";
-
 
   box.innerHTML =
     "";
@@ -788,37 +775,68 @@ function createIncidentCard(
   const type =
     getIncidentType(feature);
 
-
   const description =
     getIncidentDescription(feature);
-
 
   const location =
     getIncidentLocation(feature);
 
-
   const timestamp =
     getIncidentTimestamp(feature);
-
 
   const formattedTime =
     formatIncidentDate(timestamp);
 
+  const priority =
+    getPriority(feature);
 
-  let newestBadge = "";
+
+  let priorityClass = "";
+  let badgeClass = "";
 
 
-  if (isNewest) {
+  if (priority.level === 1) {
+    priorityClass = "priority-p1";
+    badgeClass = "badge-p1";
+  }
 
-    newestBadge =
-      '<div class="newest-badge">' +
-      "🔥 NEWEST" +
-      "</div>";
+  else if (priority.level === 2) {
+    priorityClass = "priority-p2";
+    badgeClass = "badge-p2";
+  }
+
+  else if (priority.level === 3) {
+    priorityClass = "priority-p3";
+    badgeClass = "badge-p3";
+  }
+
+  else {
+    priorityClass = "priority-p4";
+    badgeClass = "badge-p4";
   }
 
 
-  let locationHTML = "";
+  let newestBadge = "";
 
+  if (isNewest) {
+    newestBadge =
+      '<span class="newest-badge">' +
+      "🔥 NEWEST" +
+      "</span>";
+  }
+
+
+  const priorityBadge =
+    '<span class="priority-badge ' +
+    badgeClass +
+    '">' +
+    priority.code +
+    " — " +
+    priority.label +
+    "</span>";
+
+
+  let locationHTML = "";
 
   if (location) {
 
@@ -831,12 +849,14 @@ function createIncidentCard(
 
 
   return `
-
-    <div class="incident-card">
+    <div class="incident-card ${priorityClass}">
 
       <div class="incident-top">
 
-        ${newestBadge}
+        <div>
+          ${newestBadge}
+          ${priorityBadge}
+        </div>
 
         <div class="incident-type">
           ${escapeHTML(type)}
@@ -859,15 +879,14 @@ function createIncidentCard(
       </div>
 
     </div>
-
   `;
 }
 
 
 /* =========================================================
-   RENDER INCIDENTS
-   SORT BY REAL REPORTED TIME
-   NEWEST FIRST
+   SORTING
+   PRIORITY FIRST
+   THEN NEWEST TIME
    ========================================================= */
 
 function renderIncidents(features) {
@@ -878,15 +897,26 @@ function renderIncidents(features) {
     );
 
 
-  features.sort(
-    (a, b) => {
+  features.sort((a, b) => {
 
-      return (
-        getIncidentTimestamp(b) -
-        getIncidentTimestamp(a)
-      );
+    const priorityA =
+      getPriority(a).level;
+
+    const priorityB =
+      getPriority(b).level;
+
+
+    if (priorityA !== priorityB) {
+
+      return priorityA - priorityB;
     }
-  );
+
+
+    return (
+      getIncidentTimestamp(b) -
+      getIncidentTimestamp(a)
+    );
+  });
 
 
   document.getElementById(
@@ -900,9 +930,7 @@ function renderIncidents(features) {
     );
 
 
-  if (
-    features.length === 0
-  ) {
+  if (features.length === 0) {
 
     container.innerHTML =
       '<div class="loading">' +
@@ -934,7 +962,8 @@ function renderIncidents(features) {
 
 
 /* =========================================================
-   CHECK FOR NEW HIGH PRIORITY INCIDENTS
+   NEW INCIDENT ALERT CHECK
+   SOUND ONLY FOR NEW P1 CALLS
    ========================================================= */
 
 function checkForAlerts(features) {
@@ -943,33 +972,32 @@ function checkForAlerts(features) {
     new Set();
 
 
-  features.forEach(
-    feature => {
+  features.forEach(feature => {
 
-      const id =
-        String(
-          getIncidentId(feature)
-        );
+    const id =
+      String(
+        getIncidentId(feature)
+      );
+
+    currentIds.add(id);
+
+    const priority =
+      getPriority(feature);
 
 
-      currentIds.add(id);
+    if (
+      !firstLoad &&
+      !previousIncidentIds.has(id) &&
+      priority.level === 1
+    ) {
 
-
-      if (
-        !firstLoad &&
-        !previousIncidentIds.has(id) &&
-        isHighPriority(feature)
-      ) {
-
-        playAlertSound();
-      }
+      playAlertSound();
     }
-  );
+  });
 
 
   previousIncidentIds =
     currentIds;
-
 
   firstLoad =
     false;
@@ -977,7 +1005,7 @@ function checkForAlerts(features) {
 
 
 /* =========================================================
-   LOAD OKC FEED
+   LOAD FEED
    ========================================================= */
 
 async function loadIncidents() {
@@ -992,13 +1020,11 @@ async function loadIncidents() {
 
       outFields: "*",
 
-      returnGeometry:
-        "false",
+      returnGeometry: "false",
 
       f: "json",
 
-      resultRecordCount:
-        "100",
+      resultRecordCount: "100",
 
       orderByFields:
         "ObjectID DESC"
@@ -1022,9 +1048,7 @@ async function loadIncidents() {
       );
 
 
-    if (
-      !response.ok
-    ) {
+    if (!response.ok) {
 
       throw new Error(
         "OKC server returned HTTP " +
@@ -1037,9 +1061,7 @@ async function loadIncidents() {
       await response.json();
 
 
-    if (
-      data.error
-    ) {
+    if (data.error) {
 
       throw new Error(
         data.error.message ||
@@ -1050,9 +1072,7 @@ async function loadIncidents() {
 
     if (
       !data.features ||
-      !Array.isArray(
-        data.features
-      )
+      !Array.isArray(data.features)
     ) {
 
       throw new Error(
@@ -1063,16 +1083,13 @@ async function loadIncidents() {
 
     hideError();
 
-
     checkForAlerts(
       data.features
     );
 
-
     renderIncidents(
       data.features
     );
-
 
     setStatus("live");
 
@@ -1084,16 +1101,11 @@ async function loadIncidents() {
       error
     );
 
-
-    setStatus(
-      "error"
-    );
-
+    setStatus("error");
 
     showError(
       error.message
     );
-
 
     document.getElementById(
       "incidentList"
@@ -1106,11 +1118,10 @@ async function loadIncidents() {
 
 
 /* =========================================================
-   START MONITOR
+   START
    ========================================================= */
 
 loadIncidents();
-
 
 setInterval(
   loadIncidents,
