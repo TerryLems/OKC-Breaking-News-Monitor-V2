@@ -497,7 +497,7 @@ function formatIncidentDate(timestamp) {
     day: "numeric",
     year: "numeric",
     hour: "numeric",
-    
+    minute: "2-digit"
   });
 
 }
@@ -847,24 +847,14 @@ function createIncidentCard(feature) {
 function renderIncidents(features) {
 
   const container =
-    document.getElementById(
-      "incidentList"
-    );
-
-
-  /*
-    Sort newest date/time first.
-  */
+    document.getElementById("incidentList");
 
   features.sort((a, b) => {
-
     return (
       getIncidentTimestamp(b) -
       getIncidentTimestamp(a)
     );
-
   });
-
 
   document.getElementById(
     "incidentCount"
@@ -874,7 +864,6 @@ function renderIncidents(features) {
       ? " incident"
       : " incidents");
 
-
   if (features.length === 0) {
 
     container.innerHTML =
@@ -883,22 +872,41 @@ function renderIncidents(features) {
       "</div>";
 
     return;
-
   }
-
 
   let html = "";
 
-  features.forEach(feature => {
+  features.forEach((feature, index) => {
 
-    html +=
+    let card =
       createIncidentCard(feature);
 
+    if (index === 0) {
+
+      card = card.replace(
+        '<div class="incident-type">',
+        '<div style="margin-bottom:8px;">' +
+        '<span style="' +
+        'display:inline-block;' +
+        'background:#ff5b4d;' +
+        'color:white;' +
+        'font-size:12px;' +
+        'font-weight:900;' +
+        'padding:5px 8px;' +
+        'border-radius:5px;' +
+        'letter-spacing:.5px;' +
+        '">' +
+        '🔥 NEWEST' +
+        '</span>' +
+        '</div>' +
+        '<div class="incident-type">'
+      );
+    }
+
+    html += card;
   });
 
-
-  container.innerHTML =
-    html;
+  container.innerHTML = html;
 
 }
 
