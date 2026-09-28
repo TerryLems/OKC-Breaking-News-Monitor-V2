@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>OKC Breaking News Monitor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #090909;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 24px 18px 18px;
+      background: #111;
+      border-bottom: 2px solid #e53935;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      color: #ff453a;
+      font-size: 27px;
+      line-height: 1.1;
+    }
+
+    .sub {
+      margin-top: 8px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      gap: 10px;
+    }
+
+    #status {
+      color: #5cff75;
+      font-weight: bold;
+    }
+
+    #count {
+      color: #ddd;
+      font-size: 14px;
+    }
+
+    main {
+      padding: 15px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .incident {
+      background: #171717;
+      border: 1px solid #333;
+      border-left: 5px solid #777;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+    }
+
+    .incident.high {
+      border-left-color: #ff453a;
+      background: #211313;
+    }
+
+    .incident.medium {
+      border-left-color: #ff9f0a;
+    }
+
+    .title {
+      font-size: 19px;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .details {
+      color: #bbb;
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .high .badge {
+      background: #ff453a;
+      color: white;
+    }
+
+    .medium .badge {
+      background: #ff9f0a;
+      color: black;
+    }
+
+    .normal .badge {
+      background: #444;
+    }
+
+    #loading {
+      padding: 35px;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .updated {
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      padding: 10px 0 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🚨 OKC BREAKING NEWS MONITOR</h1>
+
+  <div class="sub">
+    Oklahoma City Public Safety Incident Monitor
+  </div>
+
+  <div class="status-row">
+    <span id="status">● CONNECTING</span>
+    <span id="count">0 incidents</span>
+  </div>
+
+</header>
+
+<main>
+
+  <div id="loading">
+    Loading OKC incidents...
+  </div>
+
+  <div id="incidents"></div>
+
+  <div class="updated" id="updated"></div>
+
+</main>
+
+<script>
+
+const HIGH_PRIORITY = [
+  "STRUCTURE FIRE",
+  "HOUSE FIRE",
+  "APARTMENT FIRE",
+  "COMMERCIAL FIRE",
+  "SHOOTING",
+  "STABBING",
+  "ROBBERY",
+  "HOSTAGE",
+  "EXPLOSION",
+  "ACTIVE SHOOTER",
+  "OFFICER DOWN",
+  "PERSON SHOT"
+];
+
+const MEDIUM_PRIORITY = [
+  "ACCIDENT",
+  "INJURY",
+  "COLLISION",
+  "FIRE",
+  "ASSAULT",
+  "DISTURBANCE"
+];
+
+function getPriority(text) {
+
+  const value = String(text || "").toUpperCase();
+
+  if (HIGH_PRIORITY.some(word => value.includes(word))) {
+    return "high";
+  }
+
+  if (MEDIUM_PRIORITY.some(word => value.includes(word))) {
+    return "medium";
+  }
+
+  return "normal";
+}
+
+function createIncident(attributes) {
+
+  const title =
+    attributes.InfoTitle ||
+    attributes.Call_Type ||
+    attributes.Description ||
+    "Public Safety Incident";
+
+  const priority = getPriority(title);
+
+  const card = document.createElement("div");
+
+  card.className = `incident ${priority}`;
+
+  let badge = "INCIDENT";
+
+  if (priority === "high") {
+    badge = "🚨 HIGH PRIORITY";
+  }
+
+  if (priority === "medium") {
+    badge = "⚠️ PRIORITY";
+  }
+
+  const details = Object.entries(attributes)
+    .filter(([key, value]) =>
+      value !== null &&
+      value !== "" &&
+      key !== "InfoTitle"
+    )
+    .slice(0, 6)
+    .map(([key, value]) =>
+      `<div><strong>${key}:</strong> ${value}</div>`
+    )
+    .join("");
+
+  card.innerHTML = `
+    <div class="badge">${badge}</div>
+    <div class="title">${title}</div>
+    <div class="details">${details}</div>
+  `;
+
+  return card;
+}
+
+async function loadIncidents() {
+
+  const status = document.getElementById("status");
+  const container = document.getElementById("incidents");
+  const loading = document.getElementById("loading");
+
+  try {
+
+    const response = await fetch("/api/incidents", {
+      cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error("Feed unavailable");
+    }
+
+    loading.style.display = "none";
+
+    container.innerHTML = "";
+
+    const incidents = data.incidents || [];
+
+    document.getElementById("count").textContent =
+      `${incidents.length} incidents`;
+
+    incidents.forEach(incident => {
+
+      const card = createIncident(incident);
+
+      container.appendChild(card);
+
+    });
+
+    status.textContent = "● LIVE";
+    status.style.color = "#5cff75";
+
+    document.getElementById("updated").textContent =
+      "Last updated: " + new Date().toLocaleTimeString();
+
+  } catch (error) {
+
+    loading.style.display = "none";
+
+    status.textContent = "● FEED ERROR";
+    status.style.color = "#ff453a";
+
+    console.error(error);
+
+  }
+
+}
+
+loadIncidents();
+
+setInterval(loadIncidents, 30000);
+
+</script>
+
+</body>
+</html>
