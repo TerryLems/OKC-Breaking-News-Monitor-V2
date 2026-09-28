@@ -982,24 +982,28 @@ o<!DOCTYPE html>
     */
 
     setInterval(
-      loadIncidents,
-      REFRESH_function formatTime(value) {
-  if (!value) return "";
+    loadIncidents,
+    30000
+);
 
-  const date = new Date(value);
+function formatTime(value) {
+    if (!value) return "";
 
-  if (isNaN(date.getTime())) {
-    return value;
-  }
+    const date = new Date(value);
 
-  return date.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true
-  });
+    if (isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+}
 
   </script>
 
