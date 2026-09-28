@@ -435,16 +435,11 @@ function formatDateValue(value) {
 
 }
 
-
 /* =========================================================
-   FIND DATE/TIME FIELD
+   GET INCIDENT TIMESTAMP FOR SORTING
 ========================================================= */
 
-function getIncidentDateTime(attributes) {
-
-  /*
-     First check the most common field names.
-  */
+function getIncidentTimestamp(attributes) {
 
   const preferredFields = [
 
@@ -480,78 +475,75 @@ function getIncidentDateTime(attributes) {
 
   ];
 
-
   for (const field of preferredFields) {
 
+    const value = attributes[field];
+
     if (
-      attributes[field] !== undefined &&
-      attributes[field] !== null &&
-      attributes[field] !== ""
+      value !== undefined &&
+      value !== null &&
+      value !== ""
     ) {
 
-      const formatted =
-        formatDateValue(
-          attributes[field]
-        );
+      let date;
 
+      if (typeof value === "number") {
 
-      if (formatted) {
+        date = new Date(value);
 
-        return formatted;
+      } else {
 
+        const text = String(value).trim();
+
+        if (/^\d{10,13}$/.test(text)) {
+
+          let number = Number(text);
+
+          if (text.length === 10) {
+            number *= 1000;
+          }
+
+          date = new Date(number);
+
+        } else {
+
+          date = new Date(text);
+
+        }
       }
 
+      if (!isNaN(date.getTime())) {
+        return date.getTime();
+      }
     }
-
   }
 
 
-  /*
-     If the exact field name is different,
-     search all fields for DATE or TIME.
-  */
+  /* Look for any other field containing date/time */
 
-  const keys =
-    Object.keys(attributes);
+  for (const key of Object.keys(attributes)) {
 
+    if (/date|time/i.test(key)) {
 
-  for (const key of keys) {
-
-    if (
-      /date|time/i.test(key)
-    ) {
-
-      const value =
-        attributes[key];
-
+      const value = attributes[key];
 
       if (
-        value !== null &&
         value !== undefined &&
+        value !== null &&
         value !== ""
       ) {
 
-        const formatted =
-          formatDateValue(value);
+        const date = new Date(value);
 
-
-        if (formatted) {
-
-          return formatted;
-
+        if (!isNaN(date.getTime())) {
+          return date.getTime();
         }
-
       }
-
     }
-
   }
 
-
-  return "Date/time unavailable";
-
+  return 0;
 }
-
 
 /* =========================================================
    INCIDENT TITLE
@@ -1131,8 +1123,28 @@ async function loadIncidents() {
 
 
     renderIncidents(
-      data.features
+      
+/* Sort newest incident first */
+
+data.features.sort((a, b) => {
+
+  const timeA =
+    getIncidentTimestamp(
+      a.attributes || {}
     );
+
+  const timeB =
+    getIncidentTimestamp(
+      b.attributes || {}
+    );
+
+  return timeB - timeA;
+});
+
+
+renderIncidents(
+  data.features
+);
 
 
     statusElement.textContent =
