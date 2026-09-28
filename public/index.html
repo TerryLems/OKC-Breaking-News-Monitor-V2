@@ -163,6 +163,8 @@
 </main>
 
 <script>
+let firstLoad = true;
+let knownBreakingIds = new Set();
 
 const HIGH_PRIORITY = [
   "STRUCTURE FIRE",
@@ -222,6 +224,7 @@ function getPriority(title, callType) {
     "MAJOR ACCIDENT",
     "ASSAULT",
     "ROBBERY"
+    "VEHICLE FIRE",
   ];
 
   if (HIGH.some(word => text.includes(word))) {
@@ -258,7 +261,7 @@ function createIncident(attributes) {
   badge = "🚨 BREAKING";
 }
 
-if (priority === "medium") {
+  if (priority === "medium") {
   badge = "⚠️ WATCH";
 }
 
@@ -283,7 +286,7 @@ if (priority === "medium") {
   return card;
 }
 
-async function loadIncidents() {
+  async function loadIncidents() {
 
   const status = document.getElementById("status");
   const container = document.getElementById("incidents");
@@ -307,16 +310,60 @@ async function loadIncidents() {
 
     const incidents = data.incidents || [];
 
-    document.getElementById("count").textContent =
-      `${incidents.length} incidents`;
+    const breakingIncidents = incidents.filter(incident => {
+    return getPriority(
+    incident.InfoTitle,
+    incident.Call_Type
+  ) === "high";
+});
 
-    incidents.forEach(incident => {
+    const currentBreakingIds = new Set(
+  breakingIncidents.map(incident => String(incident.ObjectID))
+);
+
+    if (!firstLoad) {
+    const newBreaking = breakingIncidents.filter(
+    incident => !knownBreakingIds.has(String(incident.ObjectID))
+  );
+
+    if (newBreaking.length > 0) {
+    playBreakingAlert();
+  }
+}
+
+knownBreakingIds = currentBreakingIds;
+firstLoad = false;
 
       const card = createIncident(incident);
 
       container.appendChild(card);
 
     });
+
+    function playBreakingAlert() {
+  const AudioContext =
+    window.AudioContext || window.webkitAudioContext;
+
+  const ctx = new AudioContext();
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.type = "square";
+  osc.frequency.setValueAtTime(880, ctx.currentTime);
+
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+
+  osc.start();
+
+  osc.frequency.setValueAtTime(660, ctx.currentTime + 0.18);
+  osc.frequency.setValueAtTime(880, ctx.currentTime + 0.36);
+
+  osc.stop(ctx.currentTime + 0.55);
+}
 
     status.textContent = "● LIVE";
     status.style.color = "#5cff75";
