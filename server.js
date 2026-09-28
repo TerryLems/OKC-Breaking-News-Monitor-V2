@@ -11,11 +11,12 @@ const FEED_URL =
 app.get("/api/incidents", async (req, res) => {
   try {
     const params = new URLSearchParams({
-      where: "1=1",
-      outFields: "*",
-      returnGeometry: "false",
-      resultRecordCount: "100",
-      f: "json"
+  where: "1=1",
+  outFields: "*",
+  returnGeometry: "false",
+  orderByFields: "ObjectID DESC",
+  resultRecordCount: "100",
+  f: "json"
     });
 
     const url = `${FEED_URL}?${params.toString()}`;
