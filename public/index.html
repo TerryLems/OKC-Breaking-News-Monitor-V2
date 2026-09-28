@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8" />
 
   <meta
@@ -8,452 +10,1004 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   />
 
-  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="theme-color" content="#050505" />
 
   <title>OKC Breaking News Monitor</title>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
 
+
     body {
       margin: 0;
       padding: 0;
+
       background: #050505;
       color: white;
-      font-family: Arial, Helvetica, sans-serif;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
     }
+
+
+    /* =====================================================
+       BRANDED HEADER
+       ===================================================== */
 
     .header {
-      background: #111111;
-      padding: 28px 20px 24px;
-      border-bottom: 3px solid #ef6a5b;
+
+      position: relative;
+
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.10),
+          rgba(0, 0, 0, 0.88)
+        ),
+        url("okc-header.png");
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      padding:
+        30px
+        20px
+        26px;
+
+      border-bottom:
+        3px solid #ef6a5b;
+
+      min-height: 390px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
     }
 
-    .title {
-      margin: 0;
-      color: #ff7366;
-      font-size: 36px;
-      line-height: 1.05;
-      font-weight: 900;
-      letter-spacing: -1px;
+
+    .header-spacer {
+      flex: 1;
+      min-height: 175px;
     }
 
-    .subtitle {
-      margin-top: 22px;
-      color: #b7b7b7;
-      font-size: 20px;
-      line-height: 1.35;
-    }
 
     .alert-button {
-      margin-top: 26px;
+
+      margin-top: 18px;
+
       width: 100%;
       max-width: 475px;
-      border: none;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.28);
+
       border-radius: 13px;
-      background: #e86154;
+
+      background:
+        rgba(220,55,45,0.92);
+
       color: white;
-      padding: 20px;
-      font-size: 21px;
+
+      padding: 19px;
+
+      font-size: 20px;
       font-weight: 900;
+
       cursor: pointer;
+
+      backdrop-filter:
+        blur(5px);
+
+      box-shadow:
+        0 6px 18px
+        rgba(0,0,0,0.35);
     }
 
+
     .status-row {
-      margin-top: 30px;
+
+      margin-top: 26px;
+
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
       gap: 16px;
     }
 
+
     .status {
+
       display: flex;
-      align-items: center;
+
+      align-items:
+        center;
+
       gap: 10px;
+
       font-size: 21px;
+
       font-weight: 900;
+
       color: #aaff95;
+
+      text-shadow:
+        0 2px 5px
+        rgba(0,0,0,0.9);
     }
 
+
     .status-dot {
+
       width: 24px;
       height: 24px;
+
       border-radius: 50%;
+
       background: #e33434;
-      box-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+
+      box-shadow:
+        0 0 8px
+        rgba(255,0,0,0.9);
+
       flex-shrink: 0;
     }
 
+
     .incident-count {
-      color: #dddddd;
-      font-size: 20px;
+
+      color: #ffffff;
+
+      font-size: 19px;
+
+      font-weight: 700;
+
       white-space: nowrap;
+
+      text-shadow:
+        0 2px 5px
+        rgba(0,0,0,0.9);
     }
+
 
     .refresh-text {
-      margin-top: 22px;
-      color: #747474;
-      font-size: 17px;
-      line-height: 1.4;
+
+      margin-top: 17px;
+
+      color: #bbbbbb;
+
+      font-size: 15px;
+
+      line-height: 1.45;
+
+      text-shadow:
+        0 2px 4px
+        rgba(0,0,0,0.9);
     }
+
+
+    /* =====================================================
+       MAIN CONTENT
+       ===================================================== */
 
     .content {
-      padding: 18px;
+
+      padding:
+        18px;
     }
 
+
     .error-box {
+
       display: none;
+
       background: #401615;
-      border: 1px solid #de5547;
+
+      border:
+        1px solid #de5547;
+
       border-radius: 12px;
+
       padding: 18px;
+
       margin-bottom: 20px;
+
       color: #ffbeb7;
+
       font-size: 17px;
+
       line-height: 1.4;
     }
 
+
     .loading {
+
       text-align: center;
+
       color: #aaaaaa;
+
       font-size: 22px;
-      padding: 60px 10px;
+
+      padding:
+        60px 10px;
     }
+
+
+    /* =====================================================
+       INCIDENT CARDS
+       ===================================================== */
 
     .incident-card {
+
       background: #151515;
-      border: 1px solid #333333;
+
+      border:
+        1px solid #333333;
+
       border-radius: 13px;
+
       margin-bottom: 16px;
+
       overflow: hidden;
-      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
+
+      box-shadow:
+        0 5px 14px
+        rgba(0,0,0,0.30);
     }
+
 
     .priority-p1 {
-      border-left: 8px solid #ff2d2d;
-      background: #1d0d0d;
+
+      border-left:
+        8px solid #ff2d2d;
+
+      background:
+        #1d0d0d;
     }
+
 
     .priority-p2 {
-      border-left: 8px solid #ff8c1a;
-      background: #1b130b;
+
+      border-left:
+        8px solid #ff8c1a;
+
+      background:
+        #1b130b;
     }
+
 
     .priority-p3 {
-      border-left: 8px solid #ffd34d;
-      background: #1b190e;
+
+      border-left:
+        8px solid #ffd34d;
+
+      background:
+        #1b190e;
     }
+
 
     .priority-p4 {
-      border-left: 6px solid #777777;
-      background: #151515;
+
+      border-left:
+        6px solid #777777;
+
+      background:
+        #151515;
     }
+
 
     .incident-top {
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid #292929;
+
+      padding:
+        16px
+        16px
+        12px;
+
+      border-bottom:
+        1px solid #292929;
     }
 
+
     .incident-type {
+
       color: #ffffff;
+
       font-size: 21px;
+
       font-weight: 900;
+
       line-height: 1.2;
     }
 
+
     .incident-time {
+
       margin-top: 8px;
+
       color: #ffbf69;
+
       font-size: 16px;
+
       font-weight: 700;
     }
+
 
     .incident-age {
+
       margin-top: 6px;
+
       color: #8f8f8f;
+
       font-size: 14px;
+
       font-weight: 700;
     }
 
+
     .incident-body {
-      padding: 14px 16px 17px;
+
+      padding:
+        14px
+        16px
+        17px;
     }
 
+
     .incident-description {
+
       color: #d9d9d9;
+
       font-size: 17px;
+
       line-height: 1.4;
     }
 
+
     .incident-location {
+
       color: #b2b2b2;
+
       margin-top: 12px;
+
       font-size: 15px;
+
       line-height: 1.35;
     }
 
+
+    /* =====================================================
+       PRIORITY BADGES
+       ===================================================== */
+
     .priority-badge {
+
       display: inline-block;
+
       margin-bottom: 10px;
       margin-right: 6px;
-      padding: 5px 8px;
+
+      padding:
+        5px 8px;
+
       border-radius: 5px;
+
       font-size: 12px;
+
       font-weight: 900;
-      letter-spacing: 0.5px;
+
+      letter-spacing:
+        0.5px;
     }
 
+
     .badge-p1 {
+
       background: #ff2d2d;
+
       color: #ffffff;
     }
 
+
     .badge-p2 {
+
       background: #ff8c1a;
+
       color: #111111;
     }
+
 
     .badge-p3 {
+
       background: #ffd34d;
+
       color: #111111;
     }
 
+
     .badge-p4 {
+
       background: #333333;
+
       color: #bdbdbd;
     }
 
+
     .newest-badge {
+
       display: inline-block;
+
       margin-bottom: 10px;
       margin-right: 6px;
-      padding: 5px 8px;
+
+      padding:
+        5px 8px;
+
       border-radius: 5px;
+
       background: #ff5b4d;
+
       color: white;
+
       font-size: 12px;
+
       font-weight: 900;
-      letter-spacing: 0.5px;
+
+      letter-spacing:
+        0.5px;
     }
+
+
+    /* =====================================================
+       MAP BUTTON
+       ===================================================== */
 
     .map-button {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      background: #2274e0;
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 900;
-      text-decoration: none;
-      letter-spacing: 0.3px;
+
+      display:
+        inline-block;
+
+      margin-top:
+        14px;
+
+      padding:
+        10px 14px;
+
+      border-radius:
+        8px;
+
+      background:
+        #2274e0;
+
+      color:
+        #ffffff;
+
+      font-size:
+        14px;
+
+      font-weight:
+        900;
+
+      text-decoration:
+        none;
+
+      letter-spacing:
+        0.3px;
+
+      box-shadow:
+        0 4px 10px
+        rgba(0,0,0,0.25);
     }
+
+
+    .map-button:hover {
+
+      background:
+        #3486f0;
+    }
+
 
     .map-button:active {
-      transform: scale(0.98);
+
+      transform:
+        scale(0.98);
     }
 
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
     .footer {
+
       color: #555555;
+
       text-align: center;
+
       padding: 20px;
+
       font-size: 13px;
     }
 
-    @media (min-width: 700px) {
+
+    /* =====================================================
+       DESKTOP
+       ===================================================== */
+
+    @media (
+      min-width: 700px
+    ) {
+
       .header,
       .content {
-        max-width: 850px;
+
+        max-width: 900px;
+
         margin-left: auto;
         margin-right: auto;
       }
 
-      .title {
-        font-size: 42px;
+
+      .header {
+
+        min-height: 430px;
+      }
+
+
+      .header-spacer {
+
+        min-height: 225px;
       }
     }
+
+
+    /* =====================================================
+       PHONE
+       ===================================================== */
+
+    @media (
+      max-width: 500px
+    ) {
+
+      .header {
+
+        min-height: 330px;
+
+        padding:
+          18px
+          14px
+          22px;
+
+        background-position:
+          center top;
+      }
+
+
+      .header-spacer {
+
+        min-height: 155px;
+      }
+
+
+      .alert-button {
+
+        font-size: 18px;
+
+        padding: 17px;
+      }
+
+
+      .incident-count {
+
+        font-size: 16px;
+      }
+
+
+      .status {
+
+        font-size: 19px;
+      }
+
+
+      .content {
+
+        padding:
+          12px;
+      }
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
   <header class="header">
 
-    <h1 class="title">
-      🚨 OKC BREAKING<br />
-      NEWS<br />
-      MONITOR
-    </h1>
 
-    <div class="subtitle">
-      Oklahoma City Public Safety Incident Monitor
-    </div>
+    <div class="header-spacer"></div>
+
 
     <button
       id="enableAlertsButton"
       class="alert-button"
       onclick="enableAlerts()"
     >
+
       🔊 ENABLE ALERTS
+
     </button>
+
 
     <div class="status-row">
 
-      <div id="status" class="status">
-        <span id="statusDot" class="status-dot"></span>
-        <span id="statusText">CONNECTING...</span>
+
+      <div
+        id="status"
+        class="status"
+      >
+
+        <span
+          id="statusDot"
+          class="status-dot"
+        ></span>
+
+
+        <span
+          id="statusText"
+        >
+
+          CONNECTING...
+
+        </span>
+
       </div>
 
-      <div id="incidentCount" class="incident-count">
+
+      <div
+        id="incidentCount"
+        class="incident-count"
+      >
+
         0 incidents
+
       </div>
+
 
     </div>
+
 
     <div class="refresh-text">
+
       Showing incidents reported within the last 24 hours.
       Automatically checks every 30 seconds.
+
     </div>
+
 
   </header>
 
+
+  <!-- =====================================================
+       INCIDENT AREA
+       ===================================================== -->
+
   <main class="content">
 
-    <div id="errorBox" class="error-box"></div>
 
-    <div id="incidentList">
+    <div
+      id="errorBox"
+      class="error-box"
+    ></div>
+
+
+    <div
+      id="incidentList"
+    >
+
       <div class="loading">
+
         Loading OKC incidents...
+
       </div>
+
     </div>
+
 
   </main>
 
+
   <div class="footer">
+
     Public safety information from Oklahoma City open data.
+
   </div>
 
+
+
 <script>
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
 const FEED_URL =
   "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
 
-const REFRESH_INTERVAL = 30000;
+
+const REFRESH_INTERVAL =
+  30000;
+
 
 const MAX_INCIDENT_AGE =
-  24 * 60 * 60 * 1000;
+  24 *
+  60 *
+  60 *
+  1000;
 
-let previousIncidentIds = new Set();
 
-let firstLoad = true;
+let previousIncidentIds =
+  new Set();
 
-let alertsEnabled = false;
+
+let firstLoad =
+  true;
+
+
+let alertsEnabled =
+  false;
+
 
 
 /* =========================================================
-   BASIC FIELD HELPERS
+   FIELD HELPERS
    ========================================================= */
 
-function getValue(attributes, possibleNames) {
+function getValue(
+  attributes,
+  possibleNames
+) {
 
-  for (const name of possibleNames) {
+
+  for (
+    const name
+    of possibleNames
+  ) {
+
 
     if (
-      attributes[name] !== undefined &&
-      attributes[name] !== null &&
-      attributes[name] !== ""
+
+      attributes[name] !==
+      undefined &&
+
+      attributes[name] !==
+      null &&
+
+      attributes[name] !==
+      ""
+
     ) {
-      return attributes[name];
+
+      return
+        attributes[name];
+
     }
+
   }
 
+
   return null;
+
 }
 
 
-function getIncidentId(feature) {
 
-  const a = feature.attributes || {};
+/* =========================================================
+   INCIDENT ID
+   ========================================================= */
 
-  return getValue(a, [
-    "ObjectID",
-    "OBJECTID",
-    "objectid"
-  ]) || JSON.stringify(a);
+function getIncidentId(
+  feature
+) {
+
+
+  const a =
+    feature.attributes ||
+    {};
+
+
+  return (
+
+    getValue(
+      a,
+      [
+        "ObjectID",
+        "OBJECTID",
+        "objectid"
+      ]
+    )
+
+    ||
+
+    JSON.stringify(a)
+
+  );
+
 }
 
 
-function getIncidentType(feature) {
 
-  const a = feature.attributes || {};
+/* =========================================================
+   INCIDENT TYPE
+   ========================================================= */
 
-  return getValue(a, [
-    "InfoTitle",
-    "Call_Type"
-  ]) || "Public Safety Incident";
+function getIncidentType(
+  feature
+) {
+
+
+  const a =
+    feature.attributes ||
+    {};
+
+
+  return (
+
+    getValue(
+      a,
+      [
+        "InfoTitle",
+        "Call_Type"
+      ]
+    )
+
+    ||
+
+    "Public Safety Incident"
+
+  );
+
 }
 
 
-function getIncidentDescription(feature) {
 
-  const a = feature.attributes || {};
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
 
-  return getValue(a, [
-    "Call_Type",
-    "InfoTitle"
-  ]) || "No additional description available.";
+function getIncidentDescription(
+  feature
+) {
+
+
+  const a =
+    feature.attributes ||
+    {};
+
+
+  return (
+
+    getValue(
+      a,
+      [
+        "Call_Type",
+        "InfoTitle"
+      ]
+    )
+
+    ||
+
+    "No additional description available."
+
+  );
+
 }
 
 
-function getIncidentLocation(feature) {
 
-  const a = feature.attributes || {};
+/* =========================================================
+   LOCATION
+   ========================================================= */
 
-  return getValue(a, [
-    "Address",
-    "Location"
-  ]);
+function getIncidentLocation(
+  feature
+) {
+
+
+  const a =
+    feature.attributes ||
+    {};
+
+
+  return getValue(
+    a,
+    [
+      "Address",
+      "Location"
+    ]
+  );
+
 }
+
 
 
 /* =========================================================
    DATE / TIME
-   Example:
+   Feed example:
+
    Sep 28 2026  4:02PM
    ========================================================= */
 
-function getIncidentTimestamp(feature) {
+function getIncidentTimestamp(
+  feature
+) {
 
-  const a = feature.attributes || {};
 
-  const value = a.Reported_Time;
+  const a =
+    feature.attributes ||
+    {};
+
+
+  const value =
+    a.Reported_Time;
+
 
   if (!value) {
+
     return 0;
+
   }
 
-  const text = String(value)
-    .replace(/\s+/g, " ")
-    .trim();
 
-  const match = text.match(
-    /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
-  );
+  const text =
+    String(value)
+      .replace(
+        /\s+/g,
+        " "
+      )
+      .trim();
+
+
+  const match =
+    text.match(
+      /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+    );
+
 
   if (!match) {
+
 
     console.log(
       "Could not read Reported_Time:",
       value
     );
 
+
     return 0;
+
   }
 
+
   const months = {
+
     Jan: 0,
     Feb: 1,
     Mar: 2,
@@ -466,48 +1020,82 @@ function getIncidentTimestamp(feature) {
     Oct: 9,
     Nov: 10,
     Dec: 11
+
   };
 
+
   const monthName =
-    match[1].charAt(0).toUpperCase() +
-    match[1].slice(1).toLowerCase();
+
+    match[1]
+      .charAt(0)
+      .toUpperCase()
+
+    +
+
+    match[1]
+      .slice(1)
+      .toLowerCase();
+
 
   const month =
     months[monthName];
 
+
   const day =
-    Number(match[2]);
+    Number(
+      match[2]
+    );
+
 
   const year =
-    Number(match[3]);
+    Number(
+      match[3]
+    );
+
 
   let hour =
-    Number(match[4]);
+    Number(
+      match[4]
+    );
+
 
   const minute =
-    Number(match[5]);
+    Number(
+      match[5]
+    );
+
 
   const ampm =
-    match[6].toUpperCase();
+    match[6]
+      .toUpperCase();
 
 
   if (
+
     ampm === "PM" &&
     hour !== 12
+
   ) {
+
     hour += 12;
+
   }
 
 
   if (
+
     ampm === "AM" &&
     hour === 12
+
   ) {
+
     hour = 0;
+
   }
 
 
   return new Date(
+
     year,
     month,
     day,
@@ -515,267 +1103,505 @@ function getIncidentTimestamp(feature) {
     minute,
     0,
     0
+
   ).getTime();
+
 }
 
-
-function formatIncidentDate(timestamp) {
-
-  if (!timestamp) {
-    return "Date/time unavailable";
-  }
-
-  const date =
-    new Date(timestamp);
-
-  return date.toLocaleString(
-    "en-US",
-    {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    }
-  );
-}
 
 
 /* =========================================================
-   HOW LONG AGO
+   DATE DISPLAY
    ========================================================= */
 
-function getIncidentAge(timestamp) {
+function formatIncidentDate(
+  timestamp
+) {
+
 
   if (!timestamp) {
-    return "";
+
+    return
+      "Date/time unavailable";
+
   }
+
+
+  const date =
+    new Date(
+      timestamp
+    );
+
+
+  return date.toLocaleString(
+
+    "en-US",
+
+    {
+
+      weekday:
+        "short",
+
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      year:
+        "numeric",
+
+      hour:
+        "numeric",
+
+      minute:
+        "2-digit"
+
+    }
+
+  );
+
+}
+
+
+
+/* =========================================================
+   REPORTED AGE
+   ========================================================= */
+
+function getIncidentAge(
+  timestamp
+) {
+
+
+  if (!timestamp) {
+
+    return "";
+
+  }
+
 
   const difference =
-    Date.now() - timestamp;
+    Date.now() -
+    timestamp;
 
-  if (difference < 0) {
-    return "Reported just now";
+
+  if (
+    difference < 0
+  ) {
+
+    return
+      "Reported just now";
+
   }
+
 
   const minutes =
     Math.floor(
-      difference / 60000
+      difference /
+      60000
     );
 
-  if (minutes < 1) {
-    return "Reported just now";
+
+  if (
+    minutes < 1
+  ) {
+
+    return
+      "Reported just now";
+
   }
 
-  if (minutes === 1) {
-    return "Reported 1 minute ago";
+
+  if (
+    minutes === 1
+  ) {
+
+    return
+      "Reported 1 minute ago";
+
   }
 
-  if (minutes < 60) {
+
+  if (
+    minutes < 60
+  ) {
+
     return (
+
       "Reported " +
       minutes +
       " minutes ago"
+
     );
+
   }
+
 
   const hours =
     Math.floor(
-      minutes / 60
+      minutes /
+      60
     );
 
-  if (hours === 1) {
-    return "Reported 1 hour ago";
+
+  if (
+    hours === 1
+  ) {
+
+    return
+      "Reported 1 hour ago";
+
   }
 
+
   return (
+
     "Reported " +
     hours +
     " hours ago"
+
   );
+
 }
+
 
 
 /* =========================================================
-   HTML SAFETY
+   SAFE HTML
    ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
+
 
   if (
+
     value === null ||
     value === undefined
+
   ) {
+
     return "";
+
   }
 
+
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
+
 
 
 /* =========================================================
    PRIORITY RANKING
    ========================================================= */
 
-function getPriority(feature) {
+function getPriority(
+  feature
+) {
+
 
   const text =
+
     (
-      getIncidentType(feature) +
-      " " +
-      getIncidentDescription(feature)
-    ).toLowerCase();
+
+      getIncidentType(
+        feature
+      )
+
+      +
+
+      " "
+
+      +
+
+      getIncidentDescription(
+        feature
+      )
+
+    )
+
+    .toLowerCase();
 
 
-  /*
-    IMPORTANT:
-    Check NON-INJURY before checking "injury accident".
-    Otherwise "non-injury accident" contains
-    the words "injury accident".
-  */
+
+  /* -------------------------------------------------------
+     NON-INJURY MUST BE CHECKED FIRST
+     ------------------------------------------------------- */
 
   if (
-    text.includes("non-injury") ||
-    text.includes("non injury")
+
+    text.includes(
+      "non-injury"
+    )
+
+    ||
+
+    text.includes(
+      "non injury"
+    )
+
   ) {
 
+
     return {
+
       level: 4,
       code: "P4",
       label: "ROUTINE"
+
     };
+
   }
 
 
+
+  /* -------------------------------------------------------
+     P1 CRITICAL
+     ------------------------------------------------------- */
+
   const p1Words = [
+
     "active shooter",
+
     "shooting",
+
     "shots fired",
+
     "person shot",
+
     "stabbing",
+
     "person stabbed",
+
     "structure fire",
+
     "house fire",
+
     "apartment fire",
+
     "commercial fire",
+
     "explosion",
+
     "armed subject",
+
     "armed robbery",
+
     "homicide",
+
     "officer down",
+
     "officer involved"
+
   ];
 
+
+
+  /* -------------------------------------------------------
+     P2 HIGH
+     ------------------------------------------------------- */
 
   const p2Words = [
+
     "injury accident",
+
     "traffic accident with injury",
+
     "major accident",
+
     "major crash",
+
     "vehicle fire",
+
     "rescue",
+
     "entrapment",
+
     "rollover",
+
     "traffic/trans. acc. fr"
+
   ];
 
+
+
+  /* -------------------------------------------------------
+     P3 MEDIUM
+     ------------------------------------------------------- */
 
   const p3Words = [
+
     "alarm fire",
+
     "fire alarm",
+
     "alarm fire auto",
+
     "suspicious",
+
     "disturbance",
+
     "burglary",
+
     "welfare check",
+
     "traffic hazard",
+
     "reckless driver"
+
   ];
+
 
 
   if (
+
     p1Words.some(
       word =>
-        text.includes(word)
+        text.includes(
+          word
+        )
     )
+
   ) {
 
+
     return {
+
       level: 1,
       code: "P1",
       label: "CRITICAL"
+
     };
+
   }
 
 
+
   if (
+
     p2Words.some(
       word =>
-        text.includes(word)
+        text.includes(
+          word
+        )
     )
+
   ) {
 
+
     return {
+
       level: 2,
       code: "P2",
       label: "HIGH"
+
     };
+
   }
+
 
 
   if (
+
     p3Words.some(
       word =>
-        text.includes(word)
+        text.includes(
+          word
+        )
     )
+
   ) {
 
+
     return {
+
       level: 3,
       code: "P3",
       label: "MEDIUM"
+
     };
+
   }
+
 
 
   return {
+
     level: 4,
     code: "P4",
     label: "ROUTINE"
+
   };
+
 }
+
 
 
 /* =========================================================
-   MAP LINK
+   GOOGLE MAP LINK
    ========================================================= */
 
-function getMapURL(location) {
+function getMapURL(
+  location
+) {
+
 
   if (!location) {
+
     return "#";
+
   }
 
-  /*
-    We add Oklahoma City, Oklahoma so intersections
-    are more likely to resolve locally.
-  */
 
   const search =
+
     location +
+
     ", Oklahoma City, Oklahoma";
 
+
   return (
-    "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent(search)
+
+    "https://www.google.com/maps/search/?api=1&query="
+
+    +
+
+    encodeURIComponent(
+      search
+    )
+
   );
+
 }
+
 
 
 /* =========================================================
@@ -784,164 +1610,272 @@ function getMapURL(location) {
 
 function playAlertSound() {
 
+
   if (!alertsEnabled) {
+
     return;
+
   }
+
 
   try {
 
+
     const AudioContextClass =
-      window.AudioContext ||
+
+      window.AudioContext
+
+      ||
+
       window.webkitAudioContext;
 
+
     const audioContext =
+
       new AudioContextClass();
 
+
     const oscillator =
-      audioContext.createOscillator();
+
+      audioContext
+        .createOscillator();
+
 
     const gain =
-      audioContext.createGain();
 
-    oscillator.connect(gain);
+      audioContext
+        .createGain();
+
+
+    oscillator.connect(
+      gain
+    );
+
 
     gain.connect(
       audioContext.destination
     );
 
+
     oscillator.frequency.value =
       880;
+
 
     oscillator.type =
       "sine";
 
+
     gain.gain.setValueAtTime(
+
       0.15,
+
       audioContext.currentTime
+
     );
+
 
     oscillator.start();
 
+
     oscillator.stop(
-      audioContext.currentTime +
+
+      audioContext.currentTime
+      +
       0.35
+
     );
+
 
   } catch (error) {
 
+
     console.log(
+
       "Unable to play alert:",
+
       error
+
     );
+
   }
+
 }
 
 
+
+/* =========================================================
+   ENABLE ALERTS
+   ========================================================= */
+
 function enableAlerts() {
 
-  alertsEnabled = true;
+
+  alertsEnabled =
+    true;
+
 
   const button =
+
     document.getElementById(
       "enableAlertsButton"
     );
 
+
   button.innerHTML =
+
     "🔊 ALERTS ENABLED";
 
+
   button.style.background =
-    "#278f4b";
+
+    "rgba(35,145,75,0.94)";
+
 
   playAlertSound();
+
 }
+
 
 
 /* =========================================================
    STATUS
    ========================================================= */
 
-function setStatus(type) {
+function setStatus(
+  type
+) {
+
 
   const statusText =
+
     document.getElementById(
       "statusText"
     );
 
+
   const dot =
+
     document.getElementById(
       "statusDot"
     );
 
 
-  if (type === "live") {
+
+  if (
+    type === "live"
+  ) {
+
 
     statusText.textContent =
       "LIVE";
 
+
     statusText.style.color =
       "#aaff95";
 
+
     dot.style.background =
       "#34c759";
+
   }
 
 
-  if (type === "loading") {
+
+  if (
+    type === "loading"
+  ) {
+
 
     statusText.textContent =
       "CHECKING...";
 
+
     statusText.style.color =
       "#ffcf66";
 
+
     dot.style.background =
       "#ffb020";
+
   }
 
 
-  if (type === "error") {
+
+  if (
+    type === "error"
+  ) {
+
 
     statusText.textContent =
       "FEED ERROR";
 
+
     statusText.style.color =
       "#ff8d84";
 
+
     dot.style.background =
       "#e33434";
+
   }
+
 }
 
 
-function showError(message) {
+
+/* =========================================================
+   ERROR DISPLAY
+   ========================================================= */
+
+function showError(
+  message
+) {
+
 
   const box =
+
     document.getElementById(
       "errorBox"
     );
+
 
   box.style.display =
     "block";
 
+
   box.innerHTML =
-    "<strong>Feed error:</strong><br>" +
-    escapeHTML(message);
+
+    "<strong>Feed error:</strong><br>"
+
+    +
+
+    escapeHTML(
+      message
+    );
+
 }
+
 
 
 function hideError() {
 
+
   const box =
+
     document.getElementById(
       "errorBox"
     );
 
+
   box.style.display =
     "none";
 
+
   box.innerHTML =
     "";
+
 }
+
 
 
 /* =========================================================
@@ -953,120 +1887,212 @@ function createIncidentCard(
   isNewest
 ) {
 
+
   const type =
-    getIncidentType(feature);
+
+    getIncidentType(
+      feature
+    );
+
 
   const description =
-    getIncidentDescription(feature);
+
+    getIncidentDescription(
+      feature
+    );
+
 
   const location =
-    getIncidentLocation(feature);
+
+    getIncidentLocation(
+      feature
+    );
+
 
   const timestamp =
-    getIncidentTimestamp(feature);
+
+    getIncidentTimestamp(
+      feature
+    );
+
 
   const formattedTime =
-    formatIncidentDate(timestamp);
+
+    formatIncidentDate(
+      timestamp
+    );
+
 
   const incidentAge =
-    getIncidentAge(timestamp);
+
+    getIncidentAge(
+      timestamp
+    );
+
 
   const priority =
-    getPriority(feature);
+
+    getPriority(
+      feature
+    );
 
 
-  let priorityClass = "";
 
-  let badgeClass = "";
+  let priorityClass =
+    "";
 
 
-  if (priority.level === 1) {
+  let badgeClass =
+    "";
+
+
+
+  if (
+    priority.level === 1
+  ) {
+
 
     priorityClass =
       "priority-p1";
 
+
     badgeClass =
       "badge-p1";
+
   }
+
 
   else if (
     priority.level === 2
   ) {
 
+
     priorityClass =
       "priority-p2";
 
+
     badgeClass =
       "badge-p2";
+
   }
+
 
   else if (
     priority.level === 3
   ) {
 
+
     priorityClass =
       "priority-p3";
 
+
     badgeClass =
       "badge-p3";
+
   }
 
+
   else {
+
 
     priorityClass =
       "priority-p4";
 
+
     badgeClass =
       "badge-p4";
+
   }
 
 
-  let newestBadge = "";
+
+  let newestBadge =
+    "";
 
 
-  if (isNewest) {
+  if (
+    isNewest
+  ) {
+
 
     newestBadge =
+
       '<span class="newest-badge">' +
+
       "🔥 NEWEST" +
+
       "</span>";
+
   }
+
 
 
   const priorityBadge =
+
     '<span class="priority-badge ' +
+
     badgeClass +
+
     '">' +
+
     priority.code +
+
     " — " +
+
     priority.label +
+
     "</span>";
 
 
-  let locationHTML = "";
+
+  let locationHTML =
+    "";
 
 
-  if (location) {
+  if (
+    location
+  ) {
+
 
     const mapURL =
-      getMapURL(location);
+
+      getMapURL(
+        location
+      );
 
 
     locationHTML =
+
       '<div class="incident-location">' +
+
       "📍 " +
-      escapeHTML(location) +
+
+      escapeHTML(
+        location
+      ) +
+
       "</div>" +
 
       '<a class="map-button" ' +
+
       'href="' +
-      escapeHTML(mapURL) +
+
+      escapeHTML(
+        mapURL
+      ) +
+
       '" ' +
+
       'target="_blank" ' +
+
       'rel="noopener noreferrer">' +
+
       "🗺️ VIEW SCENE AREA" +
+
       "</a>";
+
   }
+
 
 
   return `
@@ -1075,46 +2101,71 @@ function createIncidentCard(
 
       <div class="incident-top">
 
+
         <div>
+
           ${newestBadge}
+
           ${priorityBadge}
+
         </div>
+
 
         <div class="incident-type">
+
           ${escapeHTML(type)}
+
         </div>
+
 
         <div class="incident-time">
+
           🕒 ${escapeHTML(formattedTime)}
+
         </div>
 
+
         <div class="incident-age">
+
           ${escapeHTML(incidentAge)}
+
         </div>
+
 
       </div>
 
+
       <div class="incident-body">
 
+
         <div class="incident-description">
+
           ${escapeHTML(description)}
+
         </div>
 
+
         ${locationHTML}
+
 
       </div>
 
     </div>
 
   `;
+
 }
 
 
+
 /* =========================================================
-   FILTER TO LAST 24 HOURS
+   LAST 24 HOURS ONLY
    ========================================================= */
 
-function filterRecentIncidents(features) {
+function filterRecentIncidents(
+  features
+) {
+
 
   const now =
     Date.now();
@@ -1123,92 +2174,147 @@ function filterRecentIncidents(features) {
   return features.filter(
     feature => {
 
+
       const timestamp =
+
         getIncidentTimestamp(
           feature
         );
 
 
-      if (!timestamp) {
+      if (
+        !timestamp
+      ) {
 
         return false;
+
       }
 
 
       const age =
-        now - timestamp;
+
+        now -
+        timestamp;
 
 
       return (
-        age >= 0 &&
-        age <= MAX_INCIDENT_AGE
+
+        age >= 0
+
+        &&
+
+        age <=
+        MAX_INCIDENT_AGE
+
       );
+
     }
   );
+
 }
 
 
+
 /* =========================================================
-   SORT:
    PRIORITY FIRST
    THEN NEWEST WITHIN PRIORITY
    ========================================================= */
 
-function sortIncidents(features) {
+function sortIncidents(
+  features
+) {
+
 
   features.sort(
-    (a, b) => {
+    (
+      a,
+      b
+    ) => {
+
 
       const priorityA =
-        getPriority(a).level;
+
+        getPriority(
+          a
+        ).level;
+
 
       const priorityB =
-        getPriority(b).level;
+
+        getPriority(
+          b
+        ).level;
+
 
 
       if (
+
         priorityA !==
         priorityB
+
       ) {
 
+
         return (
+
           priorityA -
           priorityB
+
         );
+
       }
 
 
+
       return (
-        getIncidentTimestamp(b) -
-        getIncidentTimestamp(a)
+
+        getIncidentTimestamp(
+          b
+        )
+
+        -
+
+        getIncidentTimestamp(
+          a
+        )
+
       );
+
     }
   );
 
 
   return features;
+
 }
 
 
+
 /* =========================================================
-   RENDER INCIDENTS
+   RENDER
    ========================================================= */
 
-function renderIncidents(features) {
+function renderIncidents(
+  features
+) {
+
 
   const container =
+
     document.getElementById(
       "incidentList"
     );
 
 
   let recentFeatures =
+
     filterRecentIncidents(
       features
     );
 
 
   recentFeatures =
+
     sortIncidents(
       recentFeatures
     );
@@ -1217,129 +2323,212 @@ function renderIncidents(features) {
   document.getElementById(
     "incidentCount"
   ).textContent =
-    recentFeatures.length +
+
+    recentFeatures.length
+
+    +
+
     (
+
       recentFeatures.length === 1
-        ? " incident"
-        : " incidents"
+
+      ?
+
+      " incident"
+
+      :
+
+      " incidents"
+
     );
+
 
 
   if (
+
     recentFeatures.length === 0
+
   ) {
 
+
     container.innerHTML =
+
       '<div class="loading">' +
+
       "No incidents reported within the last 24 hours." +
+
       "</div>";
 
+
     return;
+
   }
 
 
-  /*
-    Find the ACTUAL newest incident,
-    regardless of priority level.
-  */
+
+  /* Find actual newest call */
+
 
   let newestIncident =
+
     recentFeatures[0];
 
 
+
   for (
-    const feature of
-    recentFeatures
+    const feature
+    of recentFeatures
   ) {
 
+
     if (
-      getIncidentTimestamp(feature) >
+
+      getIncidentTimestamp(
+        feature
+      )
+
+      >
+
       getIncidentTimestamp(
         newestIncident
       )
+
     ) {
+
 
       newestIncident =
         feature;
+
     }
+
   }
 
 
+
   const newestId =
+
     String(
+
       getIncidentId(
         newestIncident
       )
+
     );
 
 
-  let html = "";
+
+  let html =
+    "";
+
 
 
   recentFeatures.forEach(
     feature => {
 
+
       const thisId =
+
         String(
-          getIncidentId(feature)
+
+          getIncidentId(
+            feature
+          )
+
         );
 
 
       html +=
+
         createIncidentCard(
+
           feature,
-          thisId === newestId
+
+          thisId ===
+          newestId
+
         );
+
     }
   );
 
 
   container.innerHTML =
     html;
+
 }
 
 
+
 /* =========================================================
-   NEW INCIDENT ALERT CHECK
-   P1 ONLY
+   NEW P1 ALERT CHECK
    ========================================================= */
 
-function checkForAlerts(features) {
+function checkForAlerts(
+  features
+) {
+
 
   const recentFeatures =
+
     filterRecentIncidents(
       features
     );
 
 
   const currentIds =
+
     new Set();
+
 
 
   recentFeatures.forEach(
     feature => {
 
+
       const id =
+
         String(
-          getIncidentId(feature)
+
+          getIncidentId(
+            feature
+          )
+
         );
 
 
-      currentIds.add(id);
+      currentIds.add(
+        id
+      );
 
 
       const priority =
-        getPriority(feature);
+
+        getPriority(
+          feature
+        );
 
 
       if (
-        !firstLoad &&
-        !previousIncidentIds.has(id) &&
+
+        !firstLoad
+
+        &&
+
+        !previousIncidentIds.has(
+          id
+        )
+
+        &&
+
         priority.level === 1
+
       ) {
 
+
         playAlertSound();
+
       }
+
     }
   );
 
@@ -1350,91 +2539,148 @@ function checkForAlerts(features) {
 
   firstLoad =
     false;
+
 }
 
 
+
 /* =========================================================
-   LOAD OKC FEED
+   LOAD FEED
    ========================================================= */
 
 async function loadIncidents() {
 
-  setStatus("loading");
+
+  setStatus(
+    "loading"
+  );
 
 
   const params =
+
     new URLSearchParams({
 
-      where: "1=1",
+      where:
+        "1=1",
 
-      outFields: "*",
+      outFields:
+        "*",
 
       returnGeometry:
         "false",
 
-      f: "json",
+      f:
+        "json",
 
       resultRecordCount:
         "100",
 
       orderByFields:
         "ObjectID DESC"
+
     });
 
 
+
   const requestURL =
+
     FEED_URL +
+
     "?" +
+
     params.toString();
+
 
 
   try {
 
+
     const response =
+
       await fetch(
+
         requestURL,
+
         {
-          cache: "no-store"
+
+          cache:
+            "no-store"
+
         }
+
       );
 
-
-    if (!response.ok) {
-
-      throw new Error(
-        "OKC server returned HTTP " +
-        response.status
-      );
-    }
-
-
-    const data =
-      await response.json();
-
-
-    if (data.error) {
-
-      throw new Error(
-        data.error.message ||
-        "ArcGIS returned an error."
-      );
-    }
 
 
     if (
-      !data.features ||
-      !Array.isArray(
-        data.features
-      )
+      !response.ok
     ) {
 
+
       throw new Error(
-        "The OKC feed did not return incident records."
+
+        "OKC server returned HTTP "
+
+        +
+
+        response.status
+
       );
+
     }
 
 
+
+    const data =
+
+      await response.json();
+
+
+
+    if (
+      data.error
+    ) {
+
+
+      throw new Error(
+
+        data.error.message
+
+        ||
+
+        "ArcGIS returned an error."
+
+      );
+
+    }
+
+
+
+    if (
+
+      !data.features
+
+      ||
+
+      !Array.isArray(
+        data.features
+      )
+
+    ) {
+
+
+      throw new Error(
+
+        "The OKC feed did not return incident records."
+
+      );
+
+    }
+
+
+
     hideError();
+
 
 
     checkForAlerts(
@@ -1442,9 +2688,11 @@ async function loadIncidents() {
     );
 
 
+
     renderIncidents(
       data.features
     );
+
 
 
     setStatus(
@@ -1452,11 +2700,20 @@ async function loadIncidents() {
     );
 
 
-  } catch (error) {
+
+  }
+
+  catch (
+    error
+  ) {
+
 
     console.error(
+
       "Feed error:",
+
       error
+
     );
 
 
@@ -1473,11 +2730,17 @@ async function loadIncidents() {
     document.getElementById(
       "incidentList"
     ).innerHTML =
+
       '<div class="loading">' +
+
       "Unable to load OKC incidents." +
+
       "</div>";
+
   }
+
 }
+
 
 
 /* =========================================================
@@ -1488,11 +2751,17 @@ loadIncidents();
 
 
 setInterval(
+
   loadIncidents,
+
   REFRESH_INTERVAL
+
 );
+
 
 </script>
 
+
 </body>
+
 </html>
