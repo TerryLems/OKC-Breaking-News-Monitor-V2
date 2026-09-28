@@ -188,15 +188,41 @@ const MEDIUM_PRIORITY = [
   "DISTURBANCE"
 ];
 
-function getPriority(text) {
+function getPriority(title, callType) {
 
-  const value = String(text || "").toUpperCase();
+  const text =
+    `${title || ""} ${callType || ""}`.toUpperCase();
 
-  if (HIGH_PRIORITY.some(word => value.includes(word))) {
+  // Highest-priority breaking incidents
+  const HIGH = [
+    "STRUCTURE FIRE",
+    "STRUC FIRE",
+    "RESIDENTIAL FIRE",
+    "COMMERCIAL FIRE",
+    "APARTMENT FIRE",
+    "SHOOTING",
+    "PERSON SHOT",
+    "STABBING",
+    "ACTIVE SHOOTER",
+    "HOSTAGE",
+    "EXPLOSION",
+    "OFFICER DOWN"
+  ];
+
+  // Important, but not necessarily breaking news
+  const MEDIUM = [
+    "ACCIDENT WITH INJURIES",
+    "INJURY ACCIDENT",
+    "MAJOR ACCIDENT",
+    "ASSAULT",
+    "ROBBERY"
+  ];
+
+  if (HIGH.some(word => text.includes(word))) {
     return "high";
   }
 
-  if (MEDIUM_PRIORITY.some(word => value.includes(word))) {
+  if (MEDIUM.some(word => text.includes(word))) {
     return "medium";
   }
 
@@ -211,7 +237,10 @@ function createIncident(attributes) {
     attributes.Description ||
     "Public Safety Incident";
 
-  const priority = getPriority(title);
+  const priority = getPriority(
+  title,
+  attributes.Call_Type
+);
 
   const card = document.createElement("div");
 
@@ -220,12 +249,12 @@ function createIncident(attributes) {
   let badge = "INCIDENT";
 
   if (priority === "high") {
-    badge = "🚨 HIGH PRIORITY";
-  }
+  badge = "🚨 BREAKING";
+}
 
-  if (priority === "medium") {
-    badge = "⚠️ PRIORITY";
-  }
+if (priority === "medium") {
+  badge = "⚠️ WATCH";
+}
 
   const details = Object.entries(attributes)
     .filter(([key, value]) =>
