@@ -171,6 +171,13 @@
       font-weight: 700;
     }
 
+    .incident-age {
+      margin-top: 6px;
+      color: #8f8f8f;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
     .incident-body {
       padding: 14px 16px 17px;
     }
@@ -182,8 +189,8 @@
     }
 
     .incident-location {
-      color: #9f9f9f;
-      margin-top: 10px;
+      color: #b2b2b2;
+      margin-top: 12px;
       font-size: 15px;
       line-height: 1.35;
     }
@@ -230,6 +237,23 @@
       font-size: 12px;
       font-weight: 900;
       letter-spacing: 0.5px;
+    }
+
+    .map-button {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #2274e0;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
+
+    .map-button:active {
+      transform: scale(0.98);
     }
 
     .footer {
@@ -290,7 +314,8 @@
     </div>
 
     <div class="refresh-text">
-      Automatically checks for new incidents every 30 seconds
+      Showing incidents reported within the last 24 hours.
+      Automatically checks every 30 seconds.
     </div>
 
   </header>
@@ -318,8 +343,13 @@ const FEED_URL =
 
 const REFRESH_INTERVAL = 30000;
 
+const MAX_INCIDENT_AGE =
+  24 * 60 * 60 * 1000;
+
 let previousIncidentIds = new Set();
+
 let firstLoad = true;
+
 let alertsEnabled = false;
 
 
@@ -391,13 +421,14 @@ function getIncidentLocation(feature) {
 
 /* =========================================================
    DATE / TIME
-   OKC FORMAT:
+   Example:
    Sep 28 2026  4:02PM
    ========================================================= */
 
 function getIncidentTimestamp(feature) {
 
   const a = feature.attributes || {};
+
   const value = a.Reported_Time;
 
   if (!value) {
@@ -413,7 +444,12 @@ function getIncidentTimestamp(feature) {
   );
 
   if (!match) {
-    console.log("Could not read Reported_Time:", value);
+
+    console.log(
+      "Could not read Reported_Time:",
+      value
+    );
+
     return 0;
   }
 
@@ -436,21 +472,40 @@ function getIncidentTimestamp(feature) {
     match[1].charAt(0).toUpperCase() +
     match[1].slice(1).toLowerCase();
 
-  const month = months[monthName];
-  const day = Number(match[2]);
-  const year = Number(match[3]);
+  const month =
+    months[monthName];
 
-  let hour = Number(match[4]);
-  const minute = Number(match[5]);
-  const ampm = match[6].toUpperCase();
+  const day =
+    Number(match[2]);
 
-  if (ampm === "PM" && hour !== 12) {
+  const year =
+    Number(match[3]);
+
+  let hour =
+    Number(match[4]);
+
+  const minute =
+    Number(match[5]);
+
+  const ampm =
+    match[6].toUpperCase();
+
+
+  if (
+    ampm === "PM" &&
+    hour !== 12
+  ) {
     hour += 12;
   }
 
-  if (ampm === "AM" && hour === 12) {
+
+  if (
+    ampm === "AM" &&
+    hour === 12
+  ) {
     hour = 0;
   }
+
 
   return new Date(
     year,
@@ -470,20 +525,75 @@ function formatIncidentDate(timestamp) {
     return "Date/time unavailable";
   }
 
-  const date = new Date(timestamp);
+  const date =
+    new Date(timestamp);
 
-  if (Number.isNaN(date.getTime())) {
-    return "Date/time unavailable";
+  return date.toLocaleString(
+    "en-US",
+    {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }
+  );
+}
+
+
+/* =========================================================
+   HOW LONG AGO
+   ========================================================= */
+
+function getIncidentAge(timestamp) {
+
+  if (!timestamp) {
+    return "";
   }
 
-  return date.toLocaleString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
-  });
+  const difference =
+    Date.now() - timestamp;
+
+  if (difference < 0) {
+    return "Reported just now";
+  }
+
+  const minutes =
+    Math.floor(
+      difference / 60000
+    );
+
+  if (minutes < 1) {
+    return "Reported just now";
+  }
+
+  if (minutes === 1) {
+    return "Reported 1 minute ago";
+  }
+
+  if (minutes < 60) {
+    return (
+      "Reported " +
+      minutes +
+      " minutes ago"
+    );
+  }
+
+  const hours =
+    Math.floor(
+      minutes / 60
+    );
+
+  if (hours === 1) {
+    return "Reported 1 hour ago";
+  }
+
+  return (
+    "Reported " +
+    hours +
+    " hours ago"
+  );
 }
 
 
@@ -493,7 +603,10 @@ function formatIncidentDate(timestamp) {
 
 function escapeHTML(value) {
 
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
     return "";
   }
 
@@ -508,8 +621,6 @@ function escapeHTML(value) {
 
 /* =========================================================
    PRIORITY RANKING
-   P1 = MOST URGENT
-   P4 = ROUTINE
    ========================================================= */
 
 function getPriority(feature) {
@@ -522,7 +633,28 @@ function getPriority(feature) {
     ).toLowerCase();
 
 
+  /*
+    IMPORTANT:
+    Check NON-INJURY before checking "injury accident".
+    Otherwise "non-injury accident" contains
+    the words "injury accident".
+  */
+
+  if (
+    text.includes("non-injury") ||
+    text.includes("non injury")
+  ) {
+
+    return {
+      level: 4,
+      code: "P4",
+      label: "ROUTINE"
+    };
+  }
+
+
   const p1Words = [
+    "active shooter",
     "shooting",
     "shots fired",
     "person shot",
@@ -537,38 +669,43 @@ function getPriority(feature) {
     "armed robbery",
     "homicide",
     "officer down",
-    "officer involved",
-    "active shooter"
+    "officer involved"
   ];
 
 
   const p2Words = [
     "injury accident",
+    "traffic accident with injury",
     "major accident",
     "major crash",
     "vehicle fire",
     "rescue",
-    "traffic/trans. acc. fr",
-    "traffic accident with injury",
+    "entrapment",
     "rollover",
-    "entrapment"
+    "traffic/trans. acc. fr"
   ];
 
 
   const p3Words = [
     "alarm fire",
     "fire alarm",
+    "alarm fire auto",
     "suspicious",
     "disturbance",
     "burglary",
     "welfare check",
-    "medical",
     "traffic hazard",
     "reckless driver"
   ];
 
 
-  if (p1Words.some(word => text.includes(word))) {
+  if (
+    p1Words.some(
+      word =>
+        text.includes(word)
+    )
+  ) {
+
     return {
       level: 1,
       code: "P1",
@@ -577,7 +714,13 @@ function getPriority(feature) {
   }
 
 
-  if (p2Words.some(word => text.includes(word))) {
+  if (
+    p2Words.some(
+      word =>
+        text.includes(word)
+    )
+  ) {
+
     return {
       level: 2,
       code: "P2",
@@ -586,7 +729,13 @@ function getPriority(feature) {
   }
 
 
-  if (p3Words.some(word => text.includes(word))) {
+  if (
+    p3Words.some(
+      word =>
+        text.includes(word)
+    )
+  ) {
+
     return {
       level: 3,
       code: "P3",
@@ -604,8 +753,33 @@ function getPriority(feature) {
 
 
 /* =========================================================
+   MAP LINK
+   ========================================================= */
+
+function getMapURL(location) {
+
+  if (!location) {
+    return "#";
+  }
+
+  /*
+    We add Oklahoma City, Oklahoma so intersections
+    are more likely to resolve locally.
+  */
+
+  const search =
+    location +
+    ", Oklahoma City, Oklahoma";
+
+  return (
+    "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(search)
+  );
+}
+
+
+/* =========================================================
    ALERT SOUND
-   ONLY P1 INCIDENTS SOUND
    ========================================================= */
 
 function playAlertSound() {
@@ -630,10 +804,16 @@ function playAlertSound() {
       audioContext.createGain();
 
     oscillator.connect(gain);
-    gain.connect(audioContext.destination);
 
-    oscillator.frequency.value = 880;
-    oscillator.type = "sine";
+    gain.connect(
+      audioContext.destination
+    );
+
+    oscillator.frequency.value =
+      880;
+
+    oscillator.type =
+      "sine";
 
     gain.gain.setValueAtTime(
       0.15,
@@ -643,7 +823,8 @@ function playAlertSound() {
     oscillator.start();
 
     oscillator.stop(
-      audioContext.currentTime + 0.35
+      audioContext.currentTime +
+      0.35
     );
 
   } catch (error) {
@@ -787,38 +968,64 @@ function createIncidentCard(
   const formattedTime =
     formatIncidentDate(timestamp);
 
+  const incidentAge =
+    getIncidentAge(timestamp);
+
   const priority =
     getPriority(feature);
 
 
   let priorityClass = "";
+
   let badgeClass = "";
 
 
   if (priority.level === 1) {
-    priorityClass = "priority-p1";
-    badgeClass = "badge-p1";
+
+    priorityClass =
+      "priority-p1";
+
+    badgeClass =
+      "badge-p1";
   }
 
-  else if (priority.level === 2) {
-    priorityClass = "priority-p2";
-    badgeClass = "badge-p2";
+  else if (
+    priority.level === 2
+  ) {
+
+    priorityClass =
+      "priority-p2";
+
+    badgeClass =
+      "badge-p2";
   }
 
-  else if (priority.level === 3) {
-    priorityClass = "priority-p3";
-    badgeClass = "badge-p3";
+  else if (
+    priority.level === 3
+  ) {
+
+    priorityClass =
+      "priority-p3";
+
+    badgeClass =
+      "badge-p3";
   }
 
   else {
-    priorityClass = "priority-p4";
-    badgeClass = "badge-p4";
+
+    priorityClass =
+      "priority-p4";
+
+    badgeClass =
+      "badge-p4";
   }
 
 
   let newestBadge = "";
 
+
   if (isNewest) {
+
     newestBadge =
       '<span class="newest-badge">' +
       "🔥 NEWEST" +
@@ -838,17 +1045,32 @@ function createIncidentCard(
 
   let locationHTML = "";
 
+
   if (location) {
+
+    const mapURL =
+      getMapURL(location);
+
 
     locationHTML =
       '<div class="incident-location">' +
       "📍 " +
       escapeHTML(location) +
-      "</div>";
+      "</div>" +
+
+      '<a class="map-button" ' +
+      'href="' +
+      escapeHTML(mapURL) +
+      '" ' +
+      'target="_blank" ' +
+      'rel="noopener noreferrer">' +
+      "🗺️ VIEW SCENE AREA" +
+      "</a>";
   }
 
 
   return `
+
     <div class="incident-card ${priorityClass}">
 
       <div class="incident-top">
@@ -866,6 +1088,10 @@ function createIncidentCard(
           🕒 ${escapeHTML(formattedTime)}
         </div>
 
+        <div class="incident-age">
+          ${escapeHTML(incidentAge)}
+        </div>
+
       </div>
 
       <div class="incident-body">
@@ -879,14 +1105,93 @@ function createIncidentCard(
       </div>
 
     </div>
+
   `;
 }
 
 
 /* =========================================================
-   SORTING
+   FILTER TO LAST 24 HOURS
+   ========================================================= */
+
+function filterRecentIncidents(features) {
+
+  const now =
+    Date.now();
+
+
+  return features.filter(
+    feature => {
+
+      const timestamp =
+        getIncidentTimestamp(
+          feature
+        );
+
+
+      if (!timestamp) {
+
+        return false;
+      }
+
+
+      const age =
+        now - timestamp;
+
+
+      return (
+        age >= 0 &&
+        age <= MAX_INCIDENT_AGE
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   SORT:
    PRIORITY FIRST
-   THEN NEWEST TIME
+   THEN NEWEST WITHIN PRIORITY
+   ========================================================= */
+
+function sortIncidents(features) {
+
+  features.sort(
+    (a, b) => {
+
+      const priorityA =
+        getPriority(a).level;
+
+      const priorityB =
+        getPriority(b).level;
+
+
+      if (
+        priorityA !==
+        priorityB
+      ) {
+
+        return (
+          priorityA -
+          priorityB
+        );
+      }
+
+
+      return (
+        getIncidentTimestamp(b) -
+        getIncidentTimestamp(a)
+      );
+    }
+  );
+
+
+  return features;
+}
+
+
+/* =========================================================
+   RENDER INCIDENTS
    ========================================================= */
 
 function renderIncidents(features) {
@@ -897,60 +1202,93 @@ function renderIncidents(features) {
     );
 
 
-  features.sort((a, b) => {
-
-    const priorityA =
-      getPriority(a).level;
-
-    const priorityB =
-      getPriority(b).level;
-
-
-    if (priorityA !== priorityB) {
-
-      return priorityA - priorityB;
-    }
-
-
-    return (
-      getIncidentTimestamp(b) -
-      getIncidentTimestamp(a)
+  let recentFeatures =
+    filterRecentIncidents(
+      features
     );
-  });
+
+
+  recentFeatures =
+    sortIncidents(
+      recentFeatures
+    );
 
 
   document.getElementById(
     "incidentCount"
   ).textContent =
-    features.length +
+    recentFeatures.length +
     (
-      features.length === 1
+      recentFeatures.length === 1
         ? " incident"
         : " incidents"
     );
 
 
-  if (features.length === 0) {
+  if (
+    recentFeatures.length === 0
+  ) {
 
     container.innerHTML =
       '<div class="loading">' +
-      "No incidents currently available." +
+      "No incidents reported within the last 24 hours." +
       "</div>";
 
     return;
   }
 
 
+  /*
+    Find the ACTUAL newest incident,
+    regardless of priority level.
+  */
+
+  let newestIncident =
+    recentFeatures[0];
+
+
+  for (
+    const feature of
+    recentFeatures
+  ) {
+
+    if (
+      getIncidentTimestamp(feature) >
+      getIncidentTimestamp(
+        newestIncident
+      )
+    ) {
+
+      newestIncident =
+        feature;
+    }
+  }
+
+
+  const newestId =
+    String(
+      getIncidentId(
+        newestIncident
+      )
+    );
+
+
   let html = "";
 
 
-  features.forEach(
-    (feature, index) => {
+  recentFeatures.forEach(
+    feature => {
+
+      const thisId =
+        String(
+          getIncidentId(feature)
+        );
+
 
       html +=
         createIncidentCard(
           feature,
-          index === 0
+          thisId === newestId
         );
     }
   );
@@ -963,41 +1301,52 @@ function renderIncidents(features) {
 
 /* =========================================================
    NEW INCIDENT ALERT CHECK
-   SOUND ONLY FOR NEW P1 CALLS
+   P1 ONLY
    ========================================================= */
 
 function checkForAlerts(features) {
+
+  const recentFeatures =
+    filterRecentIncidents(
+      features
+    );
+
 
   const currentIds =
     new Set();
 
 
-  features.forEach(feature => {
+  recentFeatures.forEach(
+    feature => {
 
-    const id =
-      String(
-        getIncidentId(feature)
-      );
-
-    currentIds.add(id);
-
-    const priority =
-      getPriority(feature);
+      const id =
+        String(
+          getIncidentId(feature)
+        );
 
 
-    if (
-      !firstLoad &&
-      !previousIncidentIds.has(id) &&
-      priority.level === 1
-    ) {
+      currentIds.add(id);
 
-      playAlertSound();
+
+      const priority =
+        getPriority(feature);
+
+
+      if (
+        !firstLoad &&
+        !previousIncidentIds.has(id) &&
+        priority.level === 1
+      ) {
+
+        playAlertSound();
+      }
     }
-  });
+  );
 
 
   previousIncidentIds =
     currentIds;
+
 
   firstLoad =
     false;
@@ -1005,7 +1354,7 @@ function checkForAlerts(features) {
 
 
 /* =========================================================
-   LOAD FEED
+   LOAD OKC FEED
    ========================================================= */
 
 async function loadIncidents() {
@@ -1020,11 +1369,13 @@ async function loadIncidents() {
 
       outFields: "*",
 
-      returnGeometry: "false",
+      returnGeometry:
+        "false",
 
       f: "json",
 
-      resultRecordCount: "100",
+      resultRecordCount:
+        "100",
 
       orderByFields:
         "ObjectID DESC"
@@ -1072,7 +1423,9 @@ async function loadIncidents() {
 
     if (
       !data.features ||
-      !Array.isArray(data.features)
+      !Array.isArray(
+        data.features
+      )
     ) {
 
       throw new Error(
@@ -1083,15 +1436,20 @@ async function loadIncidents() {
 
     hideError();
 
+
     checkForAlerts(
       data.features
     );
+
 
     renderIncidents(
       data.features
     );
 
-    setStatus("live");
+
+    setStatus(
+      "live"
+    );
 
 
   } catch (error) {
@@ -1101,11 +1459,16 @@ async function loadIncidents() {
       error
     );
 
-    setStatus("error");
+
+    setStatus(
+      "error"
+    );
+
 
     showError(
       error.message
     );
+
 
     document.getElementById(
       "incidentList"
@@ -1122,6 +1485,7 @@ async function loadIncidents() {
    ========================================================= */
 
 loadIncidents();
+
 
 setInterval(
   loadIncidents,
