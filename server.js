@@ -7,8 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 const FEED_URL =
-  "https://utility.arcgis.com/usrsvcs/servers/8699b8414ebd476e87db5486f116b00a/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
-
+  "https://services2.arcgis.com/CyVvlIiUfRBmMQuu/arcgis/rest/services/Police_Calls_for_Service_/FeatureServer/0/query";
 app.get("/api/incidents", async (req, res) => {
   try {
     const params = new URLSearchParams({
