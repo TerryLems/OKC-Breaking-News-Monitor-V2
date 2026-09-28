@@ -1,263 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
 
-  <title>OKC Breaking News Monitor</title>
+<title>OKC Breaking News Monitor</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    body {
-      margin: 0;
-      padding: 0;
-      background: #050505;
-      color: white;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .header {
-      background: #111;
-      padding: 28px 20px 24px;
-      border-bottom: 3px solid #f05b50;
-    }
+body {
+  margin: 0;
+  background: #050505;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-    h1 {
-      margin: 0;
-      color: #ff6b61;
-      font-size: 38px;
-      line-height: 1.05;
-      font-weight: 900;
-      letter-spacing: -1px;
-    }
+.header {
+  background: #111;
+  padding: 28px 20px 24px;
+  border-bottom: 3px solid #f05b50;
+}
 
-    .subtitle {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #aaa;
-    }
+h1 {
+  margin: 0;
+  color: #ff6b61;
+  font-size: 38px;
+  line-height: 1.05;
+  font-weight: 900;
+}
 
-    #enableAlerts {
-      margin-top: 24px;
-      background: #f25549;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 17px 24px;
-      font-size: 19px;
-      font-weight: 800;
-      cursor: pointer;
-    }
+.subtitle {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #aaa;
+}
 
-    #enableAlerts.enabled {
-      background: #198754;
-    }
+#enableAlerts {
+  margin-top: 24px;
+  background: #f25549;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 17px 24px;
+  font-size: 19px;
+  font-weight: 800;
+}
 
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 28px;
-      gap: 12px;
-    }
+#enableAlerts.enabled {
+  background: #198754;
+}
 
-    #status {
-      font-size: 22px;
-      font-weight: 800;
-      color: #9cff8c;
-    }
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  gap: 12px;
+}
 
-    #count {
-      font-size: 20px;
-      color: #ddd;
-      white-space: nowrap;
-    }
+#status {
+  font-size: 22px;
+  font-weight: 800;
+  color: #9cff8c;
+}
 
-    .refresh-text {
-      color: #777;
-      margin-top: 18px;
-      font-size: 16px;
-    }
+#count {
+  font-size: 20px;
+  color: #ddd;
+  white-space: nowrap;
+}
 
-    #errorBox {
-      display: none;
-      background: #3b1111;
-      border: 1px solid #c0392b;
-      color: #ffb4ae;
-      margin: 18px 20px;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-break: break-word;
-    }
+.refresh-text {
+  color: #777;
+  margin-top: 18px;
+  font-size: 16px;
+}
 
-    #incidents {
-      padding: 16px 14px 60px;
-    }
+#errorBox {
+  display: none;
+  background: #3b1111;
+  color: #ffb4ae;
+  border: 1px solid #c0392b;
+  margin: 18px;
+  padding: 14px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
 
-    .loading {
-      text-align: center;
-      color: #aaa;
-      font-size: 25px;
-      padding: 60px 20px;
-    }
+#incidents {
+  padding: 16px 14px 60px;
+}
 
-    .incident {
-      background: #151515;
-      border: 1px solid #2c2c2c;
-      border-left: 5px solid #f05b50;
-      border-radius: 10px;
-      padding: 17px;
-      margin-bottom: 14px;
-    }
+.loading {
+  text-align: center;
+  color: #aaa;
+  font-size: 24px;
+  padding: 60px 20px;
+}
 
-    .incident.high-priority {
-      border-left-color: #ff2d2d;
-      background: #1d1010;
-    }
+.incident {
+  background: #151515;
+  border: 1px solid #303030;
+  border-left: 5px solid #f05b50;
+  border-radius: 10px;
+  padding: 17px;
+  margin-bottom: 14px;
+}
 
-    .incident-title {
-      font-size: 21px;
-      line-height: 1.2;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 7px;
-    }
+.incident.high-priority {
+  border-left-color: red;
+  background: #1d1010;
+}
 
-    .incident-description {
-      font-size: 17px;
-      color: #ccc;
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
+.priority-label {
+  display: inline-block;
+  background: #d90000;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
 
-    .incident-time {
-      display: inline-block;
-      background: #242424;
-      color: #ffd86b;
-      padding: 7px 10px;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+.incident-title {
+  font-size: 21px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
 
-    .incident-id {
-      color: #777;
-      font-size: 12px;
-      margin-top: 6px;
-    }
+.incident-description {
+  color: #ccc;
+  font-size: 17px;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
 
-    .priority-label {
-      display: inline-block;
-      margin-bottom: 9px;
-      padding: 5px 8px;
-      background: #d90000;
-      color: white;
-      font-size: 12px;
-      font-weight: 900;
-      border-radius: 5px;
-    }
+.incident-time {
+  display: inline-block;
+  background: #242424;
+  color: #ffd86b;
+  padding: 8px 11px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
 
-    .footer {
-      color: #666;
-      text-align: center;
-      padding: 15px 25px 40px;
-      font-size: 14px;
-    }
+.incident-id {
+  color: #777;
+  font-size: 12px;
+  margin-top: 7px;
+}
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 34px;
-      }
+.footer {
+  text-align: center;
+  color: #666;
+  padding: 20px 20px 40px;
+  font-size: 14px;
+}
 
-      .subtitle {
-        font-size: 18px;
-      }
-
-      #status {
-        font-size: 20px;
-      }
-
-      #count {
-        font-size: 18px;
-      }
-    }
-  </style>
+</style>
 </head>
-
 
 <body>
 
-  <div class="header">
+<div class="header">
 
-    <h1>
-      🚨 OKC BREAKING<br>
-      NEWS<br>
-      MONITOR
-    </h1>
+  <h1>
+    🚨 OKC BREAKING<br>
+    NEWS<br>
+    MONITOR
+  </h1>
 
-    <div class="subtitle">
-      Oklahoma City Public Safety Incident Monitor
+  <div class="subtitle">
+    Oklahoma City Public Safety Incident Monitor
+  </div>
+
+  <button id="enableAlerts">
+    🔊 ENABLE ALERTS
+  </button>
+
+  <div class="status-row">
+
+    <div id="status">
+      🟡 CONNECTING
     </div>
 
-    <button id="enableAlerts">
-      🔊 ENABLE ALERTS
-    </button>
-
-    <div class="status-row">
-
-      <div id="status">
-        🟡 CONNECTING
-      </div>
-
-      <div id="count">
-        0 incidents
-      </div>
-
-    </div>
-
-    <div class="refresh-text">
-      Automatically checks for new incidents every 30 seconds
+    <div id="count">
+      0 incidents
     </div>
 
   </div>
 
-
-  <div id="errorBox"></div>
-
-
-  <div id="incidents">
-
-    <div class="loading">
-      Loading OKC incidents...
-    </div>
-
+  <div class="refresh-text">
+    Automatically checks for new incidents every 30 seconds
   </div>
 
+</div>
 
-  <div class="footer">
-    Public safety information may change as incidents develop.
+<div id="errorBox"></div>
+
+<div id="incidents">
+
+  <div class="loading">
+    Loading OKC incidents...
   </div>
 
+</div>
+
+<div class="footer">
+  Public safety information may change as incidents develop.
+</div>
 
 <script>
 
 /* =========================================================
-   OKC PUBLIC SAFETY FEED
+   FEED
 ========================================================= */
 
 const BASE_URL =
   "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
-
 
 const REFRESH_INTERVAL = 30000;
 
@@ -276,7 +248,6 @@ let knownIncidentIds = new Set();
 ========================================================= */
 
 const HIGH_PRIORITY_WORDS = [
-
   "shooting",
   "shots fired",
   "structure fire",
@@ -303,7 +274,6 @@ const HIGH_PRIORITY_WORDS = [
   "hazmat",
   "bomb",
   "active shooter"
-
 ];
 
 
@@ -328,151 +298,48 @@ const alertButton =
 
 
 /* =========================================================
-   HTML SAFETY
+   SAFE HTML
 ========================================================= */
 
 function escapeHTML(value) {
-
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 }
 
 
 /* =========================================================
-   DATE / TIME
+   FIND RAW DATE/TIME FIELD
 ========================================================= */
 
-function formatDateValue(value) {
-
-  if (
-    value === null ||
-    value === undefined ||
-    value === ""
-  ) {
-
-    return "";
-
-  }
-
-
-  let date;
-
-
-  /*
-     ArcGIS dates are commonly milliseconds
-     since January 1, 1970.
-  */
-
-  if (typeof value === "number") {
-
-    date = new Date(value);
-
-  } else {
-
-    const text =
-      String(value).trim();
-
-
-    /*
-       Numeric timestamp stored as text
-    */
-
-    if (/^\d{10,13}$/.test(text)) {
-
-      let number =
-        Number(text);
-
-      if (text.length === 10) {
-
-        number *= 1000;
-
-      }
-
-      date =
-        new Date(number);
-
-    } else {
-
-      date =
-        new Date(text);
-
-    }
-
-  }
-
-
-  if (
-    !date ||
-    isNaN(date.getTime())
-  ) {
-
-    return String(value);
-
-  }
-
-
-  return date.toLocaleString(
-    "en-US",
-    {
-
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-
-      hour: "numeric",
-      minute: "2-digit",
-
-      hour12: true
-
-    }
-
-  );
-
-}
-
-/* =========================================================
-   GET INCIDENT TIMESTAMP FOR SORTING
-========================================================= */
-
-function getIncidentTimestamp(attributes) {
+function getRawIncidentDate(attributes) {
 
   const preferredFields = [
-
     "DateTime",
     "Datetime",
     "DATE_TIME",
     "Date_Time",
     "date_time",
-
     "CallDateTime",
     "Call_Date_Time",
-
     "IncidentDateTime",
     "Incident_Date_Time",
-
     "CreateDate",
     "CreatedDate",
     "CreationDate",
-
     "Date",
     "DATE",
-
     "CallDate",
     "Call_Date",
-
     "IncidentDate",
     "Incident_Date",
-
     "Time",
     "TIME",
     "CallTime",
     "Call_Time"
-
   ];
 
   for (const field of preferredFields) {
@@ -484,42 +351,9 @@ function getIncidentTimestamp(attributes) {
       value !== null &&
       value !== ""
     ) {
-
-      let date;
-
-      if (typeof value === "number") {
-
-        date = new Date(value);
-
-      } else {
-
-        const text = String(value).trim();
-
-        if (/^\d{10,13}$/.test(text)) {
-
-          let number = Number(text);
-
-          if (text.length === 10) {
-            number *= 1000;
-          }
-
-          date = new Date(number);
-
-        } else {
-
-          date = new Date(text);
-
-        }
-      }
-
-      if (!isNaN(date.getTime())) {
-        return date.getTime();
-      }
+      return value;
     }
   }
-
-
-  /* Look for any other field containing date/time */
 
   for (const key of Object.keys(attributes)) {
 
@@ -532,48 +366,134 @@ function getIncidentTimestamp(attributes) {
         value !== null &&
         value !== ""
       ) {
-
-        const date = new Date(value);
-
-        if (!isNaN(date.getTime())) {
-          return date.getTime();
-        }
+        return value;
       }
     }
   }
 
-  return 0;
+  return null;
 }
 
+
 /* =========================================================
-   INCIDENT TITLE
+   PARSE DATE
+========================================================= */
+
+function parseIncidentDate(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  let date;
+
+  if (typeof value === "number") {
+
+    date = new Date(value);
+
+  } else {
+
+    const text = String(value).trim();
+
+    if (/^\d{10,13}$/.test(text)) {
+
+      let number = Number(text);
+
+      if (text.length === 10) {
+        number *= 1000;
+      }
+
+      date = new Date(number);
+
+    } else {
+
+      date = new Date(text);
+
+    }
+  }
+
+  if (!date || isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+}
+
+
+/* =========================================================
+   FORMAT DATE/TIME FOR DISPLAY
+========================================================= */
+
+function getIncidentDateTime(attributes) {
+
+  const rawValue =
+    getRawIncidentDate(attributes);
+
+  const date =
+    parseIncidentDate(rawValue);
+
+  if (!date) {
+    return "Date/time unavailable";
+  }
+
+  return date.toLocaleString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    }
+  );
+}
+
+
+/* =========================================================
+   GET TIMESTAMP FOR SORTING
+========================================================= */
+
+function getIncidentTimestamp(attributes) {
+
+  const rawValue =
+    getRawIncidentDate(attributes);
+
+  const date =
+    parseIncidentDate(rawValue);
+
+  if (!date) {
+    return 0;
+  }
+
+  return date.getTime();
+}
+
+
+/* =========================================================
+   TITLE
 ========================================================= */
 
 function getTitle(attributes) {
 
   return (
-
     attributes.InfoTitle ||
-
     attributes.Call_Type ||
-
     attributes.CallType ||
-
     attributes.Description ||
-
     attributes.Type ||
-
     attributes.IncidentType ||
-
     "Public Safety Incident"
-
   );
-
 }
 
 
 /* =========================================================
-   INCIDENT DESCRIPTION
+   DESCRIPTION
 ========================================================= */
 
 function getDescription(attributes) {
@@ -581,44 +501,29 @@ function getDescription(attributes) {
   const title =
     getTitle(attributes);
 
-
-  const possibleValues = [
-
+  const values = [
     attributes.Call_Type,
-
     attributes.Description,
-
     attributes.Info,
-
     attributes.Problem,
-
     attributes.Nature,
-
     attributes.Location,
-
     attributes.Address
-
   ];
 
-
-  for (const value of possibleValues) {
+  for (const value of values) {
 
     if (
       value &&
-      String(value).trim() &&
       String(value).trim() !== String(title).trim()
     ) {
-
       return String(value);
-
     }
-
   }
 
-
   return "";
-
 }
+
 
 /* =========================================================
    INCIDENT ID
@@ -627,19 +532,12 @@ function getDescription(attributes) {
 function getIncidentId(attributes) {
 
   return (
-
     attributes.ObjectID ??
-
     attributes.OBJECTID ??
-
     attributes.objectid ??
-
     attributes.ID ??
-
     JSON.stringify(attributes)
-
   );
-
 }
 
 
@@ -654,29 +552,24 @@ function isHighPriority(attributes) {
       .join(" ")
       .toLowerCase();
 
-
   return HIGH_PRIORITY_WORDS.some(
     word =>
       text.includes(
         word.toLowerCase()
       )
   );
-
 }
 
 
 /* =========================================================
-   AUDIO ALERT
+   ALERT SOUND
 ========================================================= */
 
 function playAlertSound() {
 
   if (!alertsEnabled) {
-
     return;
-
   }
-
 
   try {
 
@@ -684,18 +577,14 @@ function playAlertSound() {
       window.AudioContext ||
       window.webkitAudioContext;
 
-
     const audioContext =
       new AudioContext();
-
 
     const oscillator =
       audioContext.createOscillator();
 
-
     const gain =
       audioContext.createGain();
-
 
     oscillator.connect(gain);
 
@@ -703,40 +592,32 @@ function playAlertSound() {
       audioContext.destination
     );
 
-
-    oscillator.type =
-      "square";
-
+    oscillator.type = "square";
 
     oscillator.frequency.setValueAtTime(
       880,
       audioContext.currentTime
     );
-
 
     oscillator.frequency.setValueAtTime(
       660,
-      audioContext.currentTime + 0.18
+      audioContext.currentTime + 0.2
     );
-
 
     oscillator.frequency.setValueAtTime(
       880,
-      audioContext.currentTime + 0.36
+      audioContext.currentTime + 0.4
     );
-
 
     gain.gain.setValueAtTime(
-      0.18,
+      0.15,
       audioContext.currentTime
     );
-
 
     gain.gain.exponentialRampToValueAtTime(
       0.01,
       audioContext.currentTime + 0.7
     );
-
 
     oscillator.start();
 
@@ -744,16 +625,13 @@ function playAlertSound() {
       audioContext.currentTime + 0.7
     );
 
-
   } catch (error) {
 
     console.log(
       "Audio error:",
       error
     );
-
   }
-
 }
 
 
@@ -767,23 +645,14 @@ alertButton.addEventListener(
 
     alertsEnabled = true;
 
-
     alertButton.textContent =
       "🔊 ALERTS ENABLED";
-
 
     alertButton.classList.add(
       "enabled"
     );
 
-
-    /*
-       Small test beep confirms that Safari
-       has allowed audio.
-    */
-
     playAlertSound();
-
   }
 );
 
@@ -797,53 +666,41 @@ function createIncidentCard(feature) {
   const attributes =
     feature.attributes || {};
 
-
   const title =
     getTitle(attributes);
-
 
   const description =
     getDescription(attributes);
 
-
   const dateTime =
     getIncidentDateTime(attributes);
-
 
   const incidentId =
     getIncidentId(attributes);
 
-
   const priority =
     isHighPriority(attributes);
 
-
   const card =
     document.createElement("div");
-
 
   card.className =
     priority
       ? "incident high-priority"
       : "incident";
 
-
   let html = "";
-
 
   if (priority) {
 
     html +=
       '<div class="priority-label">🚨 HIGH PRIORITY</div>';
-
   }
-
 
   html +=
     '<div class="incident-title">' +
     escapeHTML(title) +
     '</div>';
-
 
   if (description) {
 
@@ -851,32 +708,21 @@ function createIncidentCard(feature) {
       '<div class="incident-description">' +
       escapeHTML(description) +
       '</div>';
-
   }
-
-
-  /*
-     DATE AND TIME APPEAR HERE
-  */
 
   html +=
     '<div class="incident-time">🕒 ' +
     escapeHTML(dateTime) +
     '</div>';
 
-
   html +=
     '<div class="incident-id">Incident #' +
     escapeHTML(incidentId) +
     '</div>';
 
-
-  card.innerHTML =
-    html;
-
+  card.innerHTML = html;
 
   return card;
-
 }
 
 
@@ -886,9 +732,7 @@ function createIncidentCard(feature) {
 
 function renderIncidents(features) {
 
-  incidentsElement.innerHTML =
-    "";
-
+  incidentsElement.innerHTML = "";
 
   if (
     !features ||
@@ -896,15 +740,13 @@ function renderIncidents(features) {
   ) {
 
     incidentsElement.innerHTML =
-      '<div class="loading">No incidents were returned by the feed.</div>';
+      '<div class="loading">No incidents returned.</div>';
 
     countElement.textContent =
       "0 incidents";
 
     return;
-
   }
-
 
   countElement.textContent =
     features.length +
@@ -914,12 +756,6 @@ function renderIncidents(features) {
         : " incidents"
     );
 
-
-  /*
-     Check for NEW high-priority incidents
-     before drawing the cards.
-  */
-
   if (!firstLoad) {
 
     for (const feature of features) {
@@ -927,34 +763,22 @@ function renderIncidents(features) {
       const attributes =
         feature.attributes || {};
 
-
       const id =
         String(
           getIncidentId(attributes)
         );
 
-
       if (
         !knownIncidentIds.has(id) &&
         isHighPriority(attributes)
       ) {
-
         playAlertSound();
-
       }
-
     }
-
   }
-
-
-  /*
-     Save current incident IDs
-  */
 
   knownIncidentIds =
     new Set(
-
       features.map(
         feature =>
           String(
@@ -963,31 +787,21 @@ function renderIncidents(features) {
             )
           )
       )
-
     );
-
-
-  /*
-     Create cards
-  */
 
   for (const feature of features) {
 
     incidentsElement.appendChild(
       createIncidentCard(feature)
     );
-
   }
 
-
-  firstLoad =
-    false;
-
+  firstLoad = false;
 }
 
 
 /* =========================================================
-   FETCH FEED
+   LOAD INCIDENTS
 ========================================================= */
 
 async function loadIncidents() {
@@ -995,69 +809,48 @@ async function loadIncidents() {
   statusElement.textContent =
     "🟡 CONNECTING";
 
-
   errorBox.style.display =
     "none";
-
 
   try {
 
     const params =
       new URLSearchParams();
 
-
     params.set(
       "where",
       "1=1"
     );
-
 
     params.set(
       "outFields",
       "*"
     );
 
-
     params.set(
       "returnGeometry",
       "false"
     );
-
 
     params.set(
       "orderByFields",
       "ObjectID DESC"
     );
 
-
     params.set(
       "resultRecordCount",
       "100"
     );
-
-
-    /*
-       IMPORTANT:
-       JSON — NOT PBF
-    */
 
     params.set(
       "f",
       "json"
     );
 
-
     const url =
       BASE_URL +
       "?" +
       params.toString();
-
-
-    console.log(
-      "Requesting:",
-      url
-    );
-
 
     const response =
       await fetch(
@@ -1068,7 +861,6 @@ async function loadIncidents() {
         }
       );
 
-
     if (!response.ok) {
 
       throw new Error(
@@ -1077,78 +869,56 @@ async function loadIncidents() {
         " " +
         response.statusText
       );
-
     }
-
 
     const data =
       await response.json();
-
-
-    console.log(
-      "OKC feed response:",
-      data
-    );
-
-
-    /*
-       ArcGIS may return HTTP 200
-       but still include an error object.
-    */
 
     if (data.error) {
 
       throw new Error(
         data.error.message ||
-        JSON.stringify(
-          data.error
-        )
+        "ArcGIS feed error"
       );
-
     }
 
-
-    if (
-      !Array.isArray(
-        data.features
-      )
-    ) {
+    if (!Array.isArray(data.features)) {
 
       throw new Error(
         "The feed did not return a features array."
       );
-
     }
 
 
+    /* =====================================================
+       SORT BY ACTUAL INCIDENT DATE/TIME
+       NEWEST FIRST
+    ===================================================== */
+
+    data.features.sort(
+      function (a, b) {
+
+        const timeA =
+          getIncidentTimestamp(
+            a.attributes || {}
+          );
+
+        const timeB =
+          getIncidentTimestamp(
+            b.attributes || {}
+          );
+
+        return timeB - timeA;
+      }
+    );
+
+
     renderIncidents(
-      
-/* Sort newest incident first */
-
-data.features.sort((a, b) => {
-
-  const timeA =
-    getIncidentTimestamp(
-      a.attributes || {}
+      data.features
     );
-
-  const timeB =
-    getIncidentTimestamp(
-      b.attributes || {}
-    );
-
-  return timeB - timeA;
-});
-
-
-renderIncidents(
-  data.features
-);
-
 
     statusElement.textContent =
       "🟢 LIVE";
-
 
   } catch (error) {
 
@@ -1157,29 +927,21 @@ renderIncidents(
       error
     );
 
-
     statusElement.textContent =
       "🔴 FEED ERROR";
-
 
     incidentsElement.innerHTML =
       '<div class="loading">Unable to load OKC incidents.</div>';
 
-
     errorBox.style.display =
       "block";
-
 
     errorBox.innerHTML =
       "<strong>Feed error:</strong><br>" +
       escapeHTML(
         error.message
-      ) +
-      "<br><br>" +
-      "The page itself is working. This message tells us exactly what the public-data feed is rejecting.";
-
+      );
   }
-
 }
 
 
