@@ -52,14 +52,40 @@ app.get("/api/incidents", async (req, res) => {
       });
     }
 
-    let incidents = (data.features || []).map(feature => ({
-      ...feature.attributes
-    }));
+  let incidents = (data.features || []).map(feature => ({
+  ...feature.attributes
+}));
 
-    // Sort newest calls first here instead of making ArcGIS do it.
-    incidents.sort((a, b) => {
-      return Number(b.Reported_Time || 0) - Number(a.Reported_Time || 0);
-    });
+function getReportedTime(value) {
+  if (!value) return 0;
+
+  if (typeof value === "number") {
+    return value;
+  }
+
+  // Convert "8:56AM" to "8:56 AM" for safer parsing
+  const cleaned = String(value).replace(
+    /(\d)(AM|PM)$/i,
+    "$1 $2"
+  );
+
+  const time = Date.parse(cleaned);
+
+  return Number.isNaN(time) ? 0 : time;
+}
+
+// Only show incidents reported within the last 24 hours
+const cutoff = Date.now() - (24 * 60 * 60 * 1000);
+
+incidents = incidents.filter(incident => {
+  return getReportedTime(incident.Reported_Time) >= cutoff;
+});
+
+// Newest incidents first
+incidents.sort((a, b) => {
+  return getReportedTime(b.Reported_Time) -
+         getReportedTime(a.Reported_Time);
+});
 
     res.json({
       success: true,
