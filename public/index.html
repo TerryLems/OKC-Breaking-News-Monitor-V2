@@ -131,9 +131,27 @@
       padding: 10px 0 25px;
     }
   </style>
+  #enableAlerts {
+  margin-top: 12px;
+  padding: 12px 18px;
+  background: #ff453a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#enableAlerts.enabled {
+  background: #2ecc71;
+}
 </head>
 
 <body>
+<button id="enableAlerts">
+  🔊 ENABLE ALERTS
+</button>
 
 <header>
 
@@ -326,7 +344,7 @@ function createIncident(attributes) {
     incident => !knownBreakingIds.has(String(incident.ObjectID))
   );
 
-    if (newBreaking.length > 0) {
+    if (newBreaking.length > 0 && alertsEnabled) {
     playBreakingAlert();
   }
 }
@@ -388,6 +406,36 @@ loadIncidents();
 
 setInterval(loadIncidents, 30000);
 
+      let alertsEnabled = false;
+
+document.getElementById("enableAlerts").addEventListener("click", async () => {
+
+      const AudioContext =
+    window.AudioContext || window.webkitAudioContext;
+
+      const ctx = new AudioContext();
+
+      await ctx.resume();
+
+  // Tiny test tone so Safari recognizes user interaction
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  gain.gain.setValueAtTime(0.05, ctx.currentTime);
+
+  osc.start();
+  osc.stop(ctx.currentTime + 0.08);
+
+  alertsEnabled = true;
+
+  const button = document.getElementById("enableAlerts");
+
+  button.textContent = "🔊 ALERTS ENABLED";
+  button.classList.add("enabled");
+});
 </script>
 
 </body>
