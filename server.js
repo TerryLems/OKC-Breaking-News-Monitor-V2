@@ -12,12 +12,22 @@ app.get("/api/incidents", async (req, res) => {
   try {
     const params = new URLSearchParams({
   where: "1=1",
-  outFields: "*",
+  outFields: "ObjectID,InfoTitle,Call_Type,Address,Reported_Time",
   returnGeometry: "false",
-  orderByFields: "ObjectID DESC",
-  resultRecordCount: "100",
+
+  geometry: JSON.stringify({
+    xmin: -10958012.374962993,
+    ymin: 4226661.916058987,
+    xmax: -10801469.341034994,
+    ymax: 4383204.949986987
+  }),
+
+  geometryType: "esriGeometryEnvelope",
+  inSR: "102100",
+  spatialRel: "esriSpatialRelIntersects",
+  
   f: "json"
-    });
+});
 
     const url = `${FEED_URL}?${params.toString()}`;
 
