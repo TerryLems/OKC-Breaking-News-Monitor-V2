@@ -376,7 +376,7 @@ function getRawIncidentDate(attributes) {
 
 
 /* =========================================================
-   PARSE DATE
+   SMART INCIDENT DATE DETECTOR
 ========================================================= */
 
 function parseIncidentDate(value) {
@@ -389,56 +389,170 @@ function parseIncidentDate(value) {
     return null;
   }
 
-  let date;
+  let date = null;
+
+  /* ArcGIS millisecond timestamp */
 
   if (typeof value === "number") {
 
-    date = new Date(value);
+    if (value > 100000000000) {
+      date = new Date(value);
+    }
+
+    else if (value > 1000000000) {
+      date = new Date(value * 1000);
+    }
 
   } else {
 
-    const text = String(value).trim();
+    const text =
+      String(value).trim();
 
-    if (/^\d{10,13}$/.test(text)) {
+    /* 13 digit millisecond timestamp */
 
-      let number = Number(text);
+    if (/^\d{13}$/.test(text)) {
 
-      if (text.length === 10) {
-        number *= 1000;
+      date =
+        new Date(Number(text));
+
+    }
+
+    /* 10 digit Unix timestamp */
+
+    else if (/^\d{10}$/.test(text)) {
+
+      date =
+        new Date(Number(text) * 1000);
+
+    }
+
+    /* Normal written date */
+
+    else if (
+      text.includes("/") ||
+      text.includes("-") ||
+      text.includes(":") ||
+      /AM|PM/i.test(text)
+    ) {
+
+      const possibleDate =
+        new Date(text);
+
+      if (!isNaN(possibleDate.getTime())) {
+        date = possibleDate;
       }
-
-      date = new Date(number);
-
-    } else {
-
-      date = new Date(text);
-
     }
   }
 
-  if (!date || isNaN(date.getTime())) {
+
+  if (
+    !date ||
+    isNaN(date.getTime())
+  ) {
     return null;
   }
+
+
+  /*
+     Ignore values that accidentally parse as dates
+     unless they fall within a realistic incident range.
+  */
+
+  const year =
+    date.getFullYear();
+
+  if (
+    year < 2020 ||
+    year > 2035
+  ) {
+    return null;
+  }
+
 
   return date;
 }
 
 
 /* =========================================================
-   FORMAT DATE/TIME FOR DISPLAY
+   FIND ACTUAL DATE IN INCIDENT
+========================================================= */
+
+function findIncidentDate(attributes) {
+
+  /*
+     FIRST:
+     Check fields whose NAME suggests
+     a date or time.
+  */
+
+  for (const key of Object.keys(attributes)) {
+
+    if (
+      /date|time|created|updated|received|dispatch|call/i.test(key)
+    ) {
+
+      const date =
+        parseIncidentDate(
+          attributes[key]
+        );
+
+      if (date) {
+        return date;
+      }
+    }
+  }
+
+
+  /*
+     SECOND:
+     Scan ALL values.
+
+     This catches the OKC feed even if its
+     date field has an unusual field name.
+  */
+
+  let newestDate = null;
+
+
+  for (const key of Object.keys(attributes)) {
+
+    const date =
+      parseIncidentDate(
+        attributes[key]
+      );
+
+    if (date) {
+
+      if (
+        !newestDate ||
+        date.getTime() > newestDate.getTime()
+      ) {
+
+        newestDate = date;
+      }
+    }
+  }
+
+
+  return newestDate;
+}
+
+
+/* =========================================================
+   DATE/TIME SHOWN ON INCIDENT CARD
 ========================================================= */
 
 function getIncidentDateTime(attributes) {
 
-  const rawValue =
-    getRawIncidentDate(attributes);
-
   const date =
-    parseIncidentDate(rawValue);
+    findIncidentDate(attributes);
+
 
   if (!date) {
+
     return "Date/time unavailable";
   }
+
 
   return date.toLocaleString(
     "en-US",
@@ -455,24 +569,23 @@ function getIncidentDateTime(attributes) {
 
 
 /* =========================================================
-   GET TIMESTAMP FOR SORTING
+   TIMESTAMP USED FOR NEWEST-FIRST SORTING
 ========================================================= */
 
 function getIncidentTimestamp(attributes) {
 
-  const rawValue =
-    getRawIncidentDate(attributes);
-
   const date =
-    parseIncidentDate(rawValue);
+    findIncidentDate(attributes);
+
 
   if (!date) {
+
     return 0;
   }
 
+
   return date.getTime();
 }
-
 
 /* =========================================================
    TITLE
