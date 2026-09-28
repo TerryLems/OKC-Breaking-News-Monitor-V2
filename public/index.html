@@ -187,6 +187,45 @@
       font-size: 13px;
     }
 
+    .priority-card-high {
+  border-left: 7px solid #ff2d2d;
+  background: #1c1111;
+}
+
+.priority-card-elevated {
+  border-left: 7px solid #ff9f1c;
+  background: #1a1710;
+}
+
+.priority-card-routine {
+  border-left: 5px solid #777777;
+}
+
+.priority-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.priority-high {
+  background: #ff2d2d;
+  color: #ffffff;
+}
+
+.priority-elevated {
+  background: #ff9f1c;
+  color: #111111;
+}
+
+.priority-routine {
+  background: #333333;
+  color: #aaaaaa;
+}
+
     @media (min-width: 700px) {
       .header,
       .content {
@@ -198,6 +237,110 @@
       .title {
         font-size: 42px;
       }
+
+      function createIncidentCard(feature) {
+
+  const type =
+    getIncidentType(feature);
+
+  const description =
+    getIncidentDescription(feature);
+
+  const location =
+    getIncidentLocation(feature);
+
+  const timestamp =
+    getIncidentTimestamp(feature);
+
+  const formattedTime =
+    formatIncidentDate(timestamp);
+
+  const priority =
+    getPriorityLevel(feature);
+
+
+  let priorityBadge = "";
+  let priorityClass = "";
+
+
+  if (priority === "high") {
+
+    priorityBadge =
+      '<div class="priority-badge priority-high">' +
+      "🚨 HIGH PRIORITY" +
+      "</div>";
+
+    priorityClass =
+      "priority-card-high";
+
+  }
+
+
+  else if (priority === "elevated") {
+
+    priorityBadge =
+      '<div class="priority-badge priority-elevated">' +
+      "⚠️ ELEVATED" +
+      "</div>";
+
+    priorityClass =
+      "priority-card-elevated";
+
+  }
+
+  else {
+
+    priorityBadge =
+      '<div class="priority-badge priority-routine">' +
+      "ROUTINE" +
+      "</div>";
+
+    priorityClass =
+      "priority-card-routine";
+
+  }
+
+  let locationHTML = "";
+
+  if (location) {
+
+    locationHTML =
+      '<div class="incident-location">' +
+      "📍 " +
+      escapeHTML(location) +
+      "</div>";
+
+  }
+
+  return `
+
+    <div class="incident-card ${priorityClass}">
+
+      <div class="incident-top">
+
+        ${priorityBadge}
+
+        <div class="incident-type">
+          ${escapeHTML(type)}
+        </div>
+
+        <div class="incident-time">
+          🕒 ${escapeHTML(formattedTime)}
+        </div>
+
+      </div>
+
+      <div class="incident-body">
+
+        <div class="incident-description">
+          ${escapeHTML(description)}
+        </div>
+
+        ${locationHTML}
+
+      </div>
+
+    </div>
     }
   </style>
 </head>
@@ -528,7 +671,7 @@ function escapeHTML(value) {
    PRIORITY INCIDENT CHECK
    --------------------------------------------------------- */
 
-function isHighPriority(feature) {
+function getPriorityLevel(feature) {
 
   const text =
     (
@@ -537,27 +680,56 @@ function isHighPriority(feature) {
       getIncidentDescription(feature)
     ).toLowerCase();
 
-  const priorityWords = [
+
+  const highPriorityWords = [
     "shooting",
     "shots fired",
+    "stabbing",
     "structure fire",
     "house fire",
     "apartment fire",
     "commercial fire",
     "explosion",
-    "stabbing",
-    "armed robbery",
     "armed subject",
+    "armed robbery",
+    "homicide",
     "officer down",
     "officer involved",
-    "fatal",
-    "homicide",
-    "rescue",
-    "major accident"
+    "person shot",
+    "person stabbed"
   ];
 
-  return priorityWords.some(word =>
-    text.includes(word)
+
+  const elevatedWords = [
+    "injury accident",
+    "major accident",
+    "major crash",
+    "vehicle fire",
+    "rescue",
+    "traffic/trans. acc. fr",
+    "traffic accident with injury"
+  ];
+
+
+  if (
+    highPriorityWords.some(word =>
+      text.includes(word)
+    )
+  ) {
+    return "high";
+  }
+
+
+  if (
+    elevatedWords.some(word =>
+      text.includes(word)
+    )
+  ) {
+    return "elevated";
+  }
+
+
+  return "routine";
   );
 
 }
@@ -773,17 +945,48 @@ function createIncidentCard(feature) {
     formatIncidentDate(timestamp);
 
   const priority =
-    isHighPriority(feature);
+    getPriorityLevel(feature);
 
 
-  let badge = "";
+  let priorityBadge = "";
+  let priorityClass = "";
 
-  if (priority) {
 
-    badge =
-      '<div class="badge">' +
+  if (priority === "high") {
+
+    priorityBadge =
+      '<div class="priority-badge priority-high">' +
       "🚨 HIGH PRIORITY" +
       "</div>";
+
+    priorityClass =
+      "priority-card-high";
+
+  }
+
+
+  else if (priority === "elevated") {
+
+    priorityBadge =
+      '<div class="priority-badge priority-elevated">' +
+      "⚠️ ELEVATED" +
+      "</div>";
+
+    priorityClass =
+      "priority-card-elevated";
+
+  }
+
+
+  else {
+
+    priorityBadge =
+      '<div class="priority-badge priority-routine">' +
+      "ROUTINE" +
+      "</div>";
+
+    priorityClass =
+      "priority-card-routine";
 
   }
 
@@ -803,9 +1006,11 @@ function createIncidentCard(feature) {
 
   return `
 
-    <div class="incident-card">
+    <div class="incident-card ${priorityClass}">
 
       <div class="incident-top">
+
+        ${priorityBadge}
 
         <div class="incident-type">
           ${escapeHTML(type)}
@@ -824,8 +1029,6 @@ function createIncidentCard(feature) {
         </div>
 
         ${locationHTML}
-
-        ${badge}
 
       </div>
 
