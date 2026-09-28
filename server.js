@@ -12,8 +12,10 @@ app.get("/api/incidents", async (req, res) => {
   try {
     const params = new URLSearchParams({
       where: "1=1",
-      outFields: "*",
+      outFields: "ObjectID,InfoTitle,Call_Type,Address,Reported_Time",
       returnGeometry: "false",
+      orderByFields: "Reported_Time DESC",
+      resultRecordCount: "100",
       f: "json"
     });
 
