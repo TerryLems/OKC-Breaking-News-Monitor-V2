@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#090909">
+  <meta name="theme-color" content="#070707">
 
   <title>OKC Breaking News Monitor</title>
 
@@ -17,16 +17,42 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #070707;
+      --panel: #111111;
+      --panel2: #171717;
+      --border: #2e2e2e;
+      --text: #ffffff;
+      --muted: #8b8b8b;
+      --red: #ff4d45;
+      --red-dark: #8f1515;
+      --orange: #ff941f;
+      --yellow: #ffd548;
+      --gray: #777777;
+      --blue: #2f80ed;
+      --green: #35c65a;
+    }
+
     html {
-      background: #050505;
+      background: var(--bg);
     }
 
     body {
       margin: 0;
-      padding: 0;
-      background: #050505;
-      color: #ffffff;
+      padding: 0 0 88px;
+      background: var(--bg);
+      color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button,
+    select,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font-family: inherit;
     }
 
     /* =====================================================
@@ -34,77 +60,133 @@
        ===================================================== */
 
     .header {
-      background: #111111;
-      padding: 30px 20px 26px;
-      border-bottom: 3px solid #ef6a5b;
+      padding: 26px 18px 22px;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(255, 60, 50, 0.11),
+          transparent 38%
+        ),
+        #101010;
+
+      border-bottom: 1px solid #242424;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 38px;
+      line-height: 1;
     }
 
     .title {
       margin: 0;
-      color: #ff7366;
-      font-size: 38px;
-      line-height: 1.02;
+      color: #ff6f64;
+      font-size: 31px;
+      line-height: 0.98;
       font-weight: 900;
       letter-spacing: -1px;
     }
 
     .subtitle {
-      margin-top: 24px;
+      margin-top: 12px;
       color: #b7b7b7;
-      font-size: 20px;
+      font-size: 15px;
       line-height: 1.4;
     }
 
-    .alert-button {
-      margin-top: 28px;
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      background: #e86154;
-      color: white;
-      padding: 21px 15px;
-      font-size: 21px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .status-row {
-      margin-top: 28px;
+    .header-status {
+      margin-top: 18px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
-    .status {
+    .live-group {
       display: flex;
       align-items: center;
-      gap: 11px;
-      color: #aaff95;
-      font-size: 21px;
+      gap: 9px;
       font-weight: 900;
+      color: #9cff8d;
+      font-size: 17px;
     }
 
-    .status-dot {
-      width: 24px;
-      height: 24px;
-      flex-shrink: 0;
+    .live-dot {
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
-      background: #e33434;
-      box-shadow: 0 0 7px rgba(255, 40, 40, 0.8);
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(53, 198, 90, 0.7);
     }
 
     .incident-count {
-      font-size: 19px;
       color: #dddddd;
-      white-space: nowrap;
+      font-size: 15px;
+      font-weight: 700;
     }
 
-    .refresh-text {
-      margin-top: 22px;
-      color: #777777;
-      font-size: 16px;
-      line-height: 1.45;
+    .last-checked {
+      margin-top: 7px;
+      color: #6f6f6f;
+      font-size: 12px;
+    }
+
+    /* =====================================================
+       BREAKING AREA
+       ===================================================== */
+
+    .breaking-wrap {
+      display: none;
+      padding: 12px;
+      background: #090909;
+    }
+
+    .breaking-card {
+      padding: 16px;
+      border-radius: 13px;
+      background:
+        linear-gradient(
+          135deg,
+          #3b0d0d,
+          #1a0b0b
+        );
+
+      border: 1px solid #7c2222;
+      border-left: 6px solid #ff2f2f;
+    }
+
+    .breaking-label {
+      color: #ff6861;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    .breaking-title {
+      margin-top: 7px;
+      color: white;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .breaking-meta {
+      margin-top: 7px;
+      color: #d0d0d0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .breaking-actions {
+      margin-top: 13px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* =====================================================
@@ -114,365 +196,472 @@
     .priority-summary {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
-      padding: 12px;
-      background: #080808;
-      border-bottom: 1px solid #282828;
+      gap: 6px;
+      padding: 10px 12px 4px;
     }
 
     .summary-box {
-      text-align: center;
-      padding: 10px 3px;
+      padding: 9px 3px;
       border-radius: 9px;
-      border: 1px solid #333333;
-      font-weight: 900;
-    }
-
-    .summary-box span {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.4px;
-    }
-
-    .summary-box strong {
-      display: block;
-      margin-top: 4px;
-      font-size: 21px;
-    }
-
-    .summary-p1 {
-      background: #351010;
-      border-color: #7a2020;
-      color: #ff6262;
-    }
-
-    .summary-p2 {
-      background: #35210c;
-      border-color: #805016;
-      color: #ffa13c;
-    }
-
-    .summary-p3 {
-      background: #302b0d;
-      border-color: #706520;
-      color: #ffe05a;
-    }
-
-    .summary-p4 {
-      background: #1c1c1c;
-      border-color: #444444;
-      color: #bbbbbb;
-    }
-
-    /* =====================================================
-       BREAKING BANNER
-       ===================================================== */
-
-    .breaking-banner {
-      display: none;
-      background: #e32222;
-      color: #ffffff;
-      padding: 14px 12px;
       text-align: center;
-      font-size: 17px;
+      border: 1px solid var(--border);
+      background: #141414;
+    }
+
+    .summary-label {
+      display: block;
+      font-size: 10px;
       font-weight: 900;
-      letter-spacing: 0.3px;
-      border-bottom: 2px solid #850000;
+    }
+
+    .summary-count {
+      display: block;
+      margin-top: 3px;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .sum-p1 {
+      color: #ff6565;
+    }
+
+    .sum-p2 {
+      color: #ffa544;
+    }
+
+    .sum-p3 {
+      color: #ffe15c;
+    }
+
+    .sum-p4 {
+      color: #bcbcbc;
     }
 
     /* =====================================================
-       FIRE RADIO
+       TOOLBAR
        ===================================================== */
 
-    .radio-wrap {
-      padding: 14px 12px 4px;
-      background: #050505;
-    }
-
-    .radio-panel {
+    .toolbar {
       display: flex;
+      gap: 8px;
+      padding: 12px;
+      overflow-x: auto;
+      border-bottom: 1px solid #202020;
+      background: #090909;
+    }
+
+    .filter-btn {
+      flex-shrink: 0;
+      border: 1px solid #313131;
+      border-radius: 18px;
+      background: #151515;
+      color: #bdbdbd;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: #ef554b;
+      color: white;
+      border-color: #ef554b;
+    }
+
+    .sort-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 13px;
-      padding: 16px;
-      background: #121212;
-      border: 1px solid #363636;
-      border-left: 6px solid #e33d32;
-      border-radius: 13px;
+      gap: 12px;
+      padding: 11px 13px;
+      background: #0b0b0b;
+      border-bottom: 1px solid #202020;
     }
 
-    .radio-dot {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: #ff302b;
-      box-shadow: 0 0 9px rgba(255, 48, 43, 0.8);
-      animation: radioPulse 1.5s infinite;
+    .sort-label {
+      color: #747474;
+      font-size: 12px;
+      font-weight: 700;
     }
 
-    @keyframes radioPulse {
-      0% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.3;
-      }
-
-      100% {
-        opacity: 1;
-      }
-    }
-
-    .radio-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .radio-title {
-      color: #ffffff;
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    .radio-subtitle {
-      margin-top: 4px;
-      color: #b3b3b3;
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    .radio-channels {
-      margin-top: 5px;
-      color: #777777;
-      font-size: 11px;
-      line-height: 1.3;
-    }
-
-    .radio-button {
-      display: inline-block;
-      flex-shrink: 0;
-      padding: 12px 13px;
-      background: #d93a30;
+    .sort-select {
+      min-height: 38px;
       border-radius: 8px;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 900;
-      white-space: nowrap;
+      border: 1px solid #343434;
+      background: #171717;
+      color: white;
+      padding: 7px 10px;
+      font-size: 14px;
+      font-weight: 700;
     }
 
     /* =====================================================
-       MAIN
+       PANELS
        ===================================================== */
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
 
     .content {
-      padding: 14px 12px;
+      padding: 12px;
     }
 
-    .error-box {
-      display: none;
-      margin-bottom: 15px;
-      padding: 16px;
-      background: #401615;
-      color: #ffb9b3;
-      border: 1px solid #d34a40;
-      border-radius: 10px;
-      line-height: 1.4;
-    }
-
-    .loading {
+    .empty-state {
+      padding: 50px 18px;
       text-align: center;
-      padding: 55px 10px;
-      color: #aaaaaa;
-      font-size: 20px;
+      color: #8d8d8d;
     }
 
     /* =====================================================
-       INCIDENT CARDS
+       INCIDENT CARD
        ===================================================== */
 
     .incident-card {
-      margin-bottom: 16px;
+      margin-bottom: 11px;
       overflow: hidden;
-      background: #151515;
-      border: 1px solid #333333;
-      border-radius: 13px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
     }
 
     .priority-p1 {
-      border-left: 8px solid #ff2929;
-      background: #1d0c0c;
+      border-left: 6px solid #ff2f2f;
     }
 
     .priority-p2 {
-      border-left: 8px solid #ff8c1a;
-      background: #1b130b;
+      border-left: 6px solid var(--orange);
     }
 
     .priority-p3 {
-      border-left: 8px solid #ffd33d;
-      background: #1c190c;
+      border-left: 6px solid var(--yellow);
     }
 
     .priority-p4 {
-      border-left: 7px solid #878787;
-      background: #151515;
+      border-left: 6px solid #777777;
     }
 
-    .incident-top {
-      padding: 16px;
-      border-bottom: 1px solid #292929;
+    .incident-main {
+      padding: 14px;
     }
 
-    .badge-row {
+    .incident-topline {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 12px;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
     }
 
-    .priority-badge,
-    .newest-badge {
+    .badge {
       display: inline-block;
-      padding: 6px 9px;
+      padding: 5px 7px;
       border-radius: 5px;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 900;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.25px;
     }
 
-    .newest-badge {
-      background: #ff5b4d;
-      color: #ffffff;
+    .badge-new {
+      background: #ff5c52;
+      color: white;
     }
 
     .badge-p1 {
-      background: #ff2929;
+      background: #ff2f2f;
       color: white;
     }
 
     .badge-p2 {
-      background: #ff8c1a;
+      background: var(--orange);
       color: #111111;
     }
 
     .badge-p3 {
-      background: #ffd33d;
+      background: var(--yellow);
       color: #111111;
     }
 
     .badge-p4 {
-      background: #333333;
-      color: #bbbbbb;
+      background: #343434;
+      color: #c3c3c3;
     }
 
-    .incident-type {
+    .category-label {
+      color: #969696;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .incident-title {
       color: #ffffff;
-      font-size: 22px;
+      font-size: 19px;
       font-weight: 900;
-      line-height: 1.2;
+      line-height: 1.15;
     }
 
-    .incident-time {
-      margin-top: 10px;
-      color: #ffbf69;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .incident-age {
-      margin-top: 8px;
-      color: #919191;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .incident-body {
-      padding: 16px;
-    }
-
-    .incident-description {
-      color: #dddddd;
-      font-size: 17px;
-      line-height: 1.4;
+    .incident-meta {
+      margin-top: 6px;
+      color: #a8a8a8;
+      font-size: 13px;
+      line-height: 1.35;
     }
 
     .incident-location {
-      margin-top: 14px;
-      color: #bcbcbc;
-      font-size: 15px;
+      margin-top: 7px;
+      color: #bebebe;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .action-btn {
+      border: 1px solid #323232;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: white;
+      padding: 9px 11px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .action-btn.blue {
+      background: #256fce;
+      border-color: #256fce;
+    }
+
+    .action-btn.red {
+      background: #b82c27;
+      border-color: #b82c27;
+    }
+
+    .details-panel {
+      display: none;
+      padding: 13px 14px 15px;
+      background: #0d0d0d;
+      border-top: 1px solid #292929;
+    }
+
+    .details-panel.open {
+      display: block;
+    }
+
+    .detail-row {
+      margin-bottom: 10px;
+    }
+
+    .detail-label {
+      color: #696969;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .detail-value {
+      margin-top: 3px;
+      color: #d8d8d8;
+      font-size: 13px;
       line-height: 1.4;
     }
 
-    .map-button {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 12px 15px;
-      background: #2879df;
-      color: #ffffff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 14px;
+    /* =====================================================
+       RADIO
+       ===================================================== */
+
+    .radio-card {
+      margin: 12px;
+      padding: 17px;
+      border-radius: 13px;
+      background: #121212;
+      border: 1px solid #343434;
+      border-left: 6px solid #df3831;
+    }
+
+    .radio-live {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ff625b;
+      font-size: 12px;
       font-weight: 900;
     }
 
-    .footer {
-      padding: 18px;
-      text-align: center;
-      color: #555555;
-      font-size: 12px;
+    .radio-pulse {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #ff3932;
+      box-shadow: 0 0 8px rgba(255, 57, 50, 0.7);
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.35;
+      }
+    }
+
+    .radio-title {
+      margin-top: 10px;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .radio-copy {
+      margin-top: 7px;
+      color: #9a9a9a;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .radio-button {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #d33a32;
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     /* =====================================================
-       MOBILE
+       MAP PANEL
        ===================================================== */
 
-    @media (max-width: 520px) {
-      .header {
-        padding: 25px 20px 24px;
-      }
-
-      .title {
-        font-size: 37px;
-      }
-
-      .radio-panel {
-        flex-wrap: wrap;
-      }
-
-      .radio-info {
-        flex: 1 1 calc(100% - 35px);
-      }
-
-      .radio-button {
-        width: 100%;
-        text-align: center;
-        padding: 14px;
-      }
-
-      .priority-summary {
-        gap: 5px;
-        padding: 10px 8px;
-      }
-
-      .summary-box {
-        padding: 9px 2px;
-      }
-
-      .summary-box strong {
-        font-size: 19px;
-      }
+    .map-list-card {
+      margin-bottom: 10px;
+      padding: 13px;
+      border-radius: 10px;
+      background: #121212;
+      border: 1px solid #2b2b2b;
     }
 
+    .map-list-title {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .map-list-location {
+      margin-top: 4px;
+      color: #9c9c9c;
+      font-size: 13px;
+    }
+
+    /* =====================================================
+       ALERTS PANEL
+       ===================================================== */
+
+    .alerts-card {
+      margin: 12px;
+      padding: 17px;
+      border-radius: 13px;
+      background: #121212;
+      border: 1px solid #333333;
+    }
+
+    .alerts-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .alerts-card p {
+      margin: 8px 0 0;
+      color: #9a9a9a;
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .enable-alerts-btn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #e6574d;
+      color: white;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    /* =====================================================
+       BOTTOM NAV
+       ===================================================== */
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+
+      padding:
+        7px
+        7px
+        calc(7px + env(safe-area-inset-bottom));
+
+      background: rgba(13, 13, 13, 0.97);
+      border-top: 1px solid #2a2a2a;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-btn {
+      border: 0;
+      background: transparent;
+      color: #7b7b7b;
+      min-height: 49px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      display: block;
+      font-size: 19px;
+      margin-bottom: 2px;
+    }
+
+    .nav-btn.active {
+      color: #ff685d;
+    }
+
+    /* =====================================================
+       DESKTOP
+       ===================================================== */
+
     @media (min-width: 800px) {
-      .header,
-      .priority-summary,
-      .radio-wrap,
-      .content {
+      .page-shell {
         max-width: 900px;
-        margin-left: auto;
-        margin-right: auto;
+        margin: 0 auto;
+      }
+
+      .bottom-nav {
+        left: 50%;
+        right: auto;
+        width: 900px;
+        transform: translateX(-50%);
       }
     }
   </style>
@@ -480,41 +669,42 @@
 
 <body>
 
+<div class="page-shell">
+
   <!-- =====================================================
        HEADER
        ===================================================== -->
 
   <header class="header">
 
-    <h1 class="title">
-      🚨 OKC BREAKING<br>
-      NEWS<br>
-      MONITOR
-    </h1>
+    <div class="brand-row">
+
+      <div class="brand-icon">
+        🚨
+      </div>
+
+      <h1 class="title">
+        OKC BREAKING<br>
+        NEWS MONITOR
+      </h1>
+
+    </div>
 
     <div class="subtitle">
       Oklahoma City Public Safety Incident Monitor
     </div>
 
-    <button
-      id="enableAlertsButton"
-      class="alert-button"
-      type="button"
-    >
-      🔊 ENABLE ALERTS
-    </button>
+    <div class="header-status">
 
-    <div class="status-row">
-
-      <div class="status">
+      <div class="live-group">
 
         <span
           id="statusDot"
-          class="status-dot"
+          class="live-dot"
         ></span>
 
         <span id="statusText">
-          CONNECTING...
+          CONNECTING
         </span>
 
       </div>
@@ -528,152 +718,383 @@
 
     </div>
 
-    <div class="refresh-text">
-      Showing incidents reported within the last 24 hours.
-      Automatically checks every 30 seconds.
+    <div
+      id="lastChecked"
+      class="last-checked"
+    >
+      Waiting for first update…
     </div>
 
   </header>
 
   <!-- =====================================================
-       BREAKING BANNER
+       BREAKING
        ===================================================== -->
 
-  <div
-    id="breakingBanner"
-    class="breaking-banner"
+  <section
+    id="breakingWrap"
+    class="breaking-wrap"
   >
-    🚨 BREAKING NOW — CRITICAL INCIDENT ACTIVE
-  </div>
 
-  <!-- =====================================================
-       PRIORITY COUNTS
-       ===================================================== -->
+    <div class="breaking-card">
 
-  <section class="priority-summary">
+      <div class="breaking-label">
+        🚨 BREAKING STORY CANDIDATE
+      </div>
 
-    <div class="summary-box summary-p1">
-      <span>P1 CRITICAL</span>
-      <strong id="countP1">0</strong>
-    </div>
+      <div
+        id="breakingTitle"
+        class="breaking-title"
+      ></div>
 
-    <div class="summary-box summary-p2">
-      <span>P2 HIGH</span>
-      <strong id="countP2">0</strong>
-    </div>
+      <div
+        id="breakingMeta"
+        class="breaking-meta"
+      ></div>
 
-    <div class="summary-box summary-p3">
-      <span>P3 MEDIUM</span>
-      <strong id="countP3">0</strong>
-    </div>
+      <div
+        id="breakingActions"
+        class="breaking-actions"
+      ></div>
 
-    <div class="summary-box summary-p4">
-      <span>P4 ROUTINE</span>
-      <strong id="countP4">0</strong>
     </div>
 
   </section>
 
   <!-- =====================================================
-       OKC FIRE RADIO
+       PRIORITY SUMMARY
        ===================================================== -->
 
-  <div class="radio-wrap">
+  <section class="priority-summary">
 
-    <section class="radio-panel">
+    <div class="summary-box">
+      <span class="summary-label sum-p1">P1</span>
+      <strong
+        id="countP1"
+        class="summary-count sum-p1"
+      >0</strong>
+    </div>
 
-      <div class="radio-dot"></div>
+    <div class="summary-box">
+      <span class="summary-label sum-p2">P2</span>
+      <strong
+        id="countP2"
+        class="summary-count sum-p2"
+      >0</strong>
+    </div>
 
-      <div class="radio-info">
+    <div class="summary-box">
+      <span class="summary-label sum-p3">P3</span>
+      <strong
+        id="countP3"
+        class="summary-count sum-p3"
+      >0</strong>
+    </div>
 
-        <div class="radio-title">
-          🔊 OKC FIRE RADIO
-        </div>
+    <div class="summary-box">
+      <span class="summary-label sum-p4">P4</span>
+      <strong
+        id="countP4"
+        class="summary-count sum-p4"
+      >0</strong>
+    </div>
 
-        <div class="radio-subtitle">
-          Live public-safety radio
-        </div>
+  </section>
 
-        <div class="radio-channels">
-          OKC Fire Alert • Fire Ops • Fire Tactical channels
-        </div>
+  <!-- =====================================================
+       LIVE PANEL
+       ===================================================== -->
 
+  <section
+    id="panel-live"
+    class="tab-panel active"
+  >
+
+    <div class="toolbar">
+
+      <button
+        class="filter-btn active"
+        data-filter="ALL"
+        type="button"
+      >
+        ALL
+      </button>
+
+      <button
+        class="filter-btn"
+        data-filter="P1"
+        type="button"
+      >
+        P1
+      </button>
+
+      <button
+        class="filter-btn"
+        data-filter="FIRE"
+        type="button"
+      >
+        🔥 FIRE
+      </button>
+
+      <button
+        class="filter-btn"
+        data-filter="TRAFFIC"
+        type="button"
+      >
+        🚗 TRAFFIC
+      </button>
+
+    </div>
+
+    <div class="sort-row">
+
+      <span class="sort-label">
+        Feed order
+      </span>
+
+      <select
+        id="sortSelect"
+        class="sort-select"
+      >
+        <option value="PRIORITY">
+          Priority first
+        </option>
+
+        <option value="NEWEST">
+          Newest first
+        </option>
+      </select>
+
+    </div>
+
+    <main
+      id="incidentList"
+      class="content"
+    >
+      <div class="empty-state">
+        Loading OKC incidents…
+      </div>
+    </main>
+
+  </section>
+
+  <!-- =====================================================
+       MAP PANEL
+       ===================================================== -->
+
+  <section
+    id="panel-map"
+    class="tab-panel"
+  >
+
+    <div class="content">
+
+      <div style="
+        font-size:21px;
+        font-weight:900;
+        margin-bottom:4px;
+      ">
+        🗺️ Scene Area Links
+      </div>
+
+      <div style="
+        color:#808080;
+        font-size:13px;
+        margin-bottom:14px;
+      ">
+        Current incidents reported within the last 24 hours.
+      </div>
+
+      <div id="mapIncidentList"></div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       RADIO PANEL
+       ===================================================== -->
+
+  <section
+    id="panel-radio"
+    class="tab-panel"
+  >
+
+    <div class="radio-card">
+
+      <div class="radio-live">
+        <span class="radio-pulse"></span>
+        LIVE PUBLIC-SAFETY RADIO
+      </div>
+
+      <div class="radio-title">
+        OKC Fire Radio
+      </div>
+
+      <div class="radio-copy">
+        Fire Alert, Fire Ops, TAC 1–9,
+        Media and Will Rogers World Airport ARFF.
+        This is dispatch/fireground radio — not 911 caller audio.
       </div>
 
       <a
         class="radio-button"
-        href="https://www.broadcastify.com/listen/feed/318"
+        href="https://www.broadcastify.com/listen/feed/27252"
         target="_blank"
         rel="noopener noreferrer"
       >
         ▶ LISTEN LIVE
       </a>
 
-    </section>
+    </div>
 
-  </div>
+  </section>
 
   <!-- =====================================================
-       INCIDENTS
+       ALERTS PANEL
        ===================================================== -->
 
-  <main class="content">
+  <section
+    id="panel-alerts"
+    class="tab-panel"
+  >
 
-    <div
-      id="errorBox"
-      class="error-box"
-    ></div>
+    <div class="alerts-card">
 
-    <div id="incidentList">
+      <h3>
+        🔔 Critical Call Alerts
+      </h3>
 
-      <div class="loading">
-        Loading OKC incidents...
-      </div>
+      <p>
+        Enable sound alerts for new P1 incidents while
+        this dashboard is open. Safari requires you to
+        tap once before sound can play.
+      </p>
+
+      <button
+        id="enableAlertsButton"
+        class="enable-alerts-btn"
+        type="button"
+      >
+        🔊 ENABLE ALERTS
+      </button>
+
+      <p
+        id="alertsStatus"
+        style="margin-top:12px;"
+      >
+        Alerts are currently off.
+      </p>
 
     </div>
 
-  </main>
+  </section>
 
-  <div class="footer">
-    Public safety information from Oklahoma City open data.
-    Radio audio opens through Broadcastify.
-  </div>
+</div>
+
+<!-- =======================================================
+     BOTTOM NAV
+     ======================================================= -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-btn active"
+    data-tab="live"
+    type="button"
+  >
+    <span class="nav-icon">🏠</span>
+    LIVE
+  </button>
+
+  <button
+    class="nav-btn"
+    data-tab="map"
+    type="button"
+  >
+    <span class="nav-icon">🗺️</span>
+    MAP
+  </button>
+
+  <button
+    class="nav-btn"
+    data-tab="radio"
+    type="button"
+  >
+    <span class="nav-icon">🎧</span>
+    RADIO
+  </button>
+
+  <button
+    class="nav-btn"
+    data-tab="alerts"
+    type="button"
+  >
+    <span class="nav-icon">🔔</span>
+    ALERTS
+  </button>
+
+</nav>
 
 <script>
 
 /* =========================================================
-   SETTINGS
+   CONFIG
    ========================================================= */
 
 const FEED_URL =
   "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
 
-const REFRESH_INTERVAL = 30000;
+const REFRESH_INTERVAL =
+  30000;
 
 const MAX_INCIDENT_AGE =
   24 * 60 * 60 * 1000;
 
-let previousIncidentIds = new Set();
 
-let firstLoad = true;
+/* =========================================================
+   STATE
+   ========================================================= */
 
-let alertsEnabled = false;
+let allIncidents = [];
+
+let currentFilter =
+  "ALL";
+
+let currentSort =
+  "PRIORITY";
+
+let alertsEnabled =
+  false;
+
+let firstLoad =
+  true;
+
+let previousIncidentIds =
+  new Set();
 
 
 /* =========================================================
    FIELD HELPERS
    ========================================================= */
 
-function getValue(attributes, names) {
+function getValue(
+  attributes,
+  names
+) {
 
-  for (const name of names) {
+  for (
+    const name of names
+  ) {
 
     if (
       attributes[name] !== undefined &&
       attributes[name] !== null &&
       attributes[name] !== ""
     ) {
+
       return attributes[name];
+
     }
 
   }
@@ -682,87 +1103,113 @@ function getValue(attributes, names) {
 }
 
 
-function getIncidentId(feature) {
+function getIncidentId(
+  feature
+) {
 
-  const a = feature.attributes || {};
-
-  return (
-    getValue(
-      a,
-      ["ObjectID", "OBJECTID", "objectid"]
-    ) || JSON.stringify(a)
-  );
-}
-
-
-function getIncidentType(feature) {
-
-  const a = feature.attributes || {};
+  const a =
+    feature.attributes || {};
 
   return (
     getValue(
       a,
-      ["InfoTitle", "Call_Type"]
-    ) || "Public Safety Incident"
+      [
+        "ObjectID",
+        "OBJECTID",
+        "objectid"
+      ]
+    ) ||
+    JSON.stringify(a)
   );
 }
 
 
-function getIncidentDescription(feature) {
+function getIncidentType(
+  feature
+) {
 
-  const a = feature.attributes || {};
+  const a =
+    feature.attributes || {};
 
   return (
     getValue(
       a,
-      ["Call_Type", "InfoTitle"]
-    ) || "No additional description available."
+      [
+        "InfoTitle",
+        "Call_Type"
+      ]
+    ) ||
+    "Public Safety Incident"
   );
 }
 
 
-function getIncidentLocation(feature) {
+function getIncidentDescription(
+  feature
+) {
 
-  const a = feature.attributes || {};
+  const a =
+    feature.attributes || {};
+
+  return (
+    getValue(
+      a,
+      [
+        "Call_Type",
+        "InfoTitle"
+      ]
+    ) ||
+    "No additional description available."
+  );
+}
+
+
+function getIncidentLocation(
+  feature
+) {
+
+  const a =
+    feature.attributes || {};
 
   return getValue(
     a,
-    ["Address", "Location"]
+    [
+      "Address",
+      "Location"
+    ]
   );
 }
 
 
 /* =========================================================
-   DATE AND TIME
-   OKC example:
-   Sep 29 2026  4:58AM
+   DATE / TIME
    ========================================================= */
 
-function getIncidentTimestamp(feature) {
+function getIncidentTimestamp(
+  feature
+) {
 
-  const a = feature.attributes || {};
+  const a =
+    feature.attributes || {};
 
-  const value = a.Reported_Time;
+  const value =
+    a.Reported_Time;
 
   if (!value) {
     return 0;
   }
 
-  const text = String(value)
-    .replace(/\s+/g, " ")
-    .trim();
+  const text =
+    String(value)
+      .replace(/\s+/g, " ")
+      .trim();
 
-  const match = text.match(
-    /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
-  );
-
-  if (!match) {
-
-    console.log(
-      "Could not parse Reported_Time:",
-      value
+  const match =
+    text.match(
+      /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
     );
 
+  if (!match) {
     return 0;
   }
 
@@ -782,21 +1229,31 @@ function getIncidentTimestamp(feature) {
   };
 
   const monthName =
-    match[1].charAt(0).toUpperCase() +
-    match[1].slice(1).toLowerCase();
+    match[1]
+      .charAt(0)
+      .toUpperCase() +
+    match[1]
+      .slice(1)
+      .toLowerCase();
 
-  const month = months[monthName];
+  const month =
+    months[monthName];
 
-  const day = Number(match[2]);
+  const day =
+    Number(match[2]);
 
-  const year = Number(match[3]);
+  const year =
+    Number(match[3]);
 
-  let hour = Number(match[4]);
+  let hour =
+    Number(match[4]);
 
-  const minute = Number(match[5]);
+  const minute =
+    Number(match[5]);
 
   const ampm =
-    match[6].toUpperCase();
+    match[6]
+      .toUpperCase();
 
   if (
     ampm === "PM" &&
@@ -824,7 +1281,9 @@ function getIncidentTimestamp(feature) {
 }
 
 
-function formatIncidentDate(timestamp) {
+function formatIncidentDate(
+  timestamp
+) {
 
   if (!timestamp) {
     return "Date/time unavailable";
@@ -832,14 +1291,6 @@ function formatIncidentDate(timestamp) {
 
   const date =
     new Date(timestamp);
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return "Date/time unavailable";
-  }
 
   return date.toLocaleString(
     "en-US",
@@ -855,7 +1306,9 @@ function formatIncidentDate(timestamp) {
 }
 
 
-function getIncidentAge(timestamp) {
+function getIncidentAge(
+  timestamp
+) {
 
   if (!timestamp) {
     return "";
@@ -864,8 +1317,8 @@ function getIncidentAge(timestamp) {
   const difference =
     Date.now() - timestamp;
 
-  if (difference < 0) {
-    return "Reported just now";
+  if (difference < 60000) {
+    return "just now";
   }
 
   const minutes =
@@ -873,19 +1326,13 @@ function getIncidentAge(timestamp) {
       difference / 60000
     );
 
-  if (minutes < 1) {
-    return "Reported just now";
-  }
-
-  if (minutes === 1) {
-    return "Reported 1 minute ago";
-  }
-
   if (minutes < 60) {
+
     return (
-      "Reported " +
       minutes +
-      " minutes ago"
+      (minutes === 1
+        ? " min ago"
+        : " mins ago")
     );
   }
 
@@ -894,14 +1341,11 @@ function getIncidentAge(timestamp) {
       minutes / 60
     );
 
-  if (hours === 1) {
-    return "Reported 1 hour ago";
-  }
-
   return (
-    "Reported " +
     hours +
-    " hours ago"
+    (hours === 1
+      ? " hr ago"
+      : " hrs ago")
   );
 }
 
@@ -910,7 +1354,9 @@ function getIncidentAge(timestamp) {
    SAFE HTML
    ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
   if (
     value === null ||
@@ -929,28 +1375,84 @@ function escapeHTML(value) {
 
 
 /* =========================================================
+   CATEGORY ENGINE
+   ========================================================= */
+
+function getCategory(
+  feature
+) {
+
+  const text =
+    (
+      getIncidentType(feature) +
+      " " +
+      getIncidentDescription(feature)
+    )
+    .toLowerCase();
+
+  if (
+    text.includes("fire") ||
+    text.includes("alarm fire") ||
+    text.includes("smoke")
+  ) {
+
+    return {
+      code: "FIRE",
+      label: "🔥 Fire"
+    };
+  }
+
+  if (
+    text.includes("accident") ||
+    text.includes("traffic") ||
+    text.includes("vehicle") ||
+    text.includes("crash")
+  ) {
+
+    return {
+      code: "TRAFFIC",
+      label: "🚗 Traffic"
+    };
+  }
+
+  if (
+    text.includes("medical") ||
+    text.includes("ems") ||
+    text.includes("rescue")
+  ) {
+
+    return {
+      code: "EMS",
+      label: "🚑 EMS"
+    };
+  }
+
+  return {
+    code: "PUBLIC",
+    label: "🚨 Public Safety"
+  };
+}
+
+
+/* =========================================================
    PRIORITY ENGINE
    ========================================================= */
 
-function getPriority(feature) {
-
-  const type =
-    getIncidentType(feature);
-
-  const description =
-    getIncidentDescription(feature);
+function getPriority(
+  feature
+) {
 
   const text =
-    (type + " " + description)
-      .toLowerCase();
+    (
+      getIncidentType(feature) +
+      " " +
+      getIncidentDescription(feature)
+    )
+    .toLowerCase();
 
-
-  /* -------------------------------------------------------
-     P4 NON-INJURY CHECK FIRST
-
-     This prevents "Non-Injury Accident"
-     from accidentally matching "Injury Accident".
-     ------------------------------------------------------- */
+  /*
+    Non-injury must be checked before "injury accident".
+  */
 
   if (
     text.includes("non-injury") ||
@@ -964,121 +1466,58 @@ function getPriority(feature) {
     };
   }
 
-
-  /* -------------------------------------------------------
-     P1 CRITICAL
-     ------------------------------------------------------- */
-
   const p1Words = [
-
     "active shooter",
-
     "shooting",
-
     "shots fired",
-
     "person shot",
-
     "gunshot",
-
     "stabbing",
-
     "person stabbed",
-
     "homicide",
-
     "armed subject",
-
     "armed robbery",
-
     "officer down",
-
     "officer involved",
-
     "explosion",
-
     "structure fire",
-
     "struct fire",
-
     "struc fire",
-
     "struc fire residential",
-
     "residential fire",
-
     "house fire",
-
     "apartment fire",
-
     "commercial fire",
-
     "working fire",
-
     "building fire"
-
   ];
-
-
-  /* -------------------------------------------------------
-     P2 HIGH
-     ------------------------------------------------------- */
 
   const p2Words = [
-
     "injury accident",
-
     "accident with injury",
-
     "traffic accident with injury",
-
     "major accident",
-
     "major crash",
-
     "entrapment",
-
     "rollover",
-
     "vehicle fire",
-
     "car fire",
-
     "rescue",
-
     "traffic/trans. acc. fr"
-
   ];
-
-
-  /* -------------------------------------------------------
-     P3 MEDIUM
-     ------------------------------------------------------- */
 
   const p3Words = [
-
     "alarm fire",
-
     "fire alarm",
-
     "alarm fire auto",
-
     "automatic fire alarm",
-
     "suspicious",
-
     "disturbance",
-
     "burglary",
-
     "welfare check",
-
     "traffic hazard",
-
     "reckless driver"
-
   ];
-
 
   if (
     p1Words.some(
@@ -1094,7 +1533,6 @@ function getPriority(feature) {
     };
   }
 
-
   if (
     p2Words.some(
       word =>
@@ -1108,7 +1546,6 @@ function getPriority(feature) {
       label: "HIGH"
     };
   }
-
 
   if (
     p3Words.some(
@@ -1124,7 +1561,6 @@ function getPriority(feature) {
     };
   }
 
-
   return {
     level: 4,
     code: "P4",
@@ -1134,22 +1570,884 @@ function getPriority(feature) {
 
 
 /* =========================================================
-   GOOGLE MAP
+   MAP
    ========================================================= */
 
-function getMapURL(location) {
+function getMapURL(
+  location
+) {
 
   if (!location) {
     return "#";
   }
 
-  const search =
+  const query =
     location +
     ", Oklahoma City, Oklahoma";
 
   return (
     "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent(search)
+    encodeURIComponent(query)
+  );
+}
+
+
+/* =========================================================
+   LAST 24 HOURS
+   ========================================================= */
+
+function filterRecentIncidents(
+  features
+) {
+
+  const now =
+    Date.now();
+
+  return features.filter(
+    feature => {
+
+      const timestamp =
+        getIncidentTimestamp(feature);
+
+      if (!timestamp) {
+        return false;
+      }
+
+      const age =
+        now - timestamp;
+
+      return (
+        age >= 0 &&
+        age <= MAX_INCIDENT_AGE
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   USER FILTER
+   ========================================================= */
+
+function applyUserFilter(
+  features
+) {
+
+  if (
+    currentFilter === "ALL"
+  ) {
+    return features;
+  }
+
+  return features.filter(
+    feature => {
+
+      if (
+        currentFilter === "P1"
+      ) {
+
+        return (
+          getPriority(feature).level === 1
+        );
+      }
+
+      return (
+        getCategory(feature).code ===
+        currentFilter
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   SORTING
+   ========================================================= */
+
+function sortIncidents(
+  features
+) {
+
+  const copy =
+    [...features];
+
+  if (
+    currentSort === "NEWEST"
+  ) {
+
+    copy.sort(
+      (a, b) =>
+        getIncidentTimestamp(b) -
+        getIncidentTimestamp(a)
+    );
+
+    return copy;
+  }
+
+  copy.sort(
+    (a, b) => {
+
+      const pa =
+        getPriority(a).level;
+
+      const pb =
+        getPriority(b).level;
+
+      if (pa !== pb) {
+        return pa - pb;
+      }
+
+      return (
+        getIncidentTimestamp(b) -
+        getIncidentTimestamp(a)
+      );
+    }
+  );
+
+  return copy;
+}
+
+
+/* =========================================================
+   PRIORITY SUMMARY
+   ========================================================= */
+
+function updatePrioritySummary(
+  features
+) {
+
+  const counts = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0
+  };
+
+  features.forEach(
+    feature => {
+
+      const level =
+        getPriority(feature).level;
+
+      counts[level]++;
+    }
+  );
+
+  document.getElementById(
+    "countP1"
+  ).textContent =
+    counts[1];
+
+  document.getElementById(
+    "countP2"
+  ).textContent =
+    counts[2];
+
+  document.getElementById(
+    "countP3"
+  ).textContent =
+    counts[3];
+
+  document.getElementById(
+    "countP4"
+  ).textContent =
+    counts[4];
+}
+
+
+/* =========================================================
+   BREAKING STORY AREA
+   ========================================================= */
+
+function updateBreakingStory(
+  features
+) {
+
+  const p1 =
+    features
+      .filter(
+        feature =>
+          getPriority(feature).level === 1
+      )
+      .sort(
+        (a, b) =>
+          getIncidentTimestamp(b) -
+          getIncidentTimestamp(a)
+      );
+
+  const wrap =
+    document.getElementById(
+      "breakingWrap"
+    );
+
+  if (
+    p1.length === 0
+  ) {
+
+    wrap.style.display =
+      "none";
+
+    return;
+  }
+
+  const feature =
+    p1[0];
+
+  const type =
+    getIncidentType(feature);
+
+  const location =
+    getIncidentLocation(feature);
+
+  const age =
+    getIncidentAge(
+      getIncidentTimestamp(feature)
+    );
+
+  document.getElementById(
+    "breakingTitle"
+  ).textContent =
+    type;
+
+  document.getElementById(
+    "breakingMeta"
+  ).textContent =
+    (
+      (location || "Location unavailable") +
+      " · " +
+      age
+    );
+
+  const actions =
+    document.getElementById(
+      "breakingActions"
+    );
+
+  actions.innerHTML = "";
+
+  if (location) {
+
+    const map =
+      document.createElement("a");
+
+    map.className =
+      "action-btn blue";
+
+    map.href =
+      getMapURL(location);
+
+    map.target =
+      "_blank";
+
+    map.rel =
+      "noopener noreferrer";
+
+    map.textContent =
+      "🗺 MAP";
+
+    actions.appendChild(map);
+  }
+
+  const radio =
+    document.createElement("a");
+
+  radio.className =
+    "action-btn red";
+
+  radio.href =
+    "https://www.broadcastify.com/listen/feed/27252";
+
+  radio.target =
+    "_blank";
+
+  radio.rel =
+    "noopener noreferrer";
+
+  radio.textContent =
+    "🎧 FIRE RADIO";
+
+  actions.appendChild(radio);
+
+  wrap.style.display =
+    "block";
+}
+
+
+/* =========================================================
+   SHARE TEXT
+   ========================================================= */
+
+function buildShareText(
+  feature
+) {
+
+  const priority =
+    getPriority(feature);
+
+  const type =
+    getIncidentType(feature);
+
+  const location =
+    getIncidentLocation(feature);
+
+  const time =
+    formatIncidentDate(
+      getIncidentTimestamp(feature)
+    );
+
+  return [
+    "🚨 OKC INCIDENT",
+    type,
+    priority.code + " — " + priority.label,
+    location || "Location unavailable",
+    "Reported: " + time,
+    "Source: Oklahoma City public-safety incident feed"
+  ].join("\n");
+}
+
+
+/* =========================================================
+   REPORTING NOTES
+   ========================================================= */
+
+function buildReportingNotes(
+  feature
+) {
+
+  const priority =
+    getPriority(feature);
+
+  const category =
+    getCategory(feature);
+
+  return [
+    "OKC BREAKING NEWS MONITOR",
+    "",
+    "INCIDENT:",
+    getIncidentType(feature),
+    "",
+    "CATEGORY:",
+    category.label,
+    "",
+    "PRIORITY:",
+    priority.code + " — " + priority.label,
+    "",
+    "LOCATION:",
+    getIncidentLocation(feature) ||
+      "Location unavailable",
+    "",
+    "REPORTED:",
+    formatIncidentDate(
+      getIncidentTimestamp(feature)
+    ),
+    "",
+    "DESCRIPTION:",
+    getIncidentDescription(feature),
+    "",
+    "FOLLOW-UP:",
+    "• Check scene area",
+    "• Check OKC Fire radio if applicable",
+    "• Verify with official agency updates",
+    "",
+    "SOURCE:",
+    "Oklahoma City public-safety incident feed"
+  ].join("\n");
+}
+
+
+/* =========================================================
+   COPY / SHARE
+   ========================================================= */
+
+async function shareIncident(
+  feature
+) {
+
+  const text =
+    buildShareText(feature);
+
+  if (
+    navigator.share
+  ) {
+
+    try {
+
+      await navigator.share({
+        title:
+          "OKC Breaking News Monitor",
+        text
+      });
+
+      return;
+
+    } catch (error) {
+
+      if (
+        error &&
+        error.name ===
+        "AbortError"
+      ) {
+        return;
+      }
+    }
+  }
+
+  copyTextFallback(text);
+}
+
+
+async function copyTextFallback(
+  text
+) {
+
+  try {
+
+    if (
+      navigator.clipboard &&
+      navigator.clipboard.writeText
+    ) {
+
+      await navigator.clipboard
+        .writeText(text);
+
+      alert(
+        "Copied to clipboard."
+      );
+
+      return;
+    }
+
+  } catch (error) {
+  }
+
+  window.prompt(
+    "Copy this text:",
+    text
+  );
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+function createIncidentCard(
+  feature,
+  newestId
+) {
+
+  const id =
+    String(
+      getIncidentId(feature)
+    );
+
+  const priority =
+    getPriority(feature);
+
+  const category =
+    getCategory(feature);
+
+  const timestamp =
+    getIncidentTimestamp(feature);
+
+  const type =
+    getIncidentType(feature);
+
+  const description =
+    getIncidentDescription(feature);
+
+  const location =
+    getIncidentLocation(feature);
+
+  let priorityClass =
+    "priority-p4";
+
+  let badgeClass =
+    "badge-p4";
+
+  if (
+    priority.level === 1
+  ) {
+
+    priorityClass =
+      "priority-p1";
+
+    badgeClass =
+      "badge-p1";
+  }
+
+  else if (
+    priority.level === 2
+  ) {
+
+    priorityClass =
+      "priority-p2";
+
+    badgeClass =
+      "badge-p2";
+  }
+
+  else if (
+    priority.level === 3
+  ) {
+
+    priorityClass =
+      "priority-p3";
+
+    badgeClass =
+      "badge-p3";
+  }
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "incident-card " +
+    priorityClass;
+
+  const newest =
+    id === newestId;
+
+  card.innerHTML = `
+    <div class="incident-main">
+
+      <div class="incident-topline">
+
+        ${
+          newest
+            ? '<span class="badge badge-new">🔥 NEWEST</span>'
+            : ""
+        }
+
+        <span class="badge ${badgeClass}">
+          ${priority.code} — ${priority.label}
+        </span>
+
+        <span class="category-label">
+          ${escapeHTML(category.label)}
+        </span>
+
+      </div>
+
+      <div class="incident-title">
+        ${escapeHTML(type)}
+      </div>
+
+      <div class="incident-meta">
+        ${escapeHTML(getIncidentAge(timestamp))}
+        ·
+        ${escapeHTML(formatIncidentDate(timestamp))}
+      </div>
+
+      ${
+        location
+          ? `
+            <div class="incident-location">
+              📍 ${escapeHTML(location)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="action-row">
+
+        ${
+          location
+            ? `
+              <a
+                class="action-btn blue"
+                href="${escapeHTML(getMapURL(location))}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🗺 MAP
+              </a>
+            `
+            : ""
+        }
+
+        ${
+          category.code === "FIRE"
+            ? `
+              <a
+                class="action-btn red"
+                href="https://www.broadcastify.com/listen/feed/27252"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🎧 RADIO
+              </a>
+            `
+            : ""
+        }
+
+        <button
+          class="action-btn share-btn"
+          type="button"
+        >
+          ↗ SHARE
+        </button>
+
+        <button
+          class="action-btn details-btn"
+          type="button"
+        >
+          DETAILS
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="details-panel">
+
+      <div class="detail-row">
+
+        <div class="detail-label">
+          Description
+        </div>
+
+        <div class="detail-value">
+          ${escapeHTML(description)}
+        </div>
+
+      </div>
+
+      <div class="detail-row">
+
+        <div class="detail-label">
+          Full reported time
+        </div>
+
+        <div class="detail-value">
+          ${escapeHTML(formatIncidentDate(timestamp))}
+        </div>
+
+      </div>
+
+      <div class="detail-row">
+
+        <div class="detail-label">
+          Call ID
+        </div>
+
+        <div class="detail-value">
+          ${escapeHTML(id)}
+        </div>
+
+      </div>
+
+      <div class="detail-row">
+
+        <div class="detail-label">
+          Source
+        </div>
+
+        <div class="detail-value">
+          Oklahoma City public-safety incident feed
+        </div>
+
+      </div>
+
+      <button
+        class="action-btn reporting-btn"
+        type="button"
+      >
+        📋 COPY REPORTING NOTES
+      </button>
+
+    </div>
+  `;
+
+  card
+    .querySelector(
+      ".share-btn"
+    )
+    .addEventListener(
+      "click",
+      () =>
+        shareIncident(feature)
+    );
+
+  const details =
+    card.querySelector(
+      ".details-panel"
+    );
+
+  const detailsButton =
+    card.querySelector(
+      ".details-btn"
+    );
+
+  detailsButton
+    .addEventListener(
+      "click",
+      () => {
+
+        const open =
+          details.classList
+            .toggle("open");
+
+        detailsButton.textContent =
+          open
+            ? "HIDE"
+            : "DETAILS";
+      }
+    );
+
+  card
+    .querySelector(
+      ".reporting-btn"
+    )
+    .addEventListener(
+      "click",
+      () =>
+        copyTextFallback(
+          buildReportingNotes(feature)
+        )
+    );
+
+  return card;
+}
+
+
+/* =========================================================
+   RENDER LIVE FEED
+   ========================================================= */
+
+function renderLiveFeed() {
+
+  const container =
+    document.getElementById(
+      "incidentList"
+    );
+
+  let visible =
+    applyUserFilter(
+      allIncidents
+    );
+
+  visible =
+    sortIncidents(
+      visible
+    );
+
+  container.innerHTML = "";
+
+  if (
+    visible.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="empty-state">No incidents match this filter.</div>';
+
+    return;
+  }
+
+  const newest =
+    [...allIncidents]
+      .sort(
+        (a, b) =>
+          getIncidentTimestamp(b) -
+          getIncidentTimestamp(a)
+      )[0];
+
+  const newestId =
+    newest
+      ? String(
+          getIncidentId(newest)
+        )
+      : "";
+
+  visible.forEach(
+    feature => {
+
+      container.appendChild(
+        createIncidentCard(
+          feature,
+          newestId
+        )
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   RENDER MAP LIST
+   ========================================================= */
+
+function renderMapList() {
+
+  const container =
+    document.getElementById(
+      "mapIncidentList"
+    );
+
+  container.innerHTML = "";
+
+  const list =
+    [...allIncidents]
+      .sort(
+        (a, b) =>
+          getIncidentTimestamp(b) -
+          getIncidentTimestamp(a)
+      );
+
+  if (
+    list.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="empty-state">No active incident locations.</div>';
+
+    return;
+  }
+
+  list.forEach(
+    feature => {
+
+      const location =
+        getIncidentLocation(feature);
+
+      if (!location) {
+        return;
+      }
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "map-list-card";
+
+      card.innerHTML = `
+        <div class="map-list-title">
+          ${escapeHTML(getIncidentType(feature))}
+        </div>
+
+        <div class="map-list-location">
+          📍 ${escapeHTML(location)}
+          ·
+          ${escapeHTML(getIncidentAge(getIncidentTimestamp(feature)))}
+        </div>
+
+        <a
+          class="action-btn blue"
+          style="display:inline-block;margin-top:10px;"
+          href="${escapeHTML(getMapURL(location))}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          VIEW SCENE AREA
+        </a>
+      `;
+
+      container.appendChild(card);
+    }
   );
 }
 
@@ -1170,52 +2468,43 @@ function playAlertSound() {
       window.AudioContext ||
       window.webkitAudioContext;
 
-    const audioContext =
+    const context =
       new AudioContextClass();
 
     const oscillator =
-      audioContext.createOscillator();
+      context.createOscillator();
 
     const gain =
-      audioContext.createGain();
+      context.createGain();
 
     oscillator.connect(gain);
 
     gain.connect(
-      audioContext.destination
+      context.destination
     );
 
     oscillator.frequency.value =
       880;
 
-    oscillator.type =
-      "sine";
-
-    gain.gain.setValueAtTime(
-      0.15,
-      audioContext.currentTime
-    );
+    gain.gain.value =
+      0.15;
 
     oscillator.start();
 
     oscillator.stop(
-      audioContext.currentTime +
+      context.currentTime +
       0.35
     );
 
   } catch (error) {
-
-    console.log(
-      "Unable to play alert:",
-      error
-    );
   }
 }
 
 
 function enableAlerts() {
 
-  alertsEnabled = true;
+  alertsEnabled =
+    true;
 
   const button =
     document.getElementById(
@@ -1228,7 +2517,82 @@ function enableAlerts() {
   button.style.background =
     "#29964f";
 
+  document.getElementById(
+    "alertsStatus"
+  ).textContent =
+    "Sound alerts are enabled for new P1 incidents.";
+
   playAlertSound();
+}
+
+
+/* =========================================================
+   NEW P1 CHECK
+   ========================================================= */
+
+function checkForNewP1(
+  features
+) {
+
+  const ids =
+    new Set();
+
+  features.forEach(
+    feature => {
+
+      const id =
+        String(
+          getIncidentId(feature)
+        );
+
+      ids.add(id);
+
+      if (
+        !firstLoad &&
+        !previousIncidentIds.has(id) &&
+        getPriority(feature).level === 1
+      ) {
+
+        playAlertSound();
+      }
+    }
+  );
+
+  previousIncidentIds =
+    ids;
+
+  firstLoad =
+    false;
+}
+
+
+/* =========================================================
+   FULL RENDER
+   ========================================================= */
+
+function renderEverything() {
+
+  updatePrioritySummary(
+    allIncidents
+  );
+
+  updateBreakingStory(
+    allIncidents
+  );
+
+  renderLiveFeed();
+
+  renderMapList();
+
+  document.getElementById(
+    "incidentCount"
+  ).textContent =
+    allIncidents.length +
+    (
+      allIncidents.length === 1
+        ? " incident"
+        : " incidents"
+    );
 }
 
 
@@ -1236,9 +2600,11 @@ function enableAlerts() {
    STATUS
    ========================================================= */
 
-function setStatus(type) {
+function setStatus(
+  state
+) {
 
-  const statusText =
+  const text =
     document.getElementById(
       "statusText"
     );
@@ -1248,564 +2614,48 @@ function setStatus(type) {
       "statusDot"
     );
 
+  if (
+    state === "LIVE"
+  ) {
 
-  if (type === "live") {
-
-    statusText.textContent =
+    text.textContent =
       "LIVE";
 
-    statusText.style.color =
-      "#aaff95";
-
     dot.style.background =
-      "#34c759";
+      "#35c65a";
   }
 
+  else if (
+    state === "CHECKING"
+  ) {
 
-  if (type === "loading") {
-
-    statusText.textContent =
-      "CHECKING...";
-
-    statusText.style.color =
-      "#ffcf66";
+    text.textContent =
+      "CHECKING";
 
     dot.style.background =
-      "#ffb020";
+      "#ffb521";
   }
 
+  else {
 
-  if (type === "error") {
-
-    statusText.textContent =
+    text.textContent =
       "FEED ERROR";
 
-    statusText.style.color =
-      "#ff8d84";
-
     dot.style.background =
-      "#e33434";
+      "#ef3830";
   }
 }
 
 
 /* =========================================================
-   ERROR BOX
-   ========================================================= */
-
-function showError(message) {
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-  box.style.display =
-    "block";
-
-  box.innerHTML =
-    "<strong>Feed error:</strong><br>" +
-    escapeHTML(message);
-}
-
-
-function hideError() {
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-  box.style.display =
-    "none";
-
-  box.innerHTML =
-    "";
-}
-
-
-/* =========================================================
-   FILTER LAST 24 HOURS
-   ========================================================= */
-
-function filterRecentIncidents(features) {
-
-  const now =
-    Date.now();
-
-  return features.filter(
-    feature => {
-
-      const timestamp =
-        getIncidentTimestamp(
-          feature
-        );
-
-      if (!timestamp) {
-        return false;
-      }
-
-      const age =
-        now - timestamp;
-
-      return (
-        age >= 0 &&
-        age <= MAX_INCIDENT_AGE
-      );
-    }
-  );
-}
-
-
-/* =========================================================
-   PRIORITY COUNTERS
-   ========================================================= */
-
-function updatePrioritySummary(features) {
-
-  let p1 = 0;
-  let p2 = 0;
-  let p3 = 0;
-  let p4 = 0;
-
-
-  features.forEach(
-    feature => {
-
-      const priority =
-        getPriority(feature);
-
-      if (priority.level === 1) {
-        p1++;
-      }
-
-      else if (
-        priority.level === 2
-      ) {
-        p2++;
-      }
-
-      else if (
-        priority.level === 3
-      ) {
-        p3++;
-      }
-
-      else {
-        p4++;
-      }
-    }
-  );
-
-
-  document.getElementById(
-    "countP1"
-  ).textContent = p1;
-
-  document.getElementById(
-    "countP2"
-  ).textContent = p2;
-
-  document.getElementById(
-    "countP3"
-  ).textContent = p3;
-
-  document.getElementById(
-    "countP4"
-  ).textContent = p4;
-
-
-  const banner =
-    document.getElementById(
-      "breakingBanner"
-    );
-
-
-  if (p1 > 0) {
-
-    banner.style.display =
-      "block";
-
-    banner.textContent =
-      "🚨 BREAKING NOW — " +
-      p1 +
-      (
-        p1 === 1
-          ? " CRITICAL INCIDENT ACTIVE"
-          : " CRITICAL INCIDENTS ACTIVE"
-      );
-
-  } else {
-
-    banner.style.display =
-      "none";
-  }
-}
-
-
-/* =========================================================
-   SORT
-
-   Priority first.
-   Newest first inside each priority.
-   ========================================================= */
-
-function sortIncidents(features) {
-
-  features.sort(
-    (a, b) => {
-
-      const priorityA =
-        getPriority(a).level;
-
-      const priorityB =
-        getPriority(b).level;
-
-
-      if (
-        priorityA !==
-        priorityB
-      ) {
-
-        return (
-          priorityA -
-          priorityB
-        );
-      }
-
-
-      return (
-        getIncidentTimestamp(b) -
-        getIncidentTimestamp(a)
-      );
-    }
-  );
-
-  return features;
-}
-
-
-/* =========================================================
-   INCIDENT CARD
-   ========================================================= */
-
-function createIncidentCard(
-  feature,
-  isNewest
-) {
-
-  const type =
-    getIncidentType(feature);
-
-  const description =
-    getIncidentDescription(feature);
-
-  const location =
-    getIncidentLocation(feature);
-
-  const timestamp =
-    getIncidentTimestamp(feature);
-
-  const formattedTime =
-    formatIncidentDate(timestamp);
-
-  const age =
-    getIncidentAge(timestamp);
-
-  const priority =
-    getPriority(feature);
-
-
-  let cardClass =
-    "priority-p4";
-
-  let badgeClass =
-    "badge-p4";
-
-
-  if (priority.level === 1) {
-
-    cardClass =
-      "priority-p1";
-
-    badgeClass =
-      "badge-p1";
-  }
-
-  else if (
-    priority.level === 2
-  ) {
-
-    cardClass =
-      "priority-p2";
-
-    badgeClass =
-      "badge-p2";
-  }
-
-  else if (
-    priority.level === 3
-  ) {
-
-    cardClass =
-      "priority-p3";
-
-    badgeClass =
-      "badge-p3";
-  }
-
-
-  let newestHTML = "";
-
-  if (isNewest) {
-
-    newestHTML =
-      '<span class="newest-badge">' +
-      "🔥 NEWEST" +
-      "</span>";
-  }
-
-
-  let locationHTML = "";
-
-  if (location) {
-
-    const mapURL =
-      getMapURL(location);
-
-    locationHTML = `
-      <div class="incident-location">
-        📍 ${escapeHTML(location)}
-      </div>
-
-      <a
-        class="map-button"
-        href="${escapeHTML(mapURL)}"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        🗺️ VIEW SCENE AREA
-      </a>
-    `;
-  }
-
-
-  return `
-    <article class="incident-card ${cardClass}">
-
-      <div class="incident-top">
-
-        <div class="badge-row">
-
-          ${newestHTML}
-
-          <span class="priority-badge ${badgeClass}">
-            ${priority.code} — ${priority.label}
-          </span>
-
-        </div>
-
-        <div class="incident-type">
-          ${escapeHTML(type)}
-        </div>
-
-        <div class="incident-time">
-          🕒 ${escapeHTML(formattedTime)}
-        </div>
-
-        <div class="incident-age">
-          ${escapeHTML(age)}
-        </div>
-
-      </div>
-
-      <div class="incident-body">
-
-        <div class="incident-description">
-          ${escapeHTML(description)}
-        </div>
-
-        ${locationHTML}
-
-      </div>
-
-    </article>
-  `;
-}
-
-
-/* =========================================================
-   RENDER
-   ========================================================= */
-
-function renderIncidents(features) {
-
-  const container =
-    document.getElementById(
-      "incidentList"
-    );
-
-
-  let recent =
-    filterRecentIncidents(
-      features
-    );
-
-
-  updatePrioritySummary(
-    recent
-  );
-
-
-  document.getElementById(
-    "incidentCount"
-  ).textContent =
-    recent.length +
-    (
-      recent.length === 1
-        ? " incident"
-        : " incidents"
-    );
-
-
-  if (
-    recent.length === 0
-  ) {
-
-    container.innerHTML =
-      '<div class="loading">' +
-      "No incidents reported within the last 24 hours." +
-      "</div>";
-
-    return;
-  }
-
-
-  /* -------------------------------------------------------
-     Identify actual newest incident BEFORE priority sorting.
-     ------------------------------------------------------- */
-
-  let newestIncident =
-    recent[0];
-
-
-  for (
-    const feature
-    of recent
-  ) {
-
-    if (
-      getIncidentTimestamp(feature) >
-      getIncidentTimestamp(
-        newestIncident
-      )
-    ) {
-
-      newestIncident =
-        feature;
-    }
-  }
-
-
-  const newestId =
-    String(
-      getIncidentId(
-        newestIncident
-      )
-    );
-
-
-  recent =
-    sortIncidents(
-      recent
-    );
-
-
-  let html = "";
-
-
-  recent.forEach(
-    feature => {
-
-      const id =
-        String(
-          getIncidentId(feature)
-        );
-
-      html +=
-        createIncidentCard(
-          feature,
-          id === newestId
-        );
-    }
-  );
-
-
-  container.innerHTML =
-    html;
-}
-
-
-/* =========================================================
-   NEW P1 ALERT CHECK
-   ========================================================= */
-
-function checkForAlerts(features) {
-
-  const recent =
-    filterRecentIncidents(
-      features
-    );
-
-
-  const currentIds =
-    new Set();
-
-
-  recent.forEach(
-    feature => {
-
-      const id =
-        String(
-          getIncidentId(feature)
-        );
-
-      currentIds.add(id);
-
-      const priority =
-        getPriority(feature);
-
-
-      if (
-        !firstLoad &&
-        !previousIncidentIds.has(id) &&
-        priority.level === 1
-      ) {
-
-        playAlertSound();
-      }
-    }
-  );
-
-
-  previousIncidentIds =
-    currentIds;
-
-  firstLoad =
-    false;
-}
-
-
-/* =========================================================
-   LOAD OKC FEED
+   LOAD FEED
    ========================================================= */
 
 async function loadIncidents() {
 
   setStatus(
-    "loading"
+    "CHECKING"
   );
-
 
   const params =
     new URLSearchParams({
@@ -1817,107 +2667,213 @@ async function loadIncidents() {
       orderByFields: "ObjectID DESC"
     });
 
-
-  const requestURL =
-    FEED_URL +
-    "?" +
-    params.toString();
-
-
   try {
 
     const response =
       await fetch(
-        requestURL,
+        FEED_URL +
+        "?" +
+        params.toString(),
         {
           cache: "no-store"
         }
       );
 
-
     if (!response.ok) {
 
       throw new Error(
-        "OKC server returned HTTP " +
+        "HTTP " +
         response.status
       );
     }
 
-
     const data =
       await response.json();
 
-
-    if (data.error) {
+    if (
+      data.error
+    ) {
 
       throw new Error(
         data.error.message ||
-        "ArcGIS returned an error."
+        "ArcGIS feed error."
       );
     }
 
-
     if (
-      !data.features ||
       !Array.isArray(
         data.features
       )
     ) {
 
       throw new Error(
-        "The OKC feed did not return incident records."
+        "No incident records returned."
       );
     }
 
+    allIncidents =
+      filterRecentIncidents(
+        data.features
+      );
 
-    hideError();
-
-
-    checkForAlerts(
-      data.features
+    checkForNewP1(
+      allIncidents
     );
 
-
-    renderIncidents(
-      data.features
-    );
-
+    renderEverything();
 
     setStatus(
-      "live"
+      "LIVE"
     );
 
+    document.getElementById(
+      "lastChecked"
+    ).textContent =
+      "Last checked: " +
+      new Date()
+        .toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit"
+          }
+        );
 
   } catch (error) {
 
-    console.error(
-      "Feed error:",
-      error
-    );
-
+    console.error(error);
 
     setStatus(
-      "error"
+      "ERROR"
     );
-
-
-    showError(
-      error.message
-    );
-
 
     document.getElementById(
-      "incidentList"
-    ).innerHTML =
-      '<div class="loading">' +
-      "Unable to load OKC incidents." +
-      "</div>";
+      "lastChecked"
+    ).textContent =
+      "Unable to refresh feed.";
   }
 }
 
 
 /* =========================================================
-   BUTTON
+   FILTER BUTTONS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".filter-btn"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(
+              ".filter-btn"
+            )
+            .forEach(
+              btn =>
+                btn.classList
+                  .remove("active")
+            );
+
+          button.classList
+            .add("active");
+
+          currentFilter =
+            button.dataset.filter;
+
+          renderLiveFeed();
+        }
+      );
+    }
+  );
+
+
+/* =========================================================
+   SORT
+   ========================================================= */
+
+document
+  .getElementById(
+    "sortSelect"
+  )
+  .addEventListener(
+    "change",
+    event => {
+
+      currentSort =
+        event.target.value;
+
+      renderLiveFeed();
+    }
+  );
+
+
+/* =========================================================
+   BOTTOM NAV
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".nav-btn"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const tab =
+            button.dataset.tab;
+
+          document
+            .querySelectorAll(
+              ".nav-btn"
+            )
+            .forEach(
+              btn =>
+                btn.classList
+                  .remove("active")
+            );
+
+          button.classList
+            .add("active");
+
+          document
+            .querySelectorAll(
+              ".tab-panel"
+            )
+            .forEach(
+              panel =>
+                panel.classList
+                  .remove("active")
+            );
+
+          document
+            .getElementById(
+              "panel-" + tab
+            )
+            .classList
+              .add("active");
+
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        }
+      );
+    }
+  );
+
+
+/* =========================================================
+   ALERT BUTTON
    ========================================================= */
 
 document
@@ -1935,7 +2891,6 @@ document
    ========================================================= */
 
 loadIncidents();
-
 
 setInterval(
   loadIncidents,
