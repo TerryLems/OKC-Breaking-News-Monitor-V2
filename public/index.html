@@ -1,79 +1,788 @@
-🚨
-BREAKING NEWS MONITOR
-Local public-safety monitoring & newsroom assignment desk
-CITY MODE
-          AUTO — Use My Location
-          Oklahoma City — LIVE
-          Dallas — LIVE
-          Los Angeles — source not connected
-          New York City — live source not connected
-          Kansas City — source not connected
-        
-Oklahoma City source ready.
-CONNECTING
-0 incidents
-Waiting for official feed…
-✅ CONFIRMED
-Official city incident feed
-⚠️ UNCONFIRMED
-Radio / app / eyewitness lead
-🚨 ASSIGNMENT DESK — TOP STORY
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070707">
+
+  <title>Breaking News Monitor</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div class="page-shell">
+
+    <header class="header">
+
+      <div class="brand-row">
+
+        <div class="brand-icon">
+          🚨
+        </div>
+
+        <div class="brand-copy">
+
+          <h1 class="title">
+            BREAKING NEWS MONITOR
+          </h1>
+
+          <div class="subtitle">
+            Local public-safety monitoring & newsroom assignment desk
+          </div>
+
+        </div>
+
+      </div>
 
 
+      <div class="city-row">
+
+        <label for="citySelect">
+          CITY MODE
+        </label>
+
+        <select
+          id="citySelect"
+          class="city-select"
+        >
+
+          <option value="AUTO">
+            AUTO — Use My Location
+          </option>
+
+          <option value="OKC">
+            Oklahoma City — LIVE
+          </option>
+
+          <option value="DAL">
+            Dallas — LIVE
+          </option>
+
+          <option value="LAX" disabled>
+            Los Angeles — source not connected
+          </option>
+
+          <option value="NYC" disabled>
+            New York City — live source not connected
+          </option>
+
+          <option value="KC" disabled>
+            Kansas City — source not connected
+          </option>
+
+        </select>
+
+      </div>
 
 
-P10
-P20
-P30
-P40
-ALL P1 🔥 FIRE 🚗 TRAFFIC
-Feed order
-          Assignment priority
-          Newest first
-          Closest first
-        
-Loading incidents…
-📍 Nearby Confirmed Incidents
-Uses your phone location only in this browser. Distance works when the selected city source supplies coordinates.
-Location is off. Tap “Use My Location” to calculate nearby incidents.
-📍 USE MY LOCATION STOP
-Radius
-              Within 1 mile
-              Within 3 miles
-              Within 5 miles
-              Within 10 miles
-              Within 25 miles
-              All distances
-            
-Sort
-              Closest first
-              Priority first
-              Newest first
-            
-Enable location to calculate distance.
-Location has not been enabled yet.
-⚠️ Radio / App Lead
-Use this for CrimeRadar, Broadcastify, scanner traffic, eyewitness tips or other early information. It remains unconfirmed until an official source corroborates it.
-What are you hearing? General area Source
-          CrimeRadar
-          Broadcastify
-          Fire Radio
-          Eyewitness tip
-          Other source
-         Notes ⚠️ ADD UNCONFIRMED LEAD
+      <div
+        id="cityModeNote"
+        class="city-mode-note"
+      >
+        Oklahoma City source ready.
+      </div>
 
-🗺️ Confirmed Scene Areas
-Locations below come from the selected official city feed.
 
-🔴 RADIO
-OKC Fire Radio
-Fire and dispatch radio traffic. This is not 911 caller audio. Treat radio information as unconfirmed until corroborated.
-▶ LISTEN LIVE
-🔔 Assignment Alerts
-Enable sound for newly appearing P1 incidents while this dashboard is open.
-🔊 ENABLE ALERTS 🧪 TEST P1 ALERT
-Alerts are currently off.
-🧾 Unknown Call Types
-These are call descriptions the classifier has seen but does not recognize as P1/P2/P3 yet.
-None yet.
-🏠LIVE 📍NEARBY ⚠️LEADS 🗺️MAP 🎧RADIO 🔔ALERTS
+      <div class="header-status">
+
+        <div class="live-group">
+
+          <span
+            id="statusDot"
+            class="live-dot"
+          ></span>
+
+          <span id="statusText">
+            CONNECTING
+          </span>
+
+        </div>
+
+
+        <div
+          id="incidentCount"
+          class="incident-count"
+        >
+          0 incidents
+        </div>
+
+      </div>
+
+
+      <div
+        id="lastChecked"
+        class="last-checked"
+      >
+        Waiting for official feed…
+      </div>
+
+    </header>
+
+
+    <section class="source-legend">
+
+      <div class="source-key source-confirmed">
+
+        ✅ CONFIRMED
+
+        <br>
+
+        <span id="confirmedSourceLabel">
+          Official city incident feed
+        </span>
+
+      </div>
+
+
+      <div class="source-key source-unconfirmed">
+
+        ⚠️ UNCONFIRMED
+
+        <br>
+
+        Radio / app / eyewitness lead
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="breakingWrap"
+      class="breaking-wrap"
+    >
+
+      <div class="breaking-card">
+
+        <div class="breaking-label">
+          🚨 ASSIGNMENT DESK — TOP STORY
+        </div>
+
+        <div id="breakingAssignment"></div>
+
+        <div
+          id="breakingTitle"
+          class="breaking-title"
+        ></div>
+
+        <div
+          id="breakingMeta"
+          class="breaking-meta"
+        ></div>
+
+        <div
+          id="breakingActions"
+          class="breaking-actions"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <section class="priority-summary">
+
+      <div class="summary-box">
+
+        <span class="summary-label p1-color">
+          P1
+        </span>
+
+        <strong
+          id="countP1"
+          class="summary-count p1-color"
+        >
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="summary-box">
+
+        <span class="summary-label p2-color">
+          P2
+        </span>
+
+        <strong
+          id="countP2"
+          class="summary-count p2-color"
+        >
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="summary-box">
+
+        <span class="summary-label p3-color">
+          P3
+        </span>
+
+        <strong
+          id="countP3"
+          class="summary-count p3-color"
+        >
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="summary-box">
+
+        <span class="summary-label p4-color">
+          P4
+        </span>
+
+        <strong
+          id="countP4"
+          class="summary-count p4-color"
+        >
+          0
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="panel-live"
+      class="tab-panel active"
+    >
+
+      <div class="toolbar">
+
+        <button
+          class="filter-btn active"
+          data-filter="ALL"
+          type="button"
+        >
+          ALL
+        </button>
+
+        <button
+          class="filter-btn"
+          data-filter="P1"
+          type="button"
+        >
+          P1
+        </button>
+
+        <button
+          class="filter-btn"
+          data-filter="FIRE"
+          type="button"
+        >
+          🔥 FIRE
+        </button>
+
+        <button
+          class="filter-btn"
+          data-filter="TRAFFIC"
+          type="button"
+        >
+          🚗 TRAFFIC
+        </button>
+
+      </div>
+
+
+      <div class="sort-row">
+
+        <span class="sort-label">
+          Feed order
+        </span>
+
+        <select
+          id="sortSelect"
+          class="sort-select"
+        >
+
+          <option value="PRIORITY">
+            Assignment priority
+          </option>
+
+          <option value="NEWEST">
+            Newest first
+          </option>
+
+          <option value="DISTANCE">
+            Closest first
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <main
+        id="incidentList"
+        class="content"
+      >
+
+        <div class="empty-state">
+          Loading incidents…
+        </div>
+
+      </main>
+
+    </section>
+
+
+    <section
+      id="panel-nearby"
+      class="tab-panel"
+    >
+
+      <div class="nearby-control-card">
+
+        <h2 class="nearby-heading">
+          📍 Nearby Confirmed Incidents
+        </h2>
+
+        <div class="nearby-copy">
+          Uses your phone location only in this browser. Distance works when the selected city source supplies coordinates.
+        </div>
+
+
+        <div
+          id="locationStatus"
+          class="location-status"
+        >
+          Location is off. Tap “Use My Location” to calculate nearby incidents.
+        </div>
+
+
+        <div class="location-buttons">
+
+          <button
+            id="useLocationButton"
+            class="location-btn"
+            type="button"
+          >
+            📍 USE MY LOCATION
+          </button>
+
+          <button
+            id="stopLocationButton"
+            class="location-btn stop-location-btn"
+            type="button"
+            disabled
+          >
+            STOP
+          </button>
+
+        </div>
+
+
+        <div class="nearby-options">
+
+          <div>
+
+            <label class="nearby-label">
+              Radius
+            </label>
+
+            <select
+              id="nearbyRadius"
+              class="nearby-select"
+            >
+
+              <option value="1">
+                Within 1 mile
+              </option>
+
+              <option value="3">
+                Within 3 miles
+              </option>
+
+              <option value="5" selected>
+                Within 5 miles
+              </option>
+
+              <option value="10">
+                Within 10 miles
+              </option>
+
+              <option value="25">
+                Within 25 miles
+              </option>
+
+              <option value="999">
+                All distances
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label class="nearby-label">
+              Sort
+            </label>
+
+            <select
+              id="nearbySort"
+              class="nearby-select"
+            >
+
+              <option value="DISTANCE">
+                Closest first
+              </option>
+
+              <option value="PRIORITY">
+                Priority first
+              </option>
+
+              <option value="NEWEST">
+                Newest first
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="nearbySummary"
+        class="nearby-summary"
+      >
+        Enable location to calculate distance.
+      </div>
+
+
+      <div
+        id="nearbyList"
+        class="content"
+      >
+
+        <div class="empty-state">
+          Location has not been enabled yet.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="panel-leads"
+      class="tab-panel"
+    >
+
+      <div class="lead-form-card">
+
+        <h2 class="lead-heading">
+          ⚠️ Radio / App Lead
+        </h2>
+
+        <div class="lead-explain">
+          Use this for CrimeRadar, Broadcastify, scanner traffic, eyewitness tips or other early information. It remains unconfirmed until an official source corroborates it.
+        </div>
+
+
+        <label class="form-label">
+          What are you hearing?
+        </label>
+
+        <input
+          id="leadType"
+          class="form-input"
+          type="text"
+          placeholder="Example: Possible structure fire"
+        >
+
+
+        <label class="form-label">
+          General area
+        </label>
+
+        <input
+          id="leadArea"
+          class="form-input"
+          type="text"
+          placeholder="Example: Midwest City / NE 23rd area"
+        >
+
+
+        <label class="form-label">
+          Source
+        </label>
+
+        <select
+          id="leadSource"
+          class="form-select"
+        >
+
+          <option value="CrimeRadar">
+            CrimeRadar
+          </option>
+
+          <option value="Broadcastify">
+            Broadcastify
+          </option>
+
+          <option value="Fire Radio">
+            Fire Radio
+          </option>
+
+          <option value="Eyewitness tip">
+            Eyewitness tip
+          </option>
+
+          <option value="Other source">
+            Other source
+          </option>
+
+        </select>
+
+
+        <label class="form-label">
+          Notes
+        </label>
+
+        <textarea
+          id="leadNotes"
+          class="form-textarea"
+          placeholder="What did you hear? Avoid guessing an address."
+        ></textarea>
+
+
+        <button
+          id="addLeadButton"
+          class="add-lead-btn"
+          type="button"
+        >
+          ⚠️ ADD UNCONFIRMED LEAD
+        </button>
+
+      </div>
+
+
+      <div
+        id="leadList"
+        class="lead-list"
+      ></div>
+
+    </section>
+
+
+    <section
+      id="panel-map"
+      class="tab-panel"
+    >
+
+      <div class="content">
+
+        <div class="section-title">
+          🗺️ Confirmed Scene Areas
+        </div>
+
+        <div
+          id="mapPanelNote"
+          class="section-note"
+        >
+          Locations below come from the selected official city feed.
+        </div>
+
+        <div id="mapIncidentList"></div>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="panel-radio"
+      class="tab-panel"
+    >
+
+      <div
+        id="radioCard"
+        class="radio-card"
+      >
+
+        <div class="radio-live">
+          🔴 RADIO
+        </div>
+
+        <div
+          id="radioTitle"
+          class="radio-title"
+        >
+          OKC Fire Radio
+        </div>
+
+        <div
+          id="radioCopy"
+          class="radio-copy"
+        >
+          Fire and dispatch radio traffic. This is not 911 caller audio. Treat radio information as unconfirmed until corroborated.
+        </div>
+
+        <a
+          id="radioButton"
+          class="radio-button"
+          href="https://www.broadcastify.com/listen/feed/27252"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ▶ LISTEN LIVE
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="panel-alerts"
+      class="tab-panel"
+    >
+
+      <div class="alert-card">
+
+        <h3>
+          🔔 Assignment Alerts
+        </h3>
+
+        <p>
+          Enable sound for newly appearing P1 incidents while this dashboard is open.
+        </p>
+
+        <button
+          id="enableAlertsButton"
+          class="alert-button"
+          type="button"
+        >
+          🔊 ENABLE ALERTS
+        </button>
+
+        <button
+          id="testAlertButton"
+          class="test-alert-button"
+          type="button"
+        >
+          🧪 TEST P1 ALERT
+        </button>
+
+        <p id="alertsStatus">
+          Alerts are currently off.
+        </p>
+
+      </div>
+
+
+      <div class="alert-card">
+
+        <h3>
+          🧾 Unknown Call Types
+        </h3>
+
+        <p>
+          These are call descriptions the classifier has seen but does not recognize as P1/P2/P3 yet.
+        </p>
+
+        <div
+          id="unknownTypesList"
+          class="unknown-list"
+        >
+          None yet.
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <nav class="bottom-nav">
+
+    <button
+      class="nav-btn active"
+      data-tab="live"
+      type="button"
+    >
+      <span class="nav-icon">
+        🏠
+      </span>
+      LIVE
+    </button>
+
+    <button
+      class="nav-btn"
+      data-tab="nearby"
+      type="button"
+    >
+      <span class="nav-icon">
+        📍
+      </span>
+      NEARBY
+    </button>
+
+    <button
+      class="nav-btn"
+      data-tab="leads"
+      type="button"
+    >
+      <span class="nav-icon">
+        ⚠️
+      </span>
+      LEADS
+    </button>
+
+    <button
+      class="nav-btn"
+      data-tab="map"
+      type="button"
+    >
+      <span class="nav-icon">
+        🗺️
+      </span>
+      MAP
+    </button>
+
+    <button
+      class="nav-btn"
+      data-tab="radio"
+      type="button"
+    >
+      <span class="nav-icon">
+        🎧
+      </span>
+      RADIO
+    </button>
+
+    <button
+      class="nav-btn"
+      data-tab="alerts"
+      type="button"
+    >
+      <span class="nav-icon">
+        🔔
+      </span>
+      ALERTS
+    </button>
+
+  </nav>
+
+
+  <script
+    src="app.js"
+    defer
+  ></script>
+
+</body>
+</html>
