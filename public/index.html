@@ -13,24 +13,26 @@
 <title>OKC Breaking News Monitor</title>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
 
 :root {
   --bg: #070707;
-  --panel: #111111;
-  --panel2: #171717;
-  --border: #2d2d2d;
+  --panel: #121212;
+  --panel2: #181818;
+  --border: #303030;
 
   --text: #ffffff;
-  --muted: #909090;
+  --muted: #969696;
 
-  --red: #ff4b43;
-  --orange: #ff971f;
-  --yellow: #ffd94a;
-  --green: #38c967;
-  --blue: #2f80ed;
+  --red: #ff443c;
+  --orange: #ff961f;
+  --yellow: #ffd84a;
+  --green: #39c96a;
+  --blue: #2e7de1;
+  --gray: #858585;
 }
 
 html {
@@ -62,11 +64,6 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-
-/* =========================================================
-   SHELL
-   ========================================================= */
-
 .page-shell {
   width: 100%;
 }
@@ -77,13 +74,13 @@ a {
    ========================================================= */
 
 .header {
-  padding: 24px 18px 20px;
+  padding: 23px 18px 20px;
 
   background:
     radial-gradient(
       circle at top right,
-      rgba(255, 70, 60, 0.12),
-      transparent 40%
+      rgba(255, 70, 60, 0.13),
+      transparent 42%
     ),
     #101010;
 
@@ -116,10 +113,9 @@ a {
 .subtitle {
   margin-top: 11px;
 
-  color: #b3b3b3;
+  color: #b2b2b2;
 
   font-size: 14px;
-
   line-height: 1.4;
 }
 
@@ -139,8 +135,9 @@ a {
   align-items: center;
   gap: 8px;
 
-  color: #9bff90;
+  color: #9cff91;
 
+  font-size: 16px;
   font-weight: 900;
 }
 
@@ -154,7 +151,7 @@ a {
 
   box-shadow:
     0 0 8px
-    rgba(56, 201, 103, 0.75);
+    rgba(57, 201, 106, 0.75);
 }
 
 .incident-count {
@@ -167,7 +164,7 @@ a {
 .last-checked {
   margin-top: 7px;
 
-  color: #6e6e6e;
+  color: #707070;
 
   font-size: 12px;
 }
@@ -198,33 +195,35 @@ a {
 
   border-radius: 9px;
 
-  font-size: 11px;
+  font-size: 10px;
 
   font-weight: 900;
 
-  line-height: 1.3;
+  line-height: 1.35;
 
   border:
-    1px solid #313131;
+    1px solid #333333;
 }
 
 .source-confirmed {
-  background: #102316;
-  color: #72dc8c;
+  background: #102417;
 
-  border-color: #245d34;
+  color: #74df91;
+
+  border-color: #28633a;
 }
 
 .source-unconfirmed {
-  background: #29220b;
-  color: #f7d64a;
+  background: #2b240b;
 
-  border-color: #66571b;
+  color: #f7d94b;
+
+  border-color: #6c5c1d;
 }
 
 
 /* =========================================================
-   BREAKING
+   BREAKING STORY
    ========================================================= */
 
 .breaking-wrap {
@@ -241,8 +240,8 @@ a {
   background:
     linear-gradient(
       135deg,
-      #3a0e0e,
-      #180b0b
+      #3c0e0e,
+      #190b0b
     );
 
   border:
@@ -253,39 +252,19 @@ a {
 }
 
 .breaking-label {
-  color: #ff6c64;
+  color: #ff6e66;
 
   font-size: 11px;
+
   font-weight: 900;
 
   letter-spacing: 0.4px;
 }
 
-.confirmed-line {
-  display: inline-block;
-
+.breaking-title {
   margin-top: 8px;
 
-  padding: 6px 8px;
-
-  border-radius: 6px;
-
-  background: #14331d;
-
-  color: #7ce596;
-
-  border:
-    1px solid #28673b;
-
-  font-size: 10px;
-
-  font-weight: 900;
-}
-
-.breaking-title {
-  margin-top: 9px;
-
-  color: #ffffff;
+  color: white;
 
   font-size: 21px;
 
@@ -305,13 +284,74 @@ a {
 }
 
 .breaking-actions {
-  margin-top: 12px;
-
   display: flex;
 
   flex-wrap: wrap;
 
   gap: 7px;
+
+  margin-top: 12px;
+}
+
+
+/* =========================================================
+   ASSIGNMENT DESK BADGES
+   ========================================================= */
+
+.assignment-badge {
+  display: inline-block;
+
+  margin-top: 9px;
+
+  padding:
+    7px 9px;
+
+  border-radius: 7px;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.2px;
+
+  line-height: 1.25;
+}
+
+.assignment-strong {
+  background: #12341e;
+
+  color: #7be99a;
+
+  border:
+    1px solid #2c7544;
+}
+
+.assignment-verify {
+  background: #3a300b;
+
+  color: #ffe15b;
+
+  border:
+    1px solid #77661d;
+}
+
+.assignment-monitor {
+  background: #272727;
+
+  color: #c3c3c3;
+
+  border:
+    1px solid #494949;
+}
+
+.assignment-note {
+  margin-top: 7px;
+
+  color: #909090;
+
+  font-size: 11px;
+
+  line-height: 1.4;
 }
 
 
@@ -327,11 +367,13 @@ a {
 
   gap: 6px;
 
-  padding: 10px 12px 4px;
+  padding:
+    10px 12px 4px;
 }
 
 .summary-box {
-  padding: 9px 3px;
+  padding:
+    9px 3px;
 
   text-align: center;
 
@@ -362,24 +404,24 @@ a {
 }
 
 .p1-color {
-  color: #ff6767;
+  color: #ff6565;
 }
 
 .p2-color {
-  color: #ffa548;
+  color: #ffa646;
 }
 
 .p3-color {
-  color: #ffe15d;
+  color: #ffe15c;
 }
 
 .p4-color {
-  color: #bcbcbc;
+  color: #bdbdbd;
 }
 
 
 /* =========================================================
-   FILTERS
+   FILTER / SORT
    ========================================================= */
 
 .toolbar {
@@ -400,6 +442,9 @@ a {
 .filter-btn {
   flex-shrink: 0;
 
+  padding:
+    9px 13px;
+
   border:
     1px solid #333333;
 
@@ -408,9 +453,6 @@ a {
   background: #151515;
 
   color: #bdbdbd;
-
-  padding:
-    9px 13px;
 
   font-size: 12px;
 
@@ -422,9 +464,9 @@ a {
 .filter-btn.active {
   background: #ed554b;
 
-  border-color: #ed554b;
+  color: white;
 
-  color: #ffffff;
+  border-color: #ed554b;
 }
 
 .sort-row {
@@ -440,14 +482,14 @@ a {
   padding:
     10px 13px;
 
-  background: #0c0c0c;
+  background: #0b0b0b;
 
   border-bottom:
     1px solid #222222;
 }
 
 .sort-label {
-  color: #747474;
+  color: #777777;
 
   font-size: 12px;
 }
@@ -462,7 +504,7 @@ a {
 
   background: #171717;
 
-  color: #ffffff;
+  color: white;
 
   border:
     1px solid #343434;
@@ -472,7 +514,7 @@ a {
 
 
 /* =========================================================
-   TABS
+   PANELS
    ========================================================= */
 
 .tab-panel {
@@ -489,7 +531,7 @@ a {
 
 
 /* =========================================================
-   INCIDENT CARD
+   INCIDENT CARDS
    ========================================================= */
 
 .incident-card {
@@ -532,9 +574,9 @@ a {
 .incident-topline {
   display: flex;
 
-  align-items: center;
-
   flex-wrap: wrap;
+
+  align-items: center;
 
   gap: 6px;
 
@@ -556,27 +598,32 @@ a {
 
 .badge-new {
   background: #ff5b52;
+
   color: white;
 }
 
 .badge-p1 {
   background: #ff3030;
+
   color: white;
 }
 
 .badge-p2 {
   background: #ff941d;
+
   color: #111;
 }
 
 .badge-p3 {
   background: #ffd944;
+
   color: #111;
 }
 
 .badge-p4 {
-  background: #363636;
-  color: #c7c7c7;
+  background: #353535;
+
+  color: #c8c8c8;
 }
 
 .confirmed-badge {
@@ -590,9 +637,9 @@ a {
   background: #12321c;
 
   border:
-    1px solid #27673a;
+    1px solid #28663b;
 
-  color: #77df90;
+  color: #78e092;
 
   font-size: 9px;
 
@@ -600,7 +647,7 @@ a {
 }
 
 .category-label {
-  color: #8f8f8f;
+  color: #919191;
 
   font-size: 10px;
 
@@ -608,7 +655,7 @@ a {
 }
 
 .incident-title {
-  color: #ffffff;
+  color: white;
 
   font-size: 19px;
 
@@ -620,9 +667,11 @@ a {
 .incident-meta {
   margin-top: 6px;
 
-  color: #9d9d9d;
+  color: #a0a0a0;
 
   font-size: 13px;
+
+  line-height: 1.35;
 }
 
 .incident-location {
@@ -653,7 +702,7 @@ a {
 
   background: #1b1b1b;
 
-  color: #ffffff;
+  color: white;
 
   border:
     1px solid #333333;
@@ -674,9 +723,9 @@ a {
 }
 
 .action-btn.red {
-  background: #b8332c;
+  background: #b8322b;
 
-  border-color: #b8332c;
+  border-color: #b8322b;
 }
 
 .details-panel {
@@ -700,7 +749,7 @@ a {
 }
 
 .detail-label {
-  color: #696969;
+  color: #6f6f6f;
 
   font-size: 9px;
 
@@ -782,7 +831,7 @@ a {
 
   background: #090909;
 
-  color: #ffffff;
+  color: white;
 
   border:
     1px solid #3a3a3a;
@@ -791,7 +840,7 @@ a {
 }
 
 .form-textarea {
-  min-height: 86px;
+  min-height: 85px;
 
   resize: vertical;
 }
@@ -807,19 +856,18 @@ a {
 
   border-radius: 9px;
 
-  background: #e0b52d;
+  background: #dfb62f;
 
-  color: #111111;
+  color: #111;
 
   font-size: 14px;
 
   font-weight: 900;
-
-  cursor: pointer;
 }
 
 .lead-list {
-  padding: 0 12px 12px;
+  padding:
+    0 12px 12px;
 }
 
 .radio-lead-card {
@@ -829,10 +877,10 @@ a {
 
   border-radius: 12px;
 
-  background: #1c190b;
+  background: #1d190b;
 
   border:
-    1px solid #66571c;
+    1px solid #66571d;
 
   border-left:
     6px solid #ffd943;
@@ -846,7 +894,7 @@ a {
 
   border-radius: 6px;
 
-  background: #3c330e;
+  background: #3d330e;
 
   border:
     1px solid #796a1d;
@@ -869,7 +917,7 @@ a {
 .lead-meta {
   margin-top: 7px;
 
-  color: #c5b75f;
+  color: #c7b85e;
 
   font-size: 13px;
 
@@ -912,7 +960,7 @@ a {
 .safe-copy {
   margin-top: 4px;
 
-  color: #ffffff;
+  color: white;
 
   font-size: 13px;
 
@@ -921,7 +969,7 @@ a {
 
 
 /* =========================================================
-   RADIO PAGE
+   RADIO TAB
    ========================================================= */
 
 .radio-card {
@@ -937,7 +985,7 @@ a {
     1px solid #343434;
 
   border-left:
-    6px solid #dc3d34;
+    6px solid #dc3c34;
 }
 
 .radio-live {
@@ -959,7 +1007,7 @@ a {
 .radio-copy {
   margin-top: 7px;
 
-  color: #999999;
+  color: #999;
 
   font-size: 13px;
 
@@ -976,7 +1024,7 @@ a {
 
   border-radius: 8px;
 
-  background: #d13b33;
+  background: #d23b33;
 
   color: white;
 
@@ -1036,7 +1084,7 @@ a {
   background: #121212;
 
   border:
-    1px solid #333333;
+    1px solid #333;
 }
 
 .alert-card h3 {
@@ -1046,7 +1094,7 @@ a {
 }
 
 .alert-card p {
-  color: #999999;
+  color: #999;
 
   font-size: 13px;
 
@@ -1108,10 +1156,7 @@ a {
   padding:
     6px
     5px
-    calc(
-      6px +
-      env(safe-area-inset-bottom)
-    );
+    calc(6px + env(safe-area-inset-bottom));
 
   background:
     rgba(12, 12, 12, 0.98);
@@ -1135,8 +1180,6 @@ a {
   font-size: 9px;
 
   font-weight: 900;
-
-  cursor: pointer;
 }
 
 .nav-icon {
@@ -1176,6 +1219,7 @@ a {
   }
 
 }
+
 </style>
 </head>
 
@@ -1205,7 +1249,7 @@ a {
   </div>
 
   <div class="subtitle">
-    Oklahoma City Public Safety Incident Monitor
+    Local public-safety monitoring & newsroom assignment desk
   </div>
 
   <div class="header-status">
@@ -1236,7 +1280,7 @@ a {
     id="lastChecked"
     class="last-checked"
   >
-    Waiting for update…
+    Waiting for official feed…
   </div>
 
 </header>
@@ -1250,12 +1294,12 @@ a {
 
   <div class="source-key source-confirmed">
     ✅ CONFIRMED<br>
-    Official incident feed
+    OKC public incident feed
   </div>
 
   <div class="source-key source-unconfirmed">
     ⚠️ UNCONFIRMED<br>
-    Radio activity / lead
+    Radio / CrimeRadar lead
   </div>
 
 </section>
@@ -1273,12 +1317,12 @@ a {
   <div class="breaking-card">
 
     <div class="breaking-label">
-      🚨 BREAKING STORY CANDIDATE
+      🚨 ASSIGNMENT DESK — TOP STORY
     </div>
 
-    <div class="confirmed-line">
-      ✅ CONFIRMED — OKC PUBLIC SAFETY FEED
-    </div>
+    <div
+      id="breakingAssignment"
+    ></div>
 
     <div
       id="breakingTitle"
@@ -1419,7 +1463,7 @@ a {
     >
 
       <option value="PRIORITY">
-        Priority first
+        Assignment priority
       </option>
 
       <option value="NEWEST">
@@ -1437,7 +1481,7 @@ a {
   >
 
     <div class="empty-state">
-      Loading Oklahoma City incidents…
+      Loading official Oklahoma City incidents…
     </div>
 
   </main>
@@ -1446,7 +1490,7 @@ a {
 
 
 <!-- ======================================================
-     RADIO LEADS PANEL
+     LEADS PANEL
      ====================================================== -->
 
 <section
@@ -1457,14 +1501,14 @@ a {
   <div class="lead-form-card">
 
     <h2 class="lead-heading">
-      ⚠️ Radio Lead
+      ⚠️ Radio / App Lead
     </h2>
 
     <div class="lead-explain">
-      Use this when you hear something on CrimeRadar,
-      Broadcastify or another radio source before an
-      official incident appears.
-      Radio leads remain UNCONFIRMED.
+      Add something you hear on CrimeRadar,
+      Broadcastify or fire radio before it appears
+      on the official incident feed.
+      It stays unconfirmed.
     </div>
 
 
@@ -1493,7 +1537,7 @@ a {
 
 
     <label class="form-label">
-      Heard on
+      Source
     </label>
 
     <select
@@ -1527,7 +1571,7 @@ a {
     <textarea
       id="leadNotes"
       class="form-textarea"
-      placeholder="What did you hear? Do not guess an address."
+      placeholder="What did you hear? Avoid guessing an address."
     ></textarea>
 
 
@@ -1566,7 +1610,7 @@ a {
       font-weight:900;
       margin-bottom:5px;
     ">
-      🗺️ Scene Areas
+      🗺️ Confirmed Scene Areas
     </div>
 
     <div style="
@@ -1575,7 +1619,7 @@ a {
       margin-bottom:14px;
       line-height:1.4;
     ">
-      Addresses below come from the official
+      Locations below come from the official
       Oklahoma City incident feed.
     </div>
 
@@ -1606,10 +1650,10 @@ a {
     </div>
 
     <div class="radio-copy">
-      This is fire/dispatch radio traffic,
-      not 911 caller audio.
-      Information heard over radio should be
-      treated as unconfirmed until verified.
+      Fire and dispatch radio traffic.
+      This is not 911 caller audio.
+      Treat information heard here as unconfirmed
+      until corroborated.
     </div>
 
     <a
@@ -1627,7 +1671,7 @@ a {
 
 
 <!-- ======================================================
-     ALERT PANEL
+     ALERTS PANEL
      ====================================================== -->
 
 <section
@@ -1638,13 +1682,13 @@ a {
   <div class="alert-card">
 
     <h3>
-      🔔 Critical Alerts
+      🔔 Assignment Alerts
     </h3>
 
     <p>
-      Sound an alert when a new P1 incident
-      appears in the official feed while this
-      dashboard is open.
+      Enable sound for newly appearing P1
+      incidents from the official feed while
+      this page is open.
     </p>
 
     <button
@@ -1667,7 +1711,7 @@ a {
 
 
 <!-- ======================================================
-     NAVIGATION
+     BOTTOM NAV
      ====================================================== -->
 
 <nav class="bottom-nav">
@@ -1733,7 +1777,7 @@ a {
 <script>
 
 /* =========================================================
-   CONFIGURATION
+   CONFIG
    ========================================================= */
 
 const FEED_URL =
@@ -1772,7 +1816,7 @@ let radioLeads =
 
 
 /* =========================================================
-   VALUES
+   FIELD HELPERS
    ========================================================= */
 
 function getValue(
@@ -1787,7 +1831,6 @@ function getValue(
       attributes[name] !== null &&
       attributes[name] !== ""
     ) {
-
       return attributes[name];
     }
   }
@@ -1875,7 +1918,7 @@ function getIncidentLocation(
 
 
 /* =========================================================
-   DATE PARSER
+   TIME PARSER
    ========================================================= */
 
 function getIncidentTimestamp(
@@ -1977,10 +2020,9 @@ function formatIncidentDate(
     return "Date/time unavailable";
   }
 
-  const date =
-    new Date(timestamp);
-
-  return date.toLocaleString(
+  return new Date(
+    timestamp
+  ).toLocaleString(
     "en-US",
     {
       weekday: "short",
@@ -1994,23 +2036,39 @@ function formatIncidentDate(
 }
 
 
+function getAgeMinutes(
+  timestamp
+) {
+
+  if (!timestamp) {
+    return 999999;
+  }
+
+  return Math.floor(
+    (
+      Date.now() -
+      timestamp
+    ) / 60000
+  );
+}
+
+
 function getAgeText(
   timestamp
 ) {
 
-  const difference =
-    Date.now() - timestamp;
-
-  if (
-    difference < 60000
-  ) {
-    return "just now";
+  if (!timestamp) {
+    return "time unavailable";
   }
 
   const minutes =
-    Math.floor(
-      difference / 60000
-    );
+    getAgeMinutes(timestamp);
+
+  if (
+    minutes <= 0
+  ) {
+    return "just now";
+  }
 
   if (
     minutes < 60
@@ -2067,7 +2125,7 @@ function escapeHTML(
 
 
 /* =========================================================
-   CATEGORY
+   CATEGORY ENGINE
    ========================================================= */
 
 function getCategory(
@@ -2106,6 +2164,18 @@ function getCategory(
     };
   }
 
+  if (
+    text.includes("rescue") ||
+    text.includes("medical") ||
+    text.includes("ems")
+  ) {
+
+    return {
+      code: "EMS",
+      label: "🚑 EMS"
+    };
+  }
+
   return {
     code: "PUBLIC",
     label: "🚨 Public Safety"
@@ -2114,7 +2184,7 @@ function getCategory(
 
 
 /* =========================================================
-   PRIORITY
+   PRIORITY ENGINE
    ========================================================= */
 
 function getPriority(
@@ -2129,6 +2199,7 @@ function getPriority(
     )
     .toLowerCase();
 
+
   if (
     text.includes("non-injury") ||
     text.includes("non injury")
@@ -2140,6 +2211,7 @@ function getPriority(
       label: "ROUTINE"
     };
   }
+
 
   const p1Words = [
     "active shooter",
@@ -2166,6 +2238,7 @@ function getPriority(
     "building fire"
   ];
 
+
   const p2Words = [
     "injury accident",
     "accident with injury",
@@ -2180,6 +2253,7 @@ function getPriority(
     "traffic/trans. acc. fr"
   ];
 
+
   const p3Words = [
     "alarm fire",
     "fire alarm",
@@ -2192,6 +2266,7 @@ function getPriority(
     "traffic hazard",
     "reckless driver"
   ];
+
 
   if (
     p1Words.some(
@@ -2207,6 +2282,7 @@ function getPriority(
     };
   }
 
+
   if (
     p2Words.some(
       word =>
@@ -2220,6 +2296,7 @@ function getPriority(
       label: "HIGH"
     };
   }
+
 
   if (
     p3Words.some(
@@ -2235,10 +2312,92 @@ function getPriority(
     };
   }
 
+
   return {
     level: 4,
     code: "P4",
     label: "ROUTINE"
+  };
+}
+
+
+/* =========================================================
+   ASSIGNMENT DESK ENGINE
+   ========================================================= */
+
+function getAssignmentStatus(
+  feature
+) {
+
+  const priority =
+    getPriority(feature);
+
+  const location =
+    getIncidentLocation(feature);
+
+  const timestamp =
+    getIncidentTimestamp(feature);
+
+  const ageMinutes =
+    getAgeMinutes(timestamp);
+
+
+  /*
+    STRONG LEAD:
+    confirmed location
+    AND very recent serious incident.
+  */
+
+  if (
+    location &&
+    priority.level === 1 &&
+    ageMinutes <= 45
+  ) {
+
+    return {
+      code: "STRONG",
+      label:
+        "🟢 STRONG LEAD FOR COVERAGE",
+
+      className:
+        "assignment-strong",
+
+      note:
+        "Confirmed official incident, recent and location available. Verify scene conditions before reporting additional details."
+    };
+  }
+
+
+  if (
+    location &&
+    priority.level === 2 &&
+    ageMinutes <= 30
+  ) {
+
+    return {
+      code: "STRONG",
+      label:
+        "🟢 STRONG LEAD FOR COVERAGE",
+
+      className:
+        "assignment-strong",
+
+      note:
+        "Recent confirmed higher-priority incident with location available."
+    };
+  }
+
+
+  return {
+    code: "MONITOR",
+    label:
+      "⚪ MONITOR",
+
+    className:
+      "assignment-monitor",
+
+    note:
+      "Confirmed incident, but it does not currently meet this dashboard's stronger coverage threshold."
   };
 }
 
@@ -2266,7 +2425,7 @@ function getMapURL(
 
 
 /* =========================================================
-   FILTER LAST 24 HOURS
+   24 HOUR FILTER
    ========================================================= */
 
 function filterRecentIncidents(
@@ -2287,7 +2446,8 @@ function filterRecentIncidents(
       }
 
       const age =
-        now - timestamp;
+        now -
+        timestamp;
 
       return (
         age >= 0 &&
@@ -2299,7 +2459,7 @@ function filterRecentIncidents(
 
 
 /* =========================================================
-   FILTER UI
+   USER FILTER
    ========================================================= */
 
 function applyUserFilter(
@@ -2309,7 +2469,6 @@ function applyUserFilter(
   if (
     currentFilter === "ALL"
   ) {
-
     return features;
   }
 
@@ -2358,8 +2517,30 @@ function sortIncidents(
     return list;
   }
 
+
   list.sort(
     (a, b) => {
+
+      const assignmentA =
+        getAssignmentStatus(a).code;
+
+      const assignmentB =
+        getAssignmentStatus(b).code;
+
+      if (
+        assignmentA === "STRONG" &&
+        assignmentB !== "STRONG"
+      ) {
+        return -1;
+      }
+
+      if (
+        assignmentB === "STRONG" &&
+        assignmentA !== "STRONG"
+      ) {
+        return 1;
+      }
+
 
       const pa =
         getPriority(a).level;
@@ -2370,9 +2551,9 @@ function sortIncidents(
       if (
         pa !== pb
       ) {
-
         return pa - pb;
       }
+
 
       return (
         getIncidentTimestamp(b) -
@@ -2386,7 +2567,7 @@ function sortIncidents(
 
 
 /* =========================================================
-   SUMMARY
+   PRIORITY COUNTS
    ========================================================= */
 
 function updateSummary(
@@ -2400,6 +2581,7 @@ function updateSummary(
     4: 0
   };
 
+
   features.forEach(
     feature => {
 
@@ -2409,20 +2591,24 @@ function updateSummary(
     }
   );
 
+
   document.getElementById(
     "countP1"
   ).textContent =
     counts[1];
+
 
   document.getElementById(
     "countP2"
   ).textContent =
     counts[2];
 
+
   document.getElementById(
     "countP3"
   ).textContent =
     counts[3];
+
 
   document.getElementById(
     "countP4"
@@ -2432,18 +2618,19 @@ function updateSummary(
 
 
 /* =========================================================
-   BREAKING STORY
+   BREAKING / ASSIGNMENT STORY
    ========================================================= */
 
 function updateBreakingStory(
   features
 ) {
 
-  const p1 =
-    features
+  const candidates =
+    [...features]
       .filter(
         feature =>
-          getPriority(feature).level === 1
+          getAssignmentStatus(feature).code ===
+          "STRONG"
       )
       .sort(
         (a, b) =>
@@ -2451,13 +2638,15 @@ function updateBreakingStory(
           getIncidentTimestamp(a)
       );
 
+
   const wrap =
     document.getElementById(
       "breakingWrap"
     );
 
+
   if (
-    p1.length === 0
+    candidates.length === 0
   ) {
 
     wrap.style.display =
@@ -2466,42 +2655,60 @@ function updateBreakingStory(
     return;
   }
 
+
   const feature =
-    p1[0];
+    candidates[0];
+
+  const assignment =
+    getAssignmentStatus(feature);
 
   const location =
     getIncidentLocation(feature);
+
+
+  document.getElementById(
+    "breakingAssignment"
+  ).innerHTML = `
+    <div class="assignment-badge ${assignment.className}">
+      ${assignment.label}
+    </div>
+  `;
+
 
   document.getElementById(
     "breakingTitle"
   ).textContent =
     getIncidentType(feature);
 
+
   document.getElementById(
     "breakingMeta"
   ).textContent =
     (
-      (location ||
-       "Location unavailable")
-      +
-      " · "
-      +
+      "✅ Confirmed · " +
+      (location || "Location unavailable") +
+      " · " +
       getAgeText(
         getIncidentTimestamp(feature)
       )
     );
 
-  const actionArea =
+
+  const actions =
     document.getElementById(
       "breakingActions"
     );
 
-  actionArea.innerHTML = "";
+  actions.innerHTML =
+    "";
+
 
   if (location) {
 
     const map =
-      document.createElement("a");
+      document.createElement(
+        "a"
+      );
 
     map.href =
       getMapURL(location);
@@ -2518,8 +2725,42 @@ function updateBreakingStory(
     map.textContent =
       "🗺 MAP";
 
-    actionArea.appendChild(map);
+    actions.appendChild(
+      map
+    );
   }
+
+
+  if (
+    getCategory(feature).code ===
+    "FIRE"
+  ) {
+
+    const radio =
+      document.createElement(
+        "a"
+      );
+
+    radio.href =
+      "https://www.broadcastify.com/listen/feed/27252";
+
+    radio.target =
+      "_blank";
+
+    radio.rel =
+      "noopener noreferrer";
+
+    radio.className =
+      "action-btn red";
+
+    radio.textContent =
+      "🎧 FIRE RADIO";
+
+    actions.appendChild(
+      radio
+    );
+  }
+
 
   wrap.style.display =
     "block";
@@ -2527,7 +2768,105 @@ function updateBreakingStory(
 
 
 /* =========================================================
-   OFFICIAL INCIDENT CARD
+   REPORTING NOTES
+   ========================================================= */
+
+function buildReportingNotes(
+  feature
+) {
+
+  const priority =
+    getPriority(feature);
+
+  const assignment =
+    getAssignmentStatus(feature);
+
+  const category =
+    getCategory(feature);
+
+
+  return [
+    "OKC BREAKING NEWS MONITOR",
+    "",
+    "VERIFICATION:",
+    "CONFIRMED — Oklahoma City public-safety incident feed",
+    "",
+    "ASSIGNMENT STATUS:",
+    assignment.label,
+    "",
+    "INCIDENT:",
+    getIncidentType(feature),
+    "",
+    "CATEGORY:",
+    category.label,
+    "",
+    "PRIORITY:",
+    priority.code +
+      " — " +
+      priority.label,
+    "",
+    "LOCATION:",
+    getIncidentLocation(feature) ||
+      "Location unavailable",
+    "",
+    "REPORTED:",
+    formatIncidentDate(
+      getIncidentTimestamp(feature)
+    ),
+    "",
+    "DESCRIPTION:",
+    getIncidentDescription(feature),
+    "",
+    "REPORTING CHECKLIST:",
+    "• Confirm details with official agency updates",
+    "• Do not interfere with emergency operations",
+    "• Use the official feed wording when facts are limited",
+    "• Treat radio traffic as additional unconfirmed information",
+    "",
+    "SOURCE:",
+    "Oklahoma City public-safety incident feed"
+  ].join("\n");
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+async function copyText(
+  text
+) {
+
+  try {
+
+    if (
+      navigator.clipboard &&
+      navigator.clipboard.writeText
+    ) {
+
+      await navigator.clipboard
+        .writeText(text);
+
+      alert(
+        "Copied."
+      );
+
+      return;
+    }
+
+  } catch (error) {
+  }
+
+
+  window.prompt(
+    "Copy this text:",
+    text
+  );
+}
+
+
+/* =========================================================
+   INCIDENT CARD
    ========================================================= */
 
 function createIncidentCard(
@@ -2546,17 +2885,22 @@ function createIncidentCard(
   const category =
     getCategory(feature);
 
+  const assignment =
+    getAssignmentStatus(feature);
+
   const timestamp =
     getIncidentTimestamp(feature);
 
   const location =
     getIncidentLocation(feature);
 
+
   let cardClass =
     "priority-p4";
 
   let badgeClass =
     "badge-p4";
+
 
   if (
     priority.level === 1
@@ -2591,16 +2935,20 @@ function createIncidentCard(
       "badge-p3";
   }
 
+
   const card =
     document.createElement(
       "article"
     );
 
+
   card.className =
     "incident-card " +
     cardClass;
 
+
   card.innerHTML = `
+
     <div class="incident-main">
 
       <div class="incident-topline">
@@ -2627,15 +2975,32 @@ function createIncidentCard(
 
       </div>
 
+
       <div class="incident-title">
         ${escapeHTML(getIncidentType(feature))}
       </div>
 
-      <div class="incident-meta">
-        ${escapeHTML(getAgeText(timestamp))}
-        ·
-        ${escapeHTML(formatIncidentDate(timestamp))}
+
+      <div class="assignment-badge ${assignment.className}">
+        ${assignment.label}
       </div>
+
+
+      <div class="assignment-note">
+        ${escapeHTML(assignment.note)}
+      </div>
+
+
+      <div class="incident-meta">
+
+        ${escapeHTML(getAgeText(timestamp))}
+
+        ·
+
+        ${escapeHTML(formatIncidentDate(timestamp))}
+
+      </div>
+
 
       ${
         location
@@ -2648,6 +3013,7 @@ function createIncidentCard(
           :
           ""
       }
+
 
       <div class="action-row">
 
@@ -2668,6 +3034,7 @@ function createIncidentCard(
             ""
         }
 
+
         ${
           category.code === "FIRE"
             ?
@@ -2685,6 +3052,15 @@ function createIncidentCard(
             ""
         }
 
+
+        <button
+          class="action-btn reporting-btn"
+          type="button"
+        >
+          📋 NOTES
+        </button>
+
+
         <button
           class="action-btn details-btn"
           type="button"
@@ -2695,6 +3071,7 @@ function createIncidentCard(
       </div>
 
     </div>
+
 
     <div class="details-panel">
 
@@ -2711,6 +3088,22 @@ function createIncidentCard(
 
       </div>
 
+
+      <div class="detail-row">
+
+        <div class="detail-label">
+          Assignment status
+        </div>
+
+        <div class="detail-value">
+          ${escapeHTML(assignment.label)}
+          <br>
+          ${escapeHTML(assignment.note)}
+        </div>
+
+      </div>
+
+
       <div class="detail-row">
 
         <div class="detail-label">
@@ -2723,6 +3116,7 @@ function createIncidentCard(
 
       </div>
 
+
       <div class="detail-row">
 
         <div class="detail-label">
@@ -2734,6 +3128,7 @@ function createIncidentCard(
         </div>
 
       </div>
+
 
       <div class="detail-row">
 
@@ -2750,15 +3145,18 @@ function createIncidentCard(
     </div>
   `;
 
+
   const detailButton =
     card.querySelector(
       ".details-btn"
     );
 
+
   const detailPanel =
     card.querySelector(
       ".details-panel"
     );
+
 
   detailButton.addEventListener(
     "click",
@@ -2768,6 +3166,7 @@ function createIncidentCard(
         detailPanel.classList
           .toggle("open");
 
+
       detailButton.textContent =
         open
           ? "HIDE"
@@ -2775,12 +3174,30 @@ function createIncidentCard(
     }
   );
 
+
+  card
+    .querySelector(
+      ".reporting-btn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        copyText(
+          buildReportingNotes(
+            feature
+          )
+        );
+      }
+    );
+
+
   return card;
 }
 
 
 /* =========================================================
-   RENDER OFFICIAL FEED
+   RENDER LIVE
    ========================================================= */
 
 function renderLiveFeed() {
@@ -2790,17 +3207,22 @@ function renderLiveFeed() {
       "incidentList"
     );
 
+
   let visible =
     applyUserFilter(
       allIncidents
     );
+
 
   visible =
     sortIncidents(
       visible
     );
 
-  container.innerHTML = "";
+
+  container.innerHTML =
+    "";
+
 
   if (
     visible.length === 0
@@ -2812,6 +3234,7 @@ function renderLiveFeed() {
     return;
   }
 
+
   const newest =
     [...allIncidents]
       .sort(
@@ -2819,6 +3242,7 @@ function renderLiveFeed() {
           getIncidentTimestamp(b) -
           getIncidentTimestamp(a)
       )[0];
+
 
   const newestId =
     newest
@@ -2828,6 +3252,7 @@ function renderLiveFeed() {
       )
       :
       "";
+
 
   visible.forEach(
     feature => {
@@ -2854,9 +3279,12 @@ function renderMapList() {
       "mapIncidentList"
     );
 
-  container.innerHTML = "";
 
-  const sorted =
+  container.innerHTML =
+    "";
+
+
+  const list =
     [...allIncidents]
       .sort(
         (a, b) =>
@@ -2864,17 +3292,19 @@ function renderMapList() {
           getIncidentTimestamp(a)
       );
 
+
   if (
-    sorted.length === 0
+    list.length === 0
   ) {
 
     container.innerHTML =
-      '<div class="empty-state">No incident locations available.</div>';
+      '<div class="empty-state">No confirmed incident locations available.</div>';
 
     return;
   }
 
-  sorted.forEach(
+
+  list.forEach(
     feature => {
 
       const location =
@@ -2884,26 +3314,47 @@ function renderMapList() {
         return;
       }
 
+
+      const assignment =
+        getAssignmentStatus(feature);
+
+
       const card =
         document.createElement(
           "div"
         );
 
+
       card.className =
         "map-list-card";
 
+
       card.innerHTML = `
+
         <div class="map-list-title">
           ${escapeHTML(getIncidentType(feature))}
         </div>
 
-        <div class="map-list-location">
-          ✅ Confirmed
-          <br>
-          📍 ${escapeHTML(location)}
-          <br>
-          ${escapeHTML(getAgeText(getIncidentTimestamp(feature)))}
+
+        <div class="assignment-badge ${assignment.className}">
+          ${assignment.label}
         </div>
+
+
+        <div class="map-list-location">
+
+          ✅ Confirmed
+
+          <br>
+
+          📍 ${escapeHTML(location)}
+
+          <br>
+
+          ${escapeHTML(getAgeText(getIncidentTimestamp(feature)))}
+
+        </div>
+
 
         <a
           class="action-btn blue"
@@ -2916,14 +3367,17 @@ function renderMapList() {
         </a>
       `;
 
-      container.appendChild(card);
+
+      container.appendChild(
+        card
+      );
     }
   );
 }
 
 
 /* =========================================================
-   RADIO LEADS STORAGE
+   LEADS STORAGE
    ========================================================= */
 
 function loadSavedLeads() {
@@ -2935,12 +3389,15 @@ function loadSavedLeads() {
         "okcRadioLeads"
       );
 
+
     if (!saved) {
       return [];
     }
 
+
     const parsed =
       JSON.parse(saved);
+
 
     if (
       Array.isArray(parsed)
@@ -2950,6 +3407,7 @@ function loadSavedLeads() {
 
   } catch (error) {
   }
+
 
   return [];
 }
@@ -2961,7 +3419,9 @@ function saveLeads() {
 
     localStorage.setItem(
       "okcRadioLeads",
-      JSON.stringify(radioLeads)
+      JSON.stringify(
+        radioLeads
+      )
     );
 
   } catch (error) {
@@ -2970,7 +3430,7 @@ function saveLeads() {
 
 
 /* =========================================================
-   ADD RADIO LEAD
+   ADD LEAD
    ========================================================= */
 
 function addRadioLead() {
@@ -2995,8 +3455,10 @@ function addRadioLead() {
       "leadNotes"
     );
 
+
   const type =
     typeInput.value.trim();
+
 
   if (!type) {
 
@@ -3007,7 +3469,9 @@ function addRadioLead() {
     return;
   }
 
+
   const lead = {
+
     id:
       Date.now().toString(),
 
@@ -3026,34 +3490,45 @@ function addRadioLead() {
       Date.now()
   };
 
-  radioLeads.unshift(lead);
+
+  radioLeads.unshift(
+    lead
+  );
+
 
   saveLeads();
 
-  typeInput.value = "";
-  areaInput.value = "";
-  notesInput.value = "";
+
+  typeInput.value =
+    "";
+
+  areaInput.value =
+    "";
+
+  notesInput.value =
+    "";
+
 
   renderRadioLeads();
 }
 
 
 /* =========================================================
-   DELETE RADIO LEAD
+   REMOVE LEAD
    ========================================================= */
 
 function deleteRadioLead(
   id
 ) {
 
-  const confirmed =
-    window.confirm(
+  if (
+    !window.confirm(
       "Delete this radio lead?"
-    );
-
-  if (!confirmed) {
+    )
+  ) {
     return;
   }
+
 
   radioLeads =
     radioLeads.filter(
@@ -3061,7 +3536,9 @@ function deleteRadioLead(
         lead.id !== id
     );
 
+
   saveLeads();
+
 
   renderRadioLeads();
 }
@@ -3079,7 +3556,10 @@ function getSafeLeadWording(
     "Radio traffic indicates a possible " +
     lead.type;
 
-  if (lead.area) {
+
+  if (
+    lead.area
+  ) {
 
     text +=
       " in the " +
@@ -3087,50 +3567,17 @@ function getSafeLeadWording(
       " area";
   }
 
+
   text +=
     ". I have not independently confirmed the details yet.";
+
 
   return text;
 }
 
 
 /* =========================================================
-   COPY TEXT
-   ========================================================= */
-
-async function copyText(
-  text
-) {
-
-  try {
-
-    if (
-      navigator.clipboard &&
-      navigator.clipboard.writeText
-    ) {
-
-      await navigator.clipboard
-        .writeText(text);
-
-      alert(
-        "Copied."
-      );
-
-      return;
-    }
-
-  } catch (error) {
-  }
-
-  window.prompt(
-    "Copy this:",
-    text
-  );
-}
-
-
-/* =========================================================
-   RADIO LEADS
+   RENDER LEADS
    ========================================================= */
 
 function renderRadioLeads() {
@@ -3140,7 +3587,10 @@ function renderRadioLeads() {
       "leadList"
     );
 
-  container.innerHTML = "";
+
+  container.innerHTML =
+    "";
+
 
   if (
     radioLeads.length === 0
@@ -3148,31 +3598,36 @@ function renderRadioLeads() {
 
     container.innerHTML = `
       <div class="empty-state">
-        No radio leads saved.
+        No unconfirmed leads saved.
         <br><br>
-        When you hear something before it appears
-        on the official feed, add it here.
+        Add a CrimeRadar or radio lead here
+        while waiting for official confirmation.
       </div>
     `;
 
     return;
   }
 
+
   radioLeads.forEach(
     lead => {
+
+
+      const safeText =
+        getSafeLeadWording(
+          lead
+        );
+
 
       const card =
         document.createElement(
           "article"
         );
 
+
       card.className =
         "radio-lead-card";
 
-      const safeText =
-        getSafeLeadWording(
-          lead
-        );
 
       card.innerHTML = `
 
@@ -3180,9 +3635,22 @@ function renderRadioLeads() {
           ⚠️ UNCONFIRMED RADIO ACTIVITY
         </span>
 
+
+        <div class="assignment-badge assignment-verify">
+          🟡 VERIFY BEFORE REPORTING DETAILS
+        </div>
+
+
+        <div class="assignment-note">
+          Treat this as an early lead only.
+          Do not state the location or cause as fact until verified.
+        </div>
+
+
         <div class="lead-title">
           ${escapeHTML(lead.type)}
         </div>
+
 
         <div class="lead-meta">
 
@@ -3197,13 +3665,14 @@ function renderRadioLeads() {
           ${
             lead.area
               ?
-              "<br>Area: " +
+              "<br>General area: " +
               escapeHTML(lead.area)
               :
               ""
           }
 
         </div>
+
 
         ${
           lead.notes
@@ -3217,10 +3686,11 @@ function renderRadioLeads() {
             ""
         }
 
+
         <div class="safe-language">
 
           <div class="safe-title">
-            Safe wording for live/video
+            Safer wording for live/video
           </div>
 
           <div class="safe-copy">
@@ -3229,21 +3699,24 @@ function renderRadioLeads() {
 
         </div>
 
+
         <div class="action-row">
 
           <button
             class="action-btn copy-safe"
             type="button"
           >
-            📋 COPY SAFE WORDING
+            📋 COPY WORDING
           </button>
+
 
           <button
             class="action-btn check-feed"
             type="button"
           >
-            ✅ CHECK OFFICIAL FEED
+            ✅ CHECK FEED
           </button>
+
 
           <button
             class="action-btn delete-lead"
@@ -3253,7 +3726,9 @@ function renderRadioLeads() {
           </button>
 
         </div>
+
       `;
+
 
       card
         .querySelector(
@@ -3261,11 +3736,14 @@ function renderRadioLeads() {
         )
         .addEventListener(
           "click",
-          () =>
+          () => {
+
             copyText(
               safeText
-            )
+            );
+          }
         );
+
 
       card
         .querySelector(
@@ -3273,11 +3751,16 @@ function renderRadioLeads() {
         )
         .addEventListener(
           "click",
-          () =>
+          () => {
+
             switchTab(
               "live"
-            )
+            );
+
+            loadIncidents();
+          }
         );
+
 
       card
         .querySelector(
@@ -3285,11 +3768,14 @@ function renderRadioLeads() {
         )
         .addEventListener(
           "click",
-          () =>
+          () => {
+
             deleteRadioLead(
               lead.id
-            )
+            );
+          }
         );
+
 
       container.appendChild(
         card
@@ -3311,36 +3797,46 @@ function playAlertSound() {
     return;
   }
 
+
   try {
 
     const AudioContextClass =
       window.AudioContext ||
       window.webkitAudioContext;
 
+
     const context =
       new AudioContextClass();
+
 
     const oscillator =
       context.createOscillator();
 
+
     const gain =
       context.createGain();
+
 
     oscillator.connect(
       gain
     );
 
+
     gain.connect(
       context.destination
     );
 
+
     oscillator.frequency.value =
       880;
+
 
     gain.gain.value =
       0.15;
 
+
     oscillator.start();
+
 
     oscillator.stop(
       context.currentTime +
@@ -3357,28 +3853,33 @@ function enableAlerts() {
   alertsEnabled =
     true;
 
+
   const button =
     document.getElementById(
       "enableAlertsButton"
     );
 
+
   button.textContent =
     "🔊 ALERTS ENABLED";
 
+
   button.style.background =
     "#29964f";
+
 
   document.getElementById(
     "alertsStatus"
   ).textContent =
     "Alerts are enabled for new P1 official incidents.";
 
+
   playAlertSound();
 }
 
 
 /* =========================================================
-   NEW P1 CHECK
+   CHECK FOR NEW P1
    ========================================================= */
 
 function checkForNewP1(
@@ -3388,15 +3889,19 @@ function checkForNewP1(
   const ids =
     new Set();
 
+
   features.forEach(
     feature => {
+
 
       const id =
         String(
           getIncidentId(feature)
         );
 
+
       ids.add(id);
+
 
       if (
         !firstLoad &&
@@ -3409,8 +3914,10 @@ function checkForNewP1(
     }
   );
 
+
   previousIncidentIds =
     ids;
+
 
   firstLoad =
     false;
@@ -3418,7 +3925,7 @@ function checkForNewP1(
 
 
 /* =========================================================
-   RENDER
+   RENDER EVERYTHING
    ========================================================= */
 
 function renderEverything() {
@@ -3427,15 +3934,20 @@ function renderEverything() {
     allIncidents
   );
 
+
   updateBreakingStory(
     allIncidents
   );
 
+
   renderLiveFeed();
+
 
   renderMapList();
 
+
   renderRadioLeads();
+
 
   document.getElementById(
     "incidentCount"
@@ -3464,10 +3976,12 @@ function setStatus(
       "statusText"
     );
 
+
   const dot =
     document.getElementById(
       "statusDot"
     );
+
 
   if (
     status === "LIVE"
@@ -3476,11 +3990,14 @@ function setStatus(
     text.textContent =
       "LIVE";
 
+
     dot.style.background =
-      "#38c967";
+      "#39c96a";
+
 
     return;
   }
+
 
   if (
     status === "CHECKING"
@@ -3489,14 +4006,18 @@ function setStatus(
     text.textContent =
       "CHECKING";
 
+
     dot.style.background =
       "#ffb723";
+
 
     return;
   }
 
+
   text.textContent =
     "FEED ERROR";
+
 
   dot.style.background =
     "#e73b33";
@@ -3513,8 +4034,10 @@ async function loadIncidents() {
     "CHECKING"
   );
 
+
   const params =
     new URLSearchParams({
+
       where:
         "1=1",
 
@@ -3532,20 +4055,25 @@ async function loadIncidents() {
 
       orderByFields:
         "ObjectID DESC"
+
     });
+
 
   try {
 
     const response =
       await fetch(
+
         FEED_URL +
         "?" +
         params.toString(),
+
         {
           cache:
             "no-store"
         }
       );
+
 
     if (
       !response.ok
@@ -3557,8 +4085,10 @@ async function loadIncidents() {
       );
     }
 
+
     const data =
       await response.json();
+
 
     if (
       data.error
@@ -3569,6 +4099,7 @@ async function loadIncidents() {
         "Feed error"
       );
     }
+
 
     if (
       !Array.isArray(
@@ -3581,20 +4112,25 @@ async function loadIncidents() {
       );
     }
 
+
     allIncidents =
       filterRecentIncidents(
         data.features
       );
 
+
     checkForNewP1(
       allIncidents
     );
 
+
     renderEverything();
+
 
     setStatus(
       "LIVE"
     );
+
 
     document.getElementById(
       "lastChecked"
@@ -3604,26 +4140,35 @@ async function loadIncidents() {
         .toLocaleTimeString(
           "en-US",
           {
-            hour: "numeric",
-            minute: "2-digit",
-            second: "2-digit"
+            hour:
+              "numeric",
+
+            minute:
+              "2-digit",
+
+            second:
+              "2-digit"
           }
         );
 
   } catch (error) {
 
+
     console.error(
       error
     );
+
 
     setStatus(
       "ERROR"
     );
 
+
     document.getElementById(
       "lastChecked"
     ).textContent =
       "Unable to refresh official feed.";
+
   }
 }
 
@@ -3643,21 +4188,31 @@ document
         "click",
         () => {
 
+
           document
             .querySelectorAll(
               ".filter-btn"
             )
             .forEach(
-              item =>
+              item => {
+
                 item.classList
-                  .remove("active")
+                  .remove(
+                    "active"
+                  );
+              }
             );
 
+
           button.classList
-            .add("active");
+            .add(
+              "active"
+            );
+
 
           currentFilter =
             button.dataset.filter;
+
 
           renderLiveFeed();
         }
@@ -3678,8 +4233,10 @@ document
     "change",
     event => {
 
+
       currentSort =
         event.target.value;
+
 
       renderLiveFeed();
     }
@@ -3722,6 +4279,7 @@ function switchTab(
   tab
 ) {
 
+
   document
     .querySelectorAll(
       ".nav-btn"
@@ -3729,38 +4287,57 @@ function switchTab(
     .forEach(
       button => {
 
+
         button.classList
           .toggle(
             "active",
-            button.dataset.tab === tab
+            button.dataset.tab ===
+              tab
           );
       }
     );
+
 
   document
     .querySelectorAll(
       ".tab-panel"
     )
     .forEach(
-      panel =>
+      panel => {
+
+
         panel.classList
-          .remove("active")
+          .remove(
+            "active"
+          );
+      }
     );
+
 
   const target =
     document.getElementById(
-      "panel-" + tab
+      "panel-" +
+      tab
     );
 
-  if (target) {
+
+  if (
+    target
+  ) {
 
     target.classList
-      .add("active");
+      .add(
+        "active"
+      );
   }
 
+
   window.scrollTo({
-    top: 0,
-    behavior: "smooth"
+    top:
+      0,
+
+    behavior:
+      "smooth"
   });
 }
 
@@ -3772,9 +4349,11 @@ document
   .forEach(
     button => {
 
+
       button.addEventListener(
         "click",
         () => {
+
 
           switchTab(
             button.dataset.tab
@@ -3791,7 +4370,9 @@ document
 
 renderRadioLeads();
 
+
 loadIncidents();
+
 
 setInterval(
   loadIncidents,
