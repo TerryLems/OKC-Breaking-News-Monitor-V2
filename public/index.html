@@ -13,7 +13,6 @@
 <title>OKC Breaking News Monitor</title>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
@@ -41,7 +40,7 @@ html {
 
 body {
   margin: 0;
-  padding: 0 0 92px;
+  padding: 0 0 96px;
 
   background: var(--bg);
   color: var(--text);
@@ -295,7 +294,7 @@ a {
 
 
 /* =========================================================
-   ASSIGNMENT DESK BADGES
+   ASSIGNMENT DESK
    ========================================================= */
 
 .assignment-badge {
@@ -684,6 +683,28 @@ a {
   line-height: 1.4;
 }
 
+.distance-line {
+  display: inline-block;
+
+  margin-top: 9px;
+
+  padding:
+    6px 8px;
+
+  border-radius: 7px;
+
+  background: #102943;
+
+  border:
+    1px solid #24547f;
+
+  color: #7cc3ff;
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
 .action-row {
   display: flex;
 
@@ -762,6 +783,218 @@ a {
   margin-top: 3px;
 
   color: #dadada;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   NEARBY PANEL
+   ========================================================= */
+
+.nearby-control-card {
+  margin: 12px;
+
+  padding: 16px;
+
+  border-radius: 13px;
+
+  background: #101923;
+
+  border:
+    1px solid #28445d;
+
+  border-left:
+    6px solid #4297df;
+}
+
+.nearby-heading {
+  margin: 0;
+
+  font-size: 21px;
+
+  font-weight: 900;
+}
+
+.nearby-copy {
+  margin-top: 7px;
+
+  color: #a9b5c0;
+
+  font-size: 13px;
+
+  line-height: 1.45;
+}
+
+.location-status {
+  margin-top: 12px;
+
+  padding: 10px;
+
+  border-radius: 8px;
+
+  background: #0c1116;
+
+  color: #9da9b4;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+
+  border:
+    1px solid #27323b;
+}
+
+.location-buttons {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.location-btn {
+  min-height: 45px;
+
+  padding: 11px;
+
+  border: 0;
+
+  border-radius: 9px;
+
+  background: #2e7de1;
+
+  color: white;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.stop-location-btn {
+  background: #292929;
+
+  color: #d0d0d0;
+
+  border:
+    1px solid #444;
+}
+
+.nearby-options {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.nearby-select {
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 8px;
+
+  border-radius: 8px;
+
+  background: #101010;
+
+  color: white;
+
+  border:
+    1px solid #3a3a3a;
+
+  font-size: 13px;
+}
+
+.nearby-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #7f8d99;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.nearby-summary {
+  margin: 0 12px 10px;
+
+  padding: 11px;
+
+  border-radius: 9px;
+
+  background: #111;
+
+  border:
+    1px solid #303030;
+
+  color: #b9b9b9;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+.nearby-card {
+  margin-bottom: 11px;
+
+  padding: 14px;
+
+  border-radius: 12px;
+
+  background: #111;
+
+  border:
+    1px solid #303030;
+}
+
+.nearby-rank {
+  color: #7bc4ff;
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
+.nearby-distance {
+  margin-top: 5px;
+
+  color: #8ed0ff;
+
+  font-size: 22px;
+
+  font-weight: 900;
+}
+
+.nearby-title {
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 18px;
+
+  font-weight: 900;
+}
+
+.nearby-meta {
+  margin-top: 6px;
+
+  color: #9d9d9d;
 
   font-size: 13px;
 
@@ -1151,12 +1384,12 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(5, 1fr);
+    repeat(6, 1fr);
 
   padding:
-    6px
     5px
-    calc(6px + env(safe-area-inset-bottom));
+    3px
+    calc(5px + env(safe-area-inset-bottom));
 
   background:
     rgba(12, 12, 12, 0.98);
@@ -1169,7 +1402,9 @@ a {
 }
 
 .nav-btn {
-  min-height: 50px;
+  min-height: 52px;
+
+  padding: 4px 1px;
 
   border: 0;
 
@@ -1177,7 +1412,7 @@ a {
 
   color: #747474;
 
-  font-size: 9px;
+  font-size: 8px;
 
   font-weight: 900;
 }
@@ -1320,9 +1555,7 @@ a {
       🚨 ASSIGNMENT DESK — TOP STORY
     </div>
 
-    <div
-      id="breakingAssignment"
-    ></div>
+    <div id="breakingAssignment"></div>
 
     <div
       id="breakingTitle"
@@ -1470,6 +1703,10 @@ a {
         Newest first
       </option>
 
+      <option value="DISTANCE">
+        Closest first
+      </option>
+
     </select>
 
   </div>
@@ -1485,6 +1722,146 @@ a {
     </div>
 
   </main>
+
+</section>
+
+
+<!-- ======================================================
+     NEARBY PANEL
+     ====================================================== -->
+
+<section
+  id="panel-nearby"
+  class="tab-panel"
+>
+
+  <div class="nearby-control-card">
+
+    <h2 class="nearby-heading">
+      📍 Nearby Confirmed Incidents
+    </h2>
+
+    <div class="nearby-copy">
+      Use your iPhone location to sort confirmed OKC incidents
+      by distance from you. Your coordinates stay in this browser
+      and are not saved by this page.
+    </div>
+
+    <div
+      id="locationStatus"
+      class="location-status"
+    >
+      Location is off. Tap “Use My Location” to see nearby incidents.
+    </div>
+
+    <div class="location-buttons">
+
+      <button
+        id="useLocationButton"
+        class="location-btn"
+        type="button"
+      >
+        📍 USE MY LOCATION
+      </button>
+
+      <button
+        id="stopLocationButton"
+        class="location-btn stop-location-btn"
+        type="button"
+        disabled
+      >
+        STOP
+      </button>
+
+    </div>
+
+    <div class="nearby-options">
+
+      <div>
+
+        <label class="nearby-label">
+          Radius
+        </label>
+
+        <select
+          id="nearbyRadius"
+          class="nearby-select"
+        >
+          <option value="1">
+            Within 1 mile
+          </option>
+
+          <option value="3">
+            Within 3 miles
+          </option>
+
+          <option value="5" selected>
+            Within 5 miles
+          </option>
+
+          <option value="10">
+            Within 10 miles
+          </option>
+
+          <option value="25">
+            Within 25 miles
+          </option>
+
+          <option value="999">
+            All distances
+          </option>
+        </select>
+
+      </div>
+
+      <div>
+
+        <label class="nearby-label">
+          Sort
+        </label>
+
+        <select
+          id="nearbySort"
+          class="nearby-select"
+        >
+          <option value="DISTANCE">
+            Closest first
+          </option>
+
+          <option value="PRIORITY">
+            Priority first
+          </option>
+
+          <option value="NEWEST">
+            Newest first
+          </option>
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="nearbySummary"
+    class="nearby-summary"
+  >
+    Enable location to calculate distance.
+  </div>
+
+
+  <div
+    id="nearbyList"
+    class="content"
+  >
+
+    <div class="empty-state">
+      Location has not been enabled yet.
+    </div>
+
+  </div>
 
 </section>
 
@@ -1729,6 +2106,17 @@ a {
 
   <button
     class="nav-btn"
+    data-tab="nearby"
+    type="button"
+  >
+    <span class="nav-icon">
+      📍
+    </span>
+    NEARBY
+  </button>
+
+  <button
+    class="nav-btn"
     data-tab="leads"
     type="button"
   >
@@ -1813,6 +2201,12 @@ let previousIncidentIds =
 
 let radioLeads =
   loadSavedLeads();
+
+let userLocation =
+  null;
+
+let locationWatchId =
+  null;
 
 
 /* =========================================================
@@ -1913,6 +2307,171 @@ function getIncidentLocation(
       "Address",
       "Location"
     ]
+  );
+}
+
+
+/* =========================================================
+   GEOMETRY HELPERS
+   ========================================================= */
+
+function getIncidentCoordinates(
+  feature
+) {
+
+  if (
+    !feature ||
+    !feature.geometry
+  ) {
+    return null;
+  }
+
+  const longitude =
+    Number(
+      feature.geometry.x
+    );
+
+  const latitude =
+    Number(
+      feature.geometry.y
+    );
+
+  if (
+    !Number.isFinite(longitude) ||
+    !Number.isFinite(latitude)
+  ) {
+    return null;
+  }
+
+  return {
+    latitude,
+    longitude
+  };
+}
+
+
+function degreesToRadians(
+  degrees
+) {
+  return (
+    degrees *
+    Math.PI /
+    180
+  );
+}
+
+
+function calculateDistanceMiles(
+  latitude1,
+  longitude1,
+  latitude2,
+  longitude2
+) {
+
+  const earthRadiusMiles =
+    3958.7613;
+
+  const deltaLatitude =
+    degreesToRadians(
+      latitude2 -
+      latitude1
+    );
+
+  const deltaLongitude =
+    degreesToRadians(
+      longitude2 -
+      longitude1
+    );
+
+  const lat1 =
+    degreesToRadians(
+      latitude1
+    );
+
+  const lat2 =
+    degreesToRadians(
+      latitude2
+    );
+
+  const a =
+    Math.sin(
+      deltaLatitude / 2
+    ) ** 2 +
+    Math.cos(lat1) *
+    Math.cos(lat2) *
+    Math.sin(
+      deltaLongitude / 2
+    ) ** 2;
+
+  const c =
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
+
+  return (
+    earthRadiusMiles *
+    c
+  );
+}
+
+
+function getIncidentDistance(
+  feature
+) {
+
+  if (!userLocation) {
+    return null;
+  }
+
+  const coordinates =
+    getIncidentCoordinates(
+      feature
+    );
+
+  if (!coordinates) {
+    return null;
+  }
+
+  return calculateDistanceMiles(
+    userLocation.latitude,
+    userLocation.longitude,
+    coordinates.latitude,
+    coordinates.longitude
+  );
+}
+
+
+function formatDistance(
+  miles
+) {
+
+  if (
+    miles === null ||
+    !Number.isFinite(miles)
+  ) {
+    return "";
+  }
+
+  if (
+    miles < 0.1
+  ) {
+    return "Less than 0.1 mi from you";
+  }
+
+  if (
+    miles < 10
+  ) {
+    return (
+      miles.toFixed(1) +
+      " mi from you"
+    );
+  }
+
+  return (
+    Math.round(miles) +
+    " mi from you"
   );
 }
 
@@ -2048,7 +2607,8 @@ function getAgeMinutes(
     (
       Date.now() -
       timestamp
-    ) / 60000
+    ) /
+    60000
   );
 }
 
@@ -2062,7 +2622,9 @@ function getAgeText(
   }
 
   const minutes =
-    getAgeMinutes(timestamp);
+    getAgeMinutes(
+      timestamp
+    );
 
   if (
     minutes <= 0
@@ -2335,18 +2897,11 @@ function getAssignmentStatus(
   const location =
     getIncidentLocation(feature);
 
-  const timestamp =
-    getIncidentTimestamp(feature);
-
   const ageMinutes =
-    getAgeMinutes(timestamp);
+    getAgeMinutes(
+      getIncidentTimestamp(feature)
+    );
 
-
-  /*
-    STRONG LEAD:
-    confirmed location
-    AND very recent serious incident.
-  */
 
   if (
     location &&
@@ -2363,7 +2918,7 @@ function getAssignmentStatus(
         "assignment-strong",
 
       note:
-        "Confirmed official incident, recent and location available. Verify scene conditions before reporting additional details."
+        "Recent confirmed high-priority incident with a location available."
     };
   }
 
@@ -2383,7 +2938,7 @@ function getAssignmentStatus(
         "assignment-strong",
 
       note:
-        "Recent confirmed higher-priority incident with location available."
+        "Recent confirmed higher-priority incident with a location available."
     };
   }
 
@@ -2397,7 +2952,7 @@ function getAssignmentStatus(
       "assignment-monitor",
 
     note:
-      "Confirmed incident, but it does not currently meet this dashboard's stronger coverage threshold."
+      "Confirmed incident that does not currently meet the stronger coverage threshold."
   };
 }
 
@@ -2407,12 +2962,32 @@ function getAssignmentStatus(
    ========================================================= */
 
 function getMapURL(
-  location
+  location,
+  feature
 ) {
+
+  const coordinates =
+    getIncidentCoordinates(
+      feature
+    );
+
+  if (coordinates) {
+
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(
+        coordinates.latitude +
+        "," +
+        coordinates.longitude
+      )
+    );
+  }
+
 
   if (!location) {
     return "#";
   }
+
 
   return (
     "https://www.google.com/maps/search/?api=1&query=" +
@@ -2439,7 +3014,9 @@ function filterRecentIncidents(
     feature => {
 
       const timestamp =
-        getIncidentTimestamp(feature);
+        getIncidentTimestamp(
+          feature
+        );
 
       if (!timestamp) {
         return false;
@@ -2504,6 +3081,48 @@ function sortIncidents(
   const list =
     [...features];
 
+
+  if (
+    currentSort === "DISTANCE" &&
+    userLocation
+  ) {
+
+    list.sort(
+      (a, b) => {
+
+        const da =
+          getIncidentDistance(a);
+
+        const db =
+          getIncidentDistance(b);
+
+        if (
+          da === null &&
+          db === null
+        ) {
+          return 0;
+        }
+
+        if (
+          da === null
+        ) {
+          return 1;
+        }
+
+        if (
+          db === null
+        ) {
+          return -1;
+        }
+
+        return da - db;
+      }
+    );
+
+    return list;
+  }
+
+
   if (
     currentSort === "NEWEST"
   ) {
@@ -2527,12 +3146,14 @@ function sortIncidents(
       const assignmentB =
         getAssignmentStatus(b).code;
 
+
       if (
         assignmentA === "STRONG" &&
         assignmentB !== "STRONG"
       ) {
         return -1;
       }
+
 
       if (
         assignmentB === "STRONG" &&
@@ -2548,6 +3169,7 @@ function sortIncidents(
       const pb =
         getPriority(b).level;
 
+
       if (
         pa !== pb
       ) {
@@ -2561,6 +3183,7 @@ function sortIncidents(
       );
     }
   );
+
 
   return list;
 }
@@ -2618,7 +3241,7 @@ function updateSummary(
 
 
 /* =========================================================
-   BREAKING / ASSIGNMENT STORY
+   BREAKING STORY
    ========================================================= */
 
 function updateBreakingStory(
@@ -2660,10 +3283,19 @@ function updateBreakingStory(
     candidates[0];
 
   const assignment =
-    getAssignmentStatus(feature);
+    getAssignmentStatus(
+      feature
+    );
 
   const location =
-    getIncidentLocation(feature);
+    getIncidentLocation(
+      feature
+    );
+
+  const distance =
+    getIncidentDistance(
+      feature
+    );
 
 
   document.getElementById(
@@ -2678,26 +3310,46 @@ function updateBreakingStory(
   document.getElementById(
     "breakingTitle"
   ).textContent =
-    getIncidentType(feature);
+    getIncidentType(
+      feature
+    );
+
+
+  let meta =
+    "✅ Confirmed · " +
+    (
+      location ||
+      "Location unavailable"
+    ) +
+    " · " +
+    getAgeText(
+      getIncidentTimestamp(feature)
+    );
+
+
+  if (
+    distance !== null
+  ) {
+
+    meta +=
+      " · " +
+      formatDistance(
+        distance
+      );
+  }
 
 
   document.getElementById(
     "breakingMeta"
   ).textContent =
-    (
-      "✅ Confirmed · " +
-      (location || "Location unavailable") +
-      " · " +
-      getAgeText(
-        getIncidentTimestamp(feature)
-      )
-    );
+    meta;
 
 
   const actions =
     document.getElementById(
       "breakingActions"
     );
+
 
   actions.innerHTML =
     "";
@@ -2710,20 +3362,29 @@ function updateBreakingStory(
         "a"
       );
 
+
     map.href =
-      getMapURL(location);
+      getMapURL(
+        location,
+        feature
+      );
+
 
     map.target =
       "_blank";
 
+
     map.rel =
       "noopener noreferrer";
+
 
     map.className =
       "action-btn blue";
 
+
     map.textContent =
       "🗺 MAP";
+
 
     actions.appendChild(
       map
@@ -2741,20 +3402,26 @@ function updateBreakingStory(
         "a"
       );
 
+
     radio.href =
       "https://www.broadcastify.com/listen/feed/27252";
+
 
     radio.target =
       "_blank";
 
+
     radio.rel =
       "noopener noreferrer";
+
 
     radio.className =
       "action-btn red";
 
+
     radio.textContent =
       "🎧 FIRE RADIO";
+
 
     actions.appendChild(
       radio
@@ -2776,13 +3443,24 @@ function buildReportingNotes(
 ) {
 
   const priority =
-    getPriority(feature);
+    getPriority(
+      feature
+    );
 
   const assignment =
-    getAssignmentStatus(feature);
+    getAssignmentStatus(
+      feature
+    );
 
   const category =
-    getCategory(feature);
+    getCategory(
+      feature
+    );
+
+  const distance =
+    getIncidentDistance(
+      feature
+    );
 
 
   return [
@@ -2809,6 +3487,11 @@ function buildReportingNotes(
     getIncidentLocation(feature) ||
       "Location unavailable",
     "",
+    "DISTANCE FROM ME:",
+    distance !== null
+      ? formatDistance(distance)
+      : "Location distance unavailable",
+    "",
     "REPORTED:",
     formatIncidentDate(
       getIncidentTimestamp(feature)
@@ -2819,9 +3502,9 @@ function buildReportingNotes(
     "",
     "REPORTING CHECKLIST:",
     "• Confirm details with official agency updates",
-    "• Do not interfere with emergency operations",
-    "• Use the official feed wording when facts are limited",
-    "• Treat radio traffic as additional unconfirmed information",
+    "• Stay clear of emergency operations",
+    "• Do not cross police/fire lines",
+    "• Treat radio traffic as unconfirmed until corroborated",
     "",
     "SOURCE:",
     "Oklahoma City public-safety incident feed"
@@ -2876,23 +3559,40 @@ function createIncidentCard(
 
   const id =
     String(
-      getIncidentId(feature)
+      getIncidentId(
+        feature
+      )
     );
 
   const priority =
-    getPriority(feature);
+    getPriority(
+      feature
+    );
 
   const category =
-    getCategory(feature);
+    getCategory(
+      feature
+    );
 
   const assignment =
-    getAssignmentStatus(feature);
+    getAssignmentStatus(
+      feature
+    );
 
   const timestamp =
-    getIncidentTimestamp(feature);
+    getIncidentTimestamp(
+      feature
+    );
 
   const location =
-    getIncidentLocation(feature);
+    getIncidentLocation(
+      feature
+    );
+
+  const distance =
+    getIncidentDistance(
+      feature
+    );
 
 
   let cardClass =
@@ -2991,6 +3691,19 @@ function createIncidentCard(
       </div>
 
 
+      ${
+        distance !== null
+          ?
+          `
+          <div class="distance-line">
+            📍 ${escapeHTML(formatDistance(distance))}
+          </div>
+          `
+          :
+          ""
+      }
+
+
       <div class="incident-meta">
 
         ${escapeHTML(getAgeText(timestamp))}
@@ -3023,7 +3736,7 @@ function createIncidentCard(
             `
             <a
               class="action-btn blue"
-              href="${escapeHTML(getMapURL(location))}"
+              href="${escapeHTML(getMapURL(location, feature))}"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -3102,6 +3815,27 @@ function createIncidentCard(
         </div>
 
       </div>
+
+
+      ${
+        distance !== null
+          ?
+          `
+          <div class="detail-row">
+
+            <div class="detail-label">
+              Distance from you
+            </div>
+
+            <div class="detail-value">
+              ${escapeHTML(formatDistance(distance))}
+            </div>
+
+          </div>
+          `
+          :
+          ""
+      }
 
 
       <div class="detail-row">
@@ -3269,6 +4003,517 @@ function renderLiveFeed() {
 
 
 /* =========================================================
+   NEARBY RENDER
+   ========================================================= */
+
+function renderNearby() {
+
+  const container =
+    document.getElementById(
+      "nearbyList"
+    );
+
+  const summary =
+    document.getElementById(
+      "nearbySummary"
+    );
+
+
+  if (!userLocation) {
+
+    container.innerHTML =
+      '<div class="empty-state">Location has not been enabled yet.</div>';
+
+    summary.textContent =
+      "Enable location to calculate distance.";
+
+    return;
+  }
+
+
+  const radius =
+    Number(
+      document.getElementById(
+        "nearbyRadius"
+      ).value
+    );
+
+
+  const nearbySort =
+    document.getElementById(
+      "nearbySort"
+    ).value;
+
+
+  let nearby =
+    allIncidents
+      .map(
+        feature => {
+
+          return {
+            feature,
+            distance:
+              getIncidentDistance(
+                feature
+              )
+          };
+        }
+      )
+      .filter(
+        item =>
+          item.distance !== null
+      )
+      .filter(
+        item =>
+          radius >= 999 ||
+          item.distance <= radius
+      );
+
+
+  if (
+    nearbySort === "DISTANCE"
+  ) {
+
+    nearby.sort(
+      (a, b) =>
+        a.distance -
+        b.distance
+    );
+  }
+
+
+  else if (
+    nearbySort === "PRIORITY"
+  ) {
+
+    nearby.sort(
+      (a, b) => {
+
+        const pa =
+          getPriority(
+            a.feature
+          ).level;
+
+        const pb =
+          getPriority(
+            b.feature
+          ).level;
+
+
+        if (
+          pa !== pb
+        ) {
+          return pa - pb;
+        }
+
+
+        return (
+          a.distance -
+          b.distance
+        );
+      }
+    );
+  }
+
+
+  else {
+
+    nearby.sort(
+      (a, b) =>
+        getIncidentTimestamp(
+          b.feature
+        ) -
+        getIncidentTimestamp(
+          a.feature
+        )
+    );
+  }
+
+
+  summary.textContent =
+    nearby.length +
+    (
+      nearby.length === 1
+        ? " confirmed incident"
+        : " confirmed incidents"
+    ) +
+    (
+      radius >= 999
+        ? " with coordinates available."
+        : " within " +
+          radius +
+          (
+            radius === 1
+              ? " mile."
+              : " miles."
+          )
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    nearby.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="empty-state">No confirmed incidents with usable coordinates are inside this radius right now.</div>';
+
+    return;
+  }
+
+
+  nearby.forEach(
+    (item, index) => {
+
+      const feature =
+        item.feature;
+
+      const priority =
+        getPriority(
+          feature
+        );
+
+      const assignment =
+        getAssignmentStatus(
+          feature
+        );
+
+      const location =
+        getIncidentLocation(
+          feature
+        );
+
+      const category =
+        getCategory(
+          feature
+        );
+
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "nearby-card";
+
+
+      card.innerHTML = `
+
+        <div class="nearby-rank">
+          #${index + 1} NEAREST CONFIRMED INCIDENT
+        </div>
+
+
+        <div class="nearby-distance">
+          📍 ${escapeHTML(formatDistance(item.distance))}
+        </div>
+
+
+        <div class="nearby-title">
+          ${escapeHTML(getIncidentType(feature))}
+        </div>
+
+
+        <div class="assignment-badge ${assignment.className}">
+          ${assignment.label}
+        </div>
+
+
+        <div class="nearby-meta">
+
+          ✅ Confirmed
+
+          ·
+
+          ${escapeHTML(priority.code)}
+
+          ·
+
+          ${escapeHTML(category.label)}
+
+          <br>
+
+          ${escapeHTML(getAgeText(getIncidentTimestamp(feature)))}
+
+          ${
+            location
+              ?
+              "<br>📍 " +
+              escapeHTML(location)
+              :
+              ""
+          }
+
+        </div>
+
+
+        <div class="action-row">
+
+          ${
+            location
+              ?
+              `
+              <a
+                class="action-btn blue"
+                href="${escapeHTML(getMapURL(location, feature))}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🗺 MAP
+              </a>
+              `
+              :
+              ""
+          }
+
+
+          ${
+            category.code === "FIRE"
+              ?
+              `
+              <a
+                class="action-btn red"
+                href="https://www.broadcastify.com/listen/feed/27252"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🎧 FIRE RADIO
+              </a>
+              `
+              :
+              ""
+          }
+
+
+          <button
+            class="action-btn nearby-notes"
+            type="button"
+          >
+            📋 NOTES
+          </button>
+
+        </div>
+      `;
+
+
+      card
+        .querySelector(
+          ".nearby-notes"
+        )
+        .addEventListener(
+          "click",
+          () => {
+
+            copyText(
+              buildReportingNotes(
+                feature
+              )
+            );
+          }
+        );
+
+
+      container.appendChild(
+        card
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+function updateLocationStatus(
+  message
+) {
+
+  document.getElementById(
+    "locationStatus"
+  ).textContent =
+    message;
+}
+
+
+function startLocation() {
+
+  if (
+    !navigator.geolocation
+  ) {
+
+    updateLocationStatus(
+      "Location is not supported by this browser."
+    );
+
+    return;
+  }
+
+
+  updateLocationStatus(
+    "Requesting your location…"
+  );
+
+
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 15000,
+    maximumAge: 15000
+  };
+
+
+  locationWatchId =
+    navigator.geolocation
+      .watchPosition(
+
+        position => {
+
+          userLocation = {
+            latitude:
+              position.coords.latitude,
+
+            longitude:
+              position.coords.longitude,
+
+            accuracy:
+              position.coords.accuracy
+          };
+
+
+          const accuracyFeet =
+            Math.round(
+              position.coords.accuracy *
+              3.28084
+            );
+
+
+          updateLocationStatus(
+            "📍 Location active · accuracy approximately " +
+            accuracyFeet +
+            " ft · distances update as you move."
+          );
+
+
+          document.getElementById(
+            "stopLocationButton"
+          ).disabled =
+            false;
+
+
+          document.getElementById(
+            "useLocationButton"
+          ).textContent =
+            "📍 LOCATION ACTIVE";
+
+
+          renderNearby();
+
+          renderLiveFeed();
+
+          updateBreakingStory(
+            allIncidents
+          );
+        },
+
+
+        error => {
+
+          let message =
+            "Unable to use your location.";
+
+
+          if (
+            error.code === 1
+          ) {
+
+            message =
+              "Location permission was denied. Allow location access in Safari/Chrome settings and try again.";
+          }
+
+
+          else if (
+            error.code === 2
+          ) {
+
+            message =
+              "Your location is temporarily unavailable.";
+          }
+
+
+          else if (
+            error.code === 3
+          ) {
+
+            message =
+              "Location request timed out. Try again.";
+          }
+
+
+          updateLocationStatus(
+            message
+          );
+        },
+
+
+        options
+      );
+}
+
+
+function stopLocation() {
+
+  if (
+    locationWatchId !== null
+  ) {
+
+    navigator.geolocation
+      .clearWatch(
+        locationWatchId
+      );
+
+
+    locationWatchId =
+      null;
+  }
+
+
+  userLocation =
+    null;
+
+
+  document.getElementById(
+    "stopLocationButton"
+  ).disabled =
+    true;
+
+
+  document.getElementById(
+    "useLocationButton"
+  ).textContent =
+    "📍 USE MY LOCATION";
+
+
+  updateLocationStatus(
+    "Location is off. Your position is no longer being used."
+  );
+
+
+  renderNearby();
+
+  renderLiveFeed();
+
+  updateBreakingStory(
+    allIncidents
+  );
+}
+
+
+/* =========================================================
    MAP LIST
    ========================================================= */
 
@@ -3308,7 +4553,10 @@ function renderMapList() {
     feature => {
 
       const location =
-        getIncidentLocation(feature);
+        getIncidentLocation(
+          feature
+        );
+
 
       if (!location) {
         return;
@@ -3316,7 +4564,15 @@ function renderMapList() {
 
 
       const assignment =
-        getAssignmentStatus(feature);
+        getAssignmentStatus(
+          feature
+        );
+
+
+      const distance =
+        getIncidentDistance(
+          feature
+        );
 
 
       const card =
@@ -3341,6 +4597,19 @@ function renderMapList() {
         </div>
 
 
+        ${
+          distance !== null
+            ?
+            `
+            <div class="distance-line">
+              📍 ${escapeHTML(formatDistance(distance))}
+            </div>
+            `
+            :
+            ""
+        }
+
+
         <div class="map-list-location">
 
           ✅ Confirmed
@@ -3359,7 +4628,7 @@ function renderMapList() {
         <a
           class="action-btn blue"
           style="display:inline-block;margin-top:10px;"
-          href="${escapeHTML(getMapURL(location))}"
+          href="${escapeHTML(getMapURL(location, feature))}"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -3943,6 +5212,9 @@ function renderEverything() {
   renderLiveFeed();
 
 
+  renderNearby();
+
+
   renderMapList();
 
 
@@ -4045,7 +5317,10 @@ async function loadIncidents() {
         "*",
 
       returnGeometry:
-        "false",
+        "true",
+
+      outSR:
+        "4326",
 
       f:
         "json",
@@ -4222,7 +5497,7 @@ document
 
 
 /* =========================================================
-   SORT
+   LIVE SORT
    ========================================================= */
 
 document
@@ -4238,8 +5513,71 @@ document
         event.target.value;
 
 
+      if (
+        currentSort === "DISTANCE" &&
+        !userLocation
+      ) {
+
+        switchTab(
+          "nearby"
+        );
+
+
+        updateLocationStatus(
+          "Enable location first to sort incidents by distance."
+        );
+
+
+        return;
+      }
+
+
       renderLiveFeed();
     }
+  );
+
+
+/* =========================================================
+   NEARBY CONTROLS
+   ========================================================= */
+
+document
+  .getElementById(
+    "useLocationButton"
+  )
+  .addEventListener(
+    "click",
+    startLocation
+  );
+
+
+document
+  .getElementById(
+    "stopLocationButton"
+  )
+  .addEventListener(
+    "click",
+    stopLocation
+  );
+
+
+document
+  .getElementById(
+    "nearbyRadius"
+  )
+  .addEventListener(
+    "change",
+    renderNearby
+  );
+
+
+document
+  .getElementById(
+    "nearbySort"
+  )
+  .addEventListener(
+    "change",
+    renderNearby
   );
 
 
@@ -4332,6 +5670,14 @@ function switchTab(
   }
 
 
+  if (
+    tab === "nearby"
+  ) {
+
+    renderNearby();
+  }
+
+
   window.scrollTo({
     top:
       0,
@@ -4369,6 +5715,9 @@ document
    ========================================================= */
 
 renderRadioLeads();
+
+
+renderNearby();
 
 
 loadIncidents();
