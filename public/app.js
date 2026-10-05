@@ -1,519 +1,2609 @@
-const REFRESH_INTERVAL = 30000;
-const MAX_INCIDENT_AGE = 24 * 60 * 60 * 1000;
+const OKC_FEED =
+  "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
 
-const CITY_PROFILES = {
+const DALLAS_FEED =
+  "https://www.dallasopendata.com/resource/9fxf-t2tr.json?$limit=100&$order=date_time%20DESC";
+
+const REFRESH_MS =
+  30000;
+
+const MAX_AGE_MS =
+  24 * 60 * 60 * 1000;
+
+
+const CITY = {
+
   OKC: {
     name: "Oklahoma City",
-    shortName: "OKC",
-    center: { latitude: 35.4676, longitude: -97.5164 },
-    confirmedLabel: "OKC public incident feed",
-    supportsNearby: true,
-    radio: {
-      title: "OKC Fire Radio",
-      copy: "Fire and dispatch radio traffic. This is not 911 caller audio. Treat radio information as unconfirmed until corroborated.",
-      url: "https://www.broadcastify.com/listen/feed/27252"
-    }
+
+    center: [
+      35.4676,
+      -97.5164
+    ],
+
+    mode: "INTEGRATED",
+
+    source:
+      "OKC public incident feed",
+
+    nearby: true,
+
+    radio: [
+      "OKC Fire Radio",
+
+      "Oklahoma City Fire dispatch and fireground radio. This is not 911 caller audio.",
+
+      "https://www.broadcastify.com/listen/feed/27252"
+    ]
   },
+
+
   DAL: {
     name: "Dallas",
-    shortName: "Dallas",
-    center: { latitude: 32.7767, longitude: -96.7970 },
-    confirmedLabel: "Dallas Police Active Calls",
-    supportsNearby: false,
-    radio: null
+
+    center: [
+      32.7767,
+      -96.7970
+    ],
+
+    mode: "INTEGRATED",
+
+    source:
+      "Dallas Police Active Calls",
+
+    nearby: false,
+
+    radio: [
+      "Dallas Public Safety Radio",
+
+      "Dallas-area public-safety radio availability varies by agency and channel.",
+
+      "https://www.broadcastify.com/listen/ctid/2579"
+    ]
+  },
+
+
+  TUL: {
+    name: "Tulsa",
+
+    center: [
+      36.1540,
+      -95.9928
+    ],
+
+    mode: "EXTERNAL",
+
+    source:
+      "Tulsa Police Live Calls",
+
+    nearby: false,
+
+    official:
+      "https://www.tulsapolice.org/live-calls",
+
+    radio: [
+      "Tulsa Regional Public Safety",
+
+      "Tulsa-area public-safety radio. Some law-enforcement traffic may be encrypted.",
+
+      "https://www.broadcastify.com/listen/ctid/2199"
+    ]
+  },
+
+
+  HOU: {
+    name: "Houston",
+
+    center: [
+      29.7604,
+      -95.3698
+    ],
+
+    mode: "EXTERNAL",
+
+    source:
+      "Houston HFD / HPD Active Incidents",
+
+    nearby: false,
+
+    official:
+      "https://cohweb.houstontx.gov/ActiveIncidents/",
+
+    radio: [
+      "Houston Public Safety Radio",
+
+      "Houston-area fire and public-safety radio availability varies by channel and agency.",
+
+      "https://www.broadcastify.com/listen/ctid/2623"
+    ]
+  },
+
+
+  AUS: {
+    name: "Austin",
+
+    center: [
+      30.2672,
+      -97.7431
+    ],
+
+    mode: "EXTERNAL",
+
+    source:
+      "Austin Real-Time Fire / Traffic",
+
+    nearby: false,
+
+    official:
+      "https://data.austintexas.gov/stories/s/Real-Time-Fire-Incidents/dr26-vqib/",
+
+    secondary:
+      "https://data.austintexas.gov/stories/s/Austin-Travis-County-Traffic-Report-Page/9qfg-4swh/",
+
+    radio: [
+      "Austin / Travis County Public Safety",
+
+      "Austin and Travis County public-safety radio availability varies by agency and talkgroup.",
+
+      "https://www.broadcastify.com/listen/ctid/2749"
+    ]
+  },
+
+
+  CHI: {
+    name: "Chicago",
+
+    center: [
+      41.8781,
+      -87.6298
+    ],
+
+    mode: "RADIO",
+
+    source:
+      "Chicago public-safety source",
+
+    nearby: false,
+
+    radio: [
+      "Chicago Fire - Digital",
+
+      "Live Chicago Fire Department radio. Treat radio information as unconfirmed until corroborated.",
+
+      "https://www.broadcastify.com/listen/feed/909"
+    ]
   }
+
 };
 
-let selectedCityMode = "AUTO";
-let activeCityCode = "OKC";
-let allIncidents = [];
-let currentFilter = "ALL";
-let currentSort = "PRIORITY";
-let alertsEnabled = false;
-let firstLoad = true;
-let previousIncidentIds = new Set();
-let radioLeads = loadSavedLeads();
-let userLocation = null;
-let locationWatchId = null;
-let unknownCallTypes = new Set();
 
-function normalizeOkcFeature(feature) {
-  const a = feature.attributes || {};
-  const timestamp = parseOkcReportedTime(a.Reported_Time);
-  const coords = feature.geometry && Number.isFinite(Number(feature.geometry.x)) && Number.isFinite(Number(feature.geometry.y))
-    ? { latitude: Number(feature.geometry.y), longitude: Number(feature.geometry.x) }
-    : null;
-  const type = a.InfoTitle || a.Call_Type || "Public Safety Incident";
+let city =
+  "OKC";
+
+let mode =
+  "AUTO";
+
+let items =
+  [];
+
+let filter =
+  "ALL";
+
+let sortMode =
+  "PRIORITY";
+
+let alerts =
+  false;
+
+let firstLoad =
+  true;
+
+let known =
+  new Set();
+
+let userLoc =
+  null;
+
+let watchId =
+  null;
+
+let unknown =
+  new Set();
+
+let leads =
+  loadLeads();
+
+
+const $ =
+  id =>
+    document.getElementById(id);
+
+
+const esc =
+  value =>
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+
+function parseOkc(value) {
+
+  if (!value) {
+    return 0;
+  }
+
+  const text =
+    String(value)
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const match =
+    text.match(
+      /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+    );
+
+  if (!match) {
+    return 0;
+  }
+
+  const months = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11
+  };
+
+  const month =
+    match[1][0].toUpperCase() +
+    match[1].slice(1).toLowerCase();
+
+  let hour =
+    Number(match[4]);
+
+  if (
+    match[6].toUpperCase() === "PM" &&
+    hour !== 12
+  ) {
+    hour += 12;
+  }
+
+  if (
+    match[6].toUpperCase() === "AM" &&
+    hour === 12
+  ) {
+    hour = 0;
+  }
+
+  return new Date(
+    Number(match[3]),
+    months[month],
+    Number(match[2]),
+    hour,
+    Number(match[5])
+  ).getTime();
+}
+
+
+function fmt(timestamp) {
+
+  if (!timestamp) {
+    return "Time unavailable";
+  }
+
+  return new Date(timestamp)
+    .toLocaleString(
+      "en-US",
+      {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }
+    );
+}
+
+
+function age(timestamp) {
+
+  if (!timestamp) {
+    return "time unavailable";
+  }
+
+  const minutes =
+    Math.max(
+      0,
+      Math.floor(
+        (
+          Date.now() -
+          timestamp
+        ) /
+        60000
+      )
+    );
+
+  if (minutes < 1) {
+    return "just now";
+  }
+
+  if (minutes < 60) {
+
+    return (
+      minutes +
+      " min" +
+      (
+        minutes === 1
+          ? ""
+          : "s"
+      ) +
+      " ago"
+    );
+  }
+
+  const hours =
+    Math.floor(
+      minutes / 60
+    );
+
+  return (
+    hours +
+    " hr" +
+    (
+      hours === 1
+        ? ""
+        : "s"
+    ) +
+    " ago"
+  );
+}
+
+
+function cat(text) {
+
+  const value =
+    text.toLowerCase();
+
+  if (
+    value.includes("fire") ||
+    value.includes("smoke")
+  ) {
+    return "FIRE";
+  }
+
+  if (
+    value.includes("accident") ||
+    value.includes("traffic") ||
+    value.includes("crash") ||
+    value.includes("vehicle")
+  ) {
+    return "TRAFFIC";
+  }
+
+  if (
+    value.includes("ems") ||
+    value.includes("medical") ||
+    value.includes("rescue")
+  ) {
+    return "EMS";
+  }
+
+  return "PUBLIC";
+}
+
+
+function infer(text) {
+
+  const value =
+    text.toLowerCase();
+
+  if (
+    value.includes("non-injury") ||
+    value.includes("non injury")
+  ) {
+    return 4;
+  }
+
+
+  const p1 = [
+    "active shooter",
+    "shooting",
+    "shots fired",
+    "person shot",
+    "gunshot",
+    "stabbing",
+    "homicide",
+    "armed robbery",
+    "officer down",
+    "explosion",
+    "structure fire",
+    "struct fire",
+    "struc fire",
+    "residential fire",
+    "house fire",
+    "apartment fire",
+    "commercial fire",
+    "working fire"
+  ];
+
+
+  const p2 = [
+    "injury accident",
+    "accident with injury",
+    "major accident",
+    "major crash",
+    "entrapment",
+    "rollover",
+    "vehicle fire",
+    "car fire",
+    "rescue",
+    "traffic/trans. acc. fr"
+  ];
+
+
+  const p3 = [
+    "alarm fire",
+    "fire alarm",
+    "automatic fire alarm",
+    "suspicious",
+    "disturbance",
+    "burglary",
+    "welfare check",
+    "traffic hazard",
+    "reckless driver"
+  ];
+
+
+  if (
+    p1.some(
+      word =>
+        value.includes(word)
+    )
+  ) {
+    return 1;
+  }
+
+  if (
+    p2.some(
+      word =>
+        value.includes(word)
+    )
+  ) {
+    return 2;
+  }
+
+  if (
+    p3.some(
+      word =>
+        value.includes(word)
+    )
+  ) {
+    return 3;
+  }
+
+
+  unknown.add(
+    text.trim() ||
+    "Unknown"
+  );
+
+  return 4;
+}
+
+
+function pLabel(priority) {
+
+  if (priority === 1) {
+    return "CRITICAL";
+  }
+
+  if (priority === 2) {
+    return "HIGH";
+  }
+
+  if (priority === 3) {
+    return "MEDIUM";
+  }
+
+  return "ROUTINE";
+}
+
+
+function normOkc(feature) {
+
+  const a =
+    feature.attributes || {};
+
+  const type =
+    a.InfoTitle ||
+    a.Call_Type ||
+    "Public Safety Incident";
+
+  const desc =
+    a.Call_Type ||
+    a.InfoTitle ||
+    type;
+
+  const priority =
+    infer(
+      type +
+      " " +
+      desc
+    );
+
   return {
-    id: String(a.ObjectID ?? JSON.stringify(a)),
-    cityCode: "OKC",
+
+    id:
+      String(
+        a.ObjectID ||
+        Math.random()
+      ),
+
     type,
-    description: a.Call_Type || a.InfoTitle || "No additional description available.",
-    location: a.Address || null,
-    timestamp,
-    nativePriority: null,
-    status: "Active",
-    coords,
-    raw: a
+
+    desc,
+
+    location:
+      a.Address ||
+      "",
+
+    ts:
+      parseOkc(
+        a.Reported_Time
+      ),
+
+    priority,
+
+    category:
+      cat(
+        type +
+        " " +
+        desc
+      ),
+
+    source:
+      "OKC public incident feed",
+
+    geo:
+      feature.geometry
+        ? {
+            lat:
+              Number(
+                feature.geometry.y
+              ),
+
+            lon:
+              Number(
+                feature.geometry.x
+              )
+          }
+        : null
   };
 }
 
-function normalizeDallasRow(row) {
-  const type = row.nature_of_call || "Dallas Police Active Call";
-  const block = String(row.block || "").trim();
-  const street = String(row.location || "").trim();
-  const location = [block, street].filter(Boolean).join(" ") || null;
+
+function normDallas(row) {
+
+  const type =
+    row.nature_of_call ||
+    "Dallas Police Active Call";
+
+  const rawPriority =
+    Number(
+      row.priority
+    );
+
+  const priority =
+    [1, 2, 3, 4].includes(
+      rawPriority
+    )
+      ? rawPriority
+      : infer(type);
+
   return {
-    id: String(row.incident_number || `${type}-${row.date_time || row.date || ""}-${location || ""}`),
-    cityCode: "DAL",
+
+    id:
+      String(
+        row.incident_number ||
+        Math.random()
+      ),
+
     type,
-    description: [row.division ? `${row.division} Division` : null, row.status ? `Status: ${row.status}` : null].filter(Boolean).join(" · ") || type,
-    location,
-    timestamp: parseDallasTime(row),
-    nativePriority: normalizeDallasPriority(row.priority),
-    status: row.status || "Active",
-    coords: null,
-    raw: row
+
+    desc:
+      type +
+      (
+        row.division
+          ? " · " +
+            row.division +
+            " Division"
+          : ""
+      ) +
+      (
+        row.status
+          ? " · " +
+            row.status
+          : ""
+      ),
+
+    location:
+      [
+        row.block,
+        row.location
+      ]
+        .filter(Boolean)
+        .join(" "),
+
+    ts:
+      row.date_time
+        ? new Date(
+            row.date_time
+          ).getTime()
+        : 0,
+
+    priority,
+
+    category:
+      cat(type),
+
+    source:
+      "Dallas Police Active Calls",
+
+    geo:
+      null
   };
 }
 
-function parseOkcReportedTime(value) {
-  if (!value) return 0;
-  const text = String(value).replace(/\s+/g, " ").trim();
-  const match = text.match(/^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (!match) return 0;
-  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-  const key = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
-  let hour = Number(match[4]);
-  const ampm = match[6].toUpperCase();
-  if (ampm === "PM" && hour !== 12) hour += 12;
-  if (ampm === "AM" && hour === 12) hour = 0;
-  return new Date(Number(match[3]), months[key], Number(match[2]), hour, Number(match[5]), 0, 0).getTime();
+
+function fresh(list) {
+
+  return list.filter(
+    item =>
+      item.ts &&
+      Date.now() -
+        item.ts >=
+        0 &&
+      Date.now() -
+        item.ts <=
+        MAX_AGE_MS
+  );
 }
 
-function parseDallasTime(row) {
-  if (row.date_time) {
-    const t = new Date(row.date_time).getTime();
-    if (Number.isFinite(t)) return t;
+
+async function fetchOKC() {
+
+  const query =
+    new URLSearchParams({
+
+      where:
+        "1=1",
+
+      outFields:
+        "*",
+
+      returnGeometry:
+        "true",
+
+      outSR:
+        "4326",
+
+      f:
+        "json",
+
+      resultRecordCount:
+        "100",
+
+      orderByFields:
+        "ObjectID DESC"
+
+    });
+
+
+  const response =
+    await fetch(
+      OKC_FEED +
+      "?" +
+      query,
+      {
+        cache:
+          "no-store"
+      }
+    );
+
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      "OKC HTTP " +
+      response.status
+    );
   }
-  const dateText = String(row.date || "").trim();
-  const timeText = String(row.time || "").trim();
-  if (dateText) {
-    const combined = `${dateText.split("T")[0]}T${timeText || "00:00:00"}`;
-    const t = new Date(combined).getTime();
-    if (Number.isFinite(t)) return t;
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    data.error
+  ) {
+
+    throw new Error(
+      data.error.message ||
+      "OKC feed error"
+    );
   }
-  return Date.now();
+
+
+  return fresh(
+    (
+      data.features ||
+      []
+    ).map(
+      normOkc
+    )
+  );
 }
 
-function normalizeDallasPriority(value) {
-  const n = Number(String(value || "").match(/[1-4]/)?.[0]);
-  return Number.isFinite(n) ? n : null;
-}
-
-async function fetchOkc() {
-  const url = "https://utility.arcgis.com/usrsvcs/servers/01c97e2928134efc93157d99f2d23047/rest/services/OpenData/Public_Safety/FeatureServer/0/query";
-  const params = new URLSearchParams({
-    where: "1=1",
-    outFields: "*",
-    returnGeometry: "true",
-    outSR: "4326",
-    f: "json",
-    resultRecordCount: "100",
-    orderByFields: "ObjectID DESC"
-  });
-  const response = await fetch(`${url}?${params.toString()}`, { cache: "no-store" });
-  if (!response.ok) throw new Error(`OKC feed HTTP ${response.status}`);
-  const data = await response.json();
-  if (data.error) throw new Error(data.error.message || "OKC ArcGIS feed error");
-  if (!Array.isArray(data.features)) throw new Error("OKC feed returned no feature list");
-  return data.features.map(normalizeOkcFeature);
-}
 
 async function fetchDallas() {
-  const url = "https://www.dallasopendata.com/resource/9fxf-t2tr.json?$limit=500";
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Dallas feed HTTP ${response.status}`);
-  const rows = await response.json();
-  if (!Array.isArray(rows)) throw new Error("Dallas feed returned no records");
-  return rows.map(normalizeDallasRow);
-}
 
-async function fetchCityIncidents(cityCode) {
-  if (cityCode === "DAL") return fetchDallas();
-  return fetchOkc();
-}
+  const response =
+    await fetch(
+      DALLAS_FEED,
+      {
+        cache:
+          "no-store"
+      }
+    );
 
-function filterRecentIncidents(incidents) {
-  if (activeCityCode === "DAL") {
-    return incidents.filter(i => i.timestamp && Date.now() - i.timestamp <= MAX_INCIDENT_AGE);
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      "Dallas HTTP " +
+      response.status
+    );
   }
-  return incidents.filter(i => i.timestamp && Date.now() - i.timestamp >= 0 && Date.now() - i.timestamp <= MAX_INCIDENT_AGE);
+
+
+  const data =
+    await response.json();
+
+
+  return fresh(
+    (
+      Array.isArray(data)
+        ? data
+        : []
+    ).map(
+      normDallas
+    )
+  );
 }
 
-function getCategory(incident) {
-  const text = `${incident.type} ${incident.description}`.toLowerCase();
-  if (text.includes("fire") || text.includes("smoke")) return { code: "FIRE", label: "🔥 Fire" };
-  if (text.includes("accident") || text.includes("traffic") || text.includes("crash") || text.includes("vehicle")) return { code: "TRAFFIC", label: "🚗 Traffic" };
-  if (text.includes("rescue") || text.includes("medical") || text.includes("ambulance") || text.includes("ems")) return { code: "EMS", label: "🚑 EMS" };
-  return { code: "PUBLIC", label: "🚨 Public Safety" };
+
+const toRad =
+  value =>
+    value *
+    Math.PI /
+    180;
+
+
+function miles(a, b) {
+
+  const radius =
+    3958.7613;
+
+  const dLat =
+    toRad(
+      b.lat -
+      a.lat
+    );
+
+  const dLon =
+    toRad(
+      b.lon -
+      a.lon
+    );
+
+  const x =
+    Math.sin(
+      dLat / 2
+    ) ** 2 +
+    Math.cos(
+      toRad(a.lat)
+    ) *
+    Math.cos(
+      toRad(b.lat)
+    ) *
+    Math.sin(
+      dLon / 2
+    ) ** 2;
+
+
+  return (
+    radius *
+    2 *
+    Math.atan2(
+      Math.sqrt(x),
+      Math.sqrt(
+        1 - x
+      )
+    )
+  );
 }
 
-function getPriority(incident) {
-  if (incident.nativePriority && incident.nativePriority >= 1 && incident.nativePriority <= 4) {
-    const labels = {1:"CRITICAL",2:"HIGH",3:"MEDIUM",4:"ROUTINE"};
-    return { level: incident.nativePriority, code: `P${incident.nativePriority}`, label: labels[incident.nativePriority], native: true };
+
+function dist(item) {
+
+  if (
+    !userLoc ||
+    !item.geo
+  ) {
+    return null;
   }
-  const text = `${incident.type} ${incident.description}`.toLowerCase();
-  if (text.includes("non-injury") || text.includes("non injury")) return { level:4, code:"P4", label:"ROUTINE", native:false };
-  const p1 = ["active shooter","shooting","shots fired","person shot","gunshot","stabbing","person stabbed","homicide","armed subject","armed robbery","officer down","officer involved","explosion","structure fire","struct fire","struc fire","residential fire","house fire","apartment fire","commercial fire","working fire","building fire"];
-  const p2 = ["injury accident","accident with injury","traffic accident with injury","major accident","major crash","entrapment","rollover","vehicle fire","car fire","rescue","traffic/trans. acc. fr","major dist","ambulance"];
-  const p3 = ["alarm fire","fire alarm","alarm fire auto","automatic fire alarm","suspicious","disturbance","burglary","welfare check","traffic hazard","reckless driver"];
-  if (p1.some(w => text.includes(w))) return { level:1, code:"P1", label:"CRITICAL", native:false };
-  if (p2.some(w => text.includes(w))) return { level:2, code:"P2", label:"HIGH", native:false };
-  if (p3.some(w => text.includes(w))) return { level:3, code:"P3", label:"MEDIUM", native:false };
-  unknownCallTypes.add(incident.type);
-  return { level:4, code:"P4", label:"ROUTINE", native:false };
+
+  return miles(
+    userLoc,
+    item.geo
+  );
 }
 
-function getAssignmentStatus(incident) {
-  const p = getPriority(incident);
-  const age = getAgeMinutes(incident.timestamp);
-  if (incident.location && p.level === 1 && age <= 45) return { code:"STRONG", label:"🟢 STRONG LEAD FOR COVERAGE", className:"assignment-strong", note:"Recent confirmed high-priority incident with location information available." };
-  if (incident.location && p.level === 2 && age <= 30) return { code:"STRONG", label:"🟢 STRONG LEAD FOR COVERAGE", className:"assignment-strong", note:"Recent confirmed higher-priority incident with location information available." };
-  return { code:"MONITOR", label:"⚪ MONITOR", className:"assignment-monitor", note:"Confirmed incident that does not currently meet the stronger coverage threshold." };
-}
 
-function formatIncidentDate(timestamp) {
-  if (!timestamp) return "Date/time unavailable";
-  return new Date(timestamp).toLocaleString("en-US", { weekday:"short", month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" });
-}
+function distText(distance) {
 
-function getAgeMinutes(timestamp) {
-  if (!timestamp) return 999999;
-  return Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
-}
-
-function getAgeText(timestamp) {
-  if (!timestamp) return "time unavailable";
-  const m = getAgeMinutes(timestamp);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m} ${m === 1 ? "min" : "mins"} ago`;
-  const h = Math.floor(m / 60);
-  return `${h} ${h === 1 ? "hr" : "hrs"} ago`;
-}
-
-function degreesToRadians(d) { return d * Math.PI / 180; }
-function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
-  const R = 3958.7613;
-  const dLat = degreesToRadians(lat2 - lat1);
-  const dLon = degreesToRadians(lon2 - lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(degreesToRadians(lat1))*Math.cos(degreesToRadians(lat2))*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-function getIncidentDistance(i) {
-  if (!userLocation || !i.coords) return null;
-  return calculateDistanceMiles(userLocation.latitude, userLocation.longitude, i.coords.latitude, i.coords.longitude);
-}
-function formatDistance(miles) {
-  if (miles === null || !Number.isFinite(miles)) return "";
-  if (miles < .1) return "Less than 0.1 mi from you";
-  if (miles < 10) return `${miles.toFixed(1)} mi from you`;
-  return `${Math.round(miles)} mi from you`;
-}
-
-function getMapURL(incident) {
-  if (incident.coords) return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${incident.coords.latitude},${incident.coords.longitude}`)}`;
-  if (!incident.location) return "#";
-  const city = CITY_PROFILES[incident.cityCode]?.name || "";
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${incident.location}, ${city}`)}`;
-}
-
-function escapeHTML(value) {
-  if (value === null || value === undefined) return "";
-  return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-}
-
-function applyUserFilter(list) {
-  if (currentFilter === "ALL") return list;
-  if (currentFilter === "P1") return list.filter(i => getPriority(i).level === 1);
-  return list.filter(i => getCategory(i).code === currentFilter);
-}
-
-function sortIncidents(list) {
-  const copy = [...list];
-  if (currentSort === "DISTANCE" && userLocation) {
-    return copy.sort((a,b) => {
-      const da = getIncidentDistance(a), db = getIncidentDistance(b);
-      if (da === null && db === null) return 0;
-      if (da === null) return 1;
-      if (db === null) return -1;
-      return da - db;
-    });
+  if (
+    distance === null
+  ) {
+    return "";
   }
-  if (currentSort === "NEWEST") return copy.sort((a,b) => b.timestamp - a.timestamp);
-  return copy.sort((a,b) => {
-    const aa = getAssignmentStatus(a).code, ab = getAssignmentStatus(b).code;
-    if (aa === "STRONG" && ab !== "STRONG") return -1;
-    if (ab === "STRONG" && aa !== "STRONG") return 1;
-    const pa = getPriority(a).level, pb = getPriority(b).level;
-    return pa !== pb ? pa - pb : b.timestamp - a.timestamp;
-  });
+
+  if (
+    distance < 0.1
+  ) {
+    return "Less than 0.1 mi from you";
+  }
+
+  return (
+    (
+      distance < 10
+        ? distance.toFixed(1)
+        : Math.round(distance)
+    ) +
+    " mi from you"
+  );
 }
 
-function updateSummary() {
-  const counts = {1:0,2:0,3:0,4:0};
-  allIncidents.forEach(i => counts[getPriority(i).level]++);
-  document.getElementById("countP1").textContent = counts[1];
-  document.getElementById("countP2").textContent = counts[2];
-  document.getElementById("countP3").textContent = counts[3];
-  document.getElementById("countP4").textContent = counts[4];
+
+function mapURL(item) {
+
+  if (
+    item.geo
+  ) {
+
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(
+        item.geo.lat +
+        "," +
+        item.geo.lon
+      )
+    );
+  }
+
+
+  if (
+    item.location
+  ) {
+
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(
+        item.location +
+        ", " +
+        CITY[city].name
+      )
+    );
+  }
+
+  return "#";
 }
 
-function updateBreakingStory() {
-  const candidates = allIncidents.filter(i => getAssignmentStatus(i).code === "STRONG").sort((a,b) => b.timestamp - a.timestamp);
-  const wrap = document.getElementById("breakingWrap");
-  if (!candidates.length) { wrap.style.display = "none"; return; }
-  const i = candidates[0], a = getAssignmentStatus(i), distance = getIncidentDistance(i);
-  document.getElementById("breakingAssignment").innerHTML = `<div class="assignment-badge ${a.className}">${a.label}</div>`;
-  document.getElementById("breakingTitle").textContent = i.type;
-  document.getElementById("breakingMeta").textContent = `✅ Confirmed · ${i.location || "Location unavailable"} · ${getAgeText(i.timestamp)}${distance !== null ? ` · ${formatDistance(distance)}` : ""}`;
-  const actions = document.getElementById("breakingActions");
-  actions.innerHTML = "";
-  if (i.location) actions.insertAdjacentHTML("beforeend", `<a class="action-btn blue" href="${escapeHTML(getMapURL(i))}" target="_blank" rel="noopener noreferrer">🗺 MAP</a>`);
-  const radio = CITY_PROFILES[i.cityCode]?.radio;
-  if (getCategory(i).code === "FIRE" && radio) actions.insertAdjacentHTML("beforeend", `<a class="action-btn red" href="${escapeHTML(radio.url)}" target="_blank" rel="noopener noreferrer">🎧 FIRE RADIO</a>`);
-  wrap.style.display = "block";
-}
 
-function buildReportingNotes(i) {
-  const p = getPriority(i), a = getAssignmentStatus(i), c = getCategory(i), d = getIncidentDistance(i);
+function assignment(item) {
+
+  const minutes =
+    (
+      Date.now() -
+      item.ts
+    ) /
+    60000;
+
+
+  if (
+    item.location &&
+    (
+      (
+        item.priority === 1 &&
+        minutes <= 45
+      ) ||
+      (
+        item.priority === 2 &&
+        minutes <= 30
+      )
+    )
+  ) {
+
+    return [
+      "STRONG",
+      "🟢 STRONG LEAD FOR COVERAGE",
+      "assignment-strong"
+    ];
+  }
+
+
   return [
-    "BREAKING NEWS MONITOR","","VERIFICATION:",`CONFIRMED — ${CITY_PROFILES[i.cityCode].confirmedLabel}`,"","ASSIGNMENT STATUS:",a.label,"","INCIDENT:",i.type,"","CATEGORY:",c.label,"","PRIORITY:",`${p.code} — ${p.label}`,"","LOCATION:",i.location || "Location unavailable","","DISTANCE FROM ME:",d !== null ? formatDistance(d) : "Unavailable","","REPORTED:",formatIncidentDate(i.timestamp),"","DESCRIPTION:",i.description,"","REPORTING CHECKLIST:","• Confirm details with official agency updates","• Stay clear of emergency operations","• Do not cross police/fire lines","• Treat radio traffic as unconfirmed until corroborated","","SOURCE:",CITY_PROFILES[i.cityCode].confirmedLabel
-  ].join("\n");
+    "MONITOR",
+    "⚪ MONITOR",
+    "assignment-monitor"
+  ];
 }
 
-async function copyText(text) {
-  try { if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); alert("Copied."); return; } } catch (_) {}
-  window.prompt("Copy this text:", text);
+
+function filtered() {
+
+  return items.filter(
+    item =>
+      filter === "ALL" ||
+      (
+        filter === "P1" &&
+        item.priority === 1
+      ) ||
+      item.category === filter
+  );
 }
 
-function createIncidentCard(i, newestId) {
-  const p = getPriority(i), c = getCategory(i), a = getAssignmentStatus(i), d = getIncidentDistance(i);
-  const cardClass = `priority-p${p.level}`;
-  const badgeClass = `badge-p${p.level}`;
-  const radio = CITY_PROFILES[i.cityCode]?.radio;
-  const card = document.createElement("article");
-  card.className = `incident-card ${cardClass}`;
-  card.innerHTML = `
-    <div class="incident-main">
-      <div class="incident-topline">
-        ${i.id === newestId ? '<span class="badge badge-new">🔥 NEWEST</span>' : ''}
-        <span class="badge ${badgeClass}">${p.code} — ${p.label}</span>
-        <span class="confirmed-badge">✅ CONFIRMED</span>
-        <span class="category-label">${escapeHTML(c.label)}</span>
-      </div>
-      <div class="incident-title">${escapeHTML(i.type)}</div>
-      <div class="assignment-badge ${a.className}">${a.label}</div>
-      <div class="assignment-note">${escapeHTML(a.note)}</div>
-      ${d !== null ? `<div class="distance-line">📍 ${escapeHTML(formatDistance(d))}</div>` : ''}
-      <div class="incident-meta">${escapeHTML(getAgeText(i.timestamp))} · ${escapeHTML(formatIncidentDate(i.timestamp))}</div>
-      ${i.location ? `<div class="incident-location">📍 ${escapeHTML(i.location)}</div>` : ''}
-      <div class="action-row">
-        ${i.location ? `<a class="action-btn blue" href="${escapeHTML(getMapURL(i))}" target="_blank" rel="noopener noreferrer">🗺 MAP</a>` : ''}
-        ${c.code === "FIRE" && radio ? `<a class="action-btn red" href="${escapeHTML(radio.url)}" target="_blank" rel="noopener noreferrer">🎧 RADIO</a>` : ''}
-        <button class="action-btn reporting-btn" type="button">📋 NOTES</button>
-        <button class="action-btn details-btn" type="button">DETAILS</button>
-      </div>
-    </div>
-    <div class="details-panel">
-      <div class="detail-row"><div class="detail-label">Verification</div><div class="detail-value">✅ Confirmed through ${escapeHTML(CITY_PROFILES[i.cityCode].confirmedLabel)}.</div></div>
-      <div class="detail-row"><div class="detail-label">Description</div><div class="detail-value">${escapeHTML(i.description)}</div></div>
-      <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${escapeHTML(i.status)}</div></div>
-      <div class="detail-row"><div class="detail-label">Incident ID</div><div class="detail-value">${escapeHTML(i.id)}</div></div>
-    </div>`;
-  const panel = card.querySelector(".details-panel");
-  const detailBtn = card.querySelector(".details-btn");
-  detailBtn.addEventListener("click", () => { const open = panel.classList.toggle("open"); detailBtn.textContent = open ? "HIDE" : "DETAILS"; });
-  card.querySelector(".reporting-btn").addEventListener("click", () => copyText(buildReportingNotes(i)));
-  return card;
+
+function ordered(list) {
+
+  const copy =
+    [...list];
+
+
+  if (
+    sortMode === "NEWEST"
+  ) {
+
+    return copy.sort(
+      (a, b) =>
+        b.ts -
+        a.ts
+    );
+  }
+
+
+  if (
+    sortMode === "DISTANCE" &&
+    userLoc
+  ) {
+
+    return copy.sort(
+      (a, b) =>
+        (
+          dist(a) ??
+          99999
+        ) -
+        (
+          dist(b) ??
+          99999
+        )
+    );
+  }
+
+
+  return copy.sort(
+    (a, b) => {
+
+      const assignmentA =
+        assignment(a)[0] ===
+        "STRONG"
+          ? 0
+          : 1;
+
+      const assignmentB =
+        assignment(b)[0] ===
+        "STRONG"
+          ? 0
+          : 1;
+
+
+      return (
+        assignmentA -
+          assignmentB ||
+        a.priority -
+          b.priority ||
+        b.ts -
+          a.ts
+      );
+    }
+  );
 }
 
-function renderLiveFeed() {
-  const container = document.getElementById("incidentList");
-  let visible = sortIncidents(applyUserFilter(allIncidents));
-  container.innerHTML = "";
-  if (!visible.length) { container.innerHTML = '<div class="empty-state">No incidents match this filter.</div>'; return; }
-  const newestId = [...allIncidents].sort((a,b) => b.timestamp - a.timestamp)[0]?.id || "";
-  visible.forEach(i => container.appendChild(createIncidentCard(i, newestId)));
+
+function setStatus(
+  text,
+  color
+) {
+
+  $("statusText").textContent =
+    text;
+
+  $("statusDot").style.background =
+    color;
 }
 
-function renderNearby() {
-  const list = document.getElementById("nearbyList");
-  const summary = document.getElementById("nearbySummary");
-  const profile = CITY_PROFILES[activeCityCode];
-  if (!profile.supportsNearby) {
-    summary.textContent = `${profile.name} is live, but this dataset does not provide incident coordinates for distance sorting yet.`;
-    list.innerHTML = '<div class="empty-state">Nearby distance is unavailable for this city source right now. The LIVE feed still works.</div>';
+
+function summary() {
+
+  const counts = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0
+  };
+
+
+  items.forEach(
+    item =>
+      counts[
+        item.priority
+      ]++
+  );
+
+
+  [
+    1,
+    2,
+    3,
+    4
+  ].forEach(
+    number =>
+      $(
+        "countP" +
+        number
+      ).textContent =
+        counts[number]
+  );
+}
+
+
+function updateUnknown() {
+
+  const values =
+    [...unknown]
+      .slice(-20);
+
+
+  $("unknownTypesList").innerHTML =
+    values.length
+      ? values
+          .map(
+            value =>
+              "• " +
+              esc(value)
+          )
+          .join("<br>")
+      : "None yet.";
+}
+
+
+function breaking() {
+
+  const top =
+    [...items]
+      .filter(
+        item =>
+          assignment(item)[0] ===
+          "STRONG"
+      )
+      .sort(
+        (a, b) =>
+          b.ts -
+          a.ts
+      )[0];
+
+
+  if (!top) {
+
+    $("breakingWrap").style.display =
+      "none";
+
     return;
   }
-  if (!userLocation) { summary.textContent = "Enable location to calculate distance."; list.innerHTML = '<div class="empty-state">Location has not been enabled yet.</div>'; return; }
-  const radius = Number(document.getElementById("nearbyRadius").value);
-  const sort = document.getElementById("nearbySort").value;
-  let nearby = allIncidents.map(i => ({ incident:i, distance:getIncidentDistance(i) })).filter(x => x.distance !== null).filter(x => radius >= 999 || x.distance <= radius);
-  if (sort === "DISTANCE") nearby.sort((a,b) => a.distance - b.distance);
-  else if (sort === "PRIORITY") nearby.sort((a,b) => getPriority(a.incident).level - getPriority(b.incident).level || a.distance - b.distance);
-  else nearby.sort((a,b) => b.incident.timestamp - a.incident.timestamp);
-  summary.textContent = `${nearby.length} confirmed ${nearby.length === 1 ? "incident" : "incidents"}${radius >= 999 ? " with coordinates available." : ` within ${radius} ${radius === 1 ? "mile" : "miles"}.`}`;
-  list.innerHTML = "";
-  if (!nearby.length) { list.innerHTML = '<div class="empty-state">No confirmed incidents with usable coordinates are inside this radius right now.</div>'; return; }
-  nearby.forEach((x,index) => {
-    const i = x.incident, p = getPriority(i), a = getAssignmentStatus(i), c = getCategory(i), radio = CITY_PROFILES[i.cityCode]?.radio;
-    const card = document.createElement("article");
-    card.className = "nearby-card";
-    card.innerHTML = `<div class="nearby-rank">#${index+1} NEAREST CONFIRMED INCIDENT</div><div class="nearby-distance">📍 ${escapeHTML(formatDistance(x.distance))}</div><div class="nearby-title">${escapeHTML(i.type)}</div><div class="assignment-badge ${a.className}">${a.label}</div><div class="nearby-meta">✅ Confirmed · ${p.code} · ${escapeHTML(c.label)}<br>${escapeHTML(getAgeText(i.timestamp))}${i.location ? `<br>📍 ${escapeHTML(i.location)}` : ''}</div><div class="action-row">${i.location ? `<a class="action-btn blue" href="${escapeHTML(getMapURL(i))}" target="_blank" rel="noopener noreferrer">🗺 MAP</a>` : ''}${c.code === "FIRE" && radio ? `<a class="action-btn red" href="${escapeHTML(radio.url)}" target="_blank" rel="noopener noreferrer">🎧 RADIO</a>` : ''}<button class="action-btn nearby-notes" type="button">📋 NOTES</button></div>`;
-    card.querySelector(".nearby-notes").addEventListener("click", () => copyText(buildReportingNotes(i)));
-    list.appendChild(card);
-  });
+
+
+  const assign =
+    assignment(top);
+
+  const distance =
+    dist(top);
+
+
+  $("breakingAssignment").innerHTML = `
+    <span class="assignment-badge ${assign[2]}">
+      ${assign[1]}
+    </span>
+  `;
+
+
+  $("breakingTitle").textContent =
+    top.type;
+
+
+  $("breakingMeta").textContent =
+    "✅ Confirmed · " +
+    (
+      top.location ||
+      "Location unavailable"
+    ) +
+    " · " +
+    age(top.ts) +
+    (
+      distance !== null
+        ? " · " +
+          distText(distance)
+        : ""
+    );
+
+
+  $("breakingActions").innerHTML =
+    top.location
+      ? `
+        <a
+          class="action-btn blue"
+          href="${esc(mapURL(top))}"
+          target="_blank"
+        >
+          🗺 MAP
+        </a>
+      `
+      : "";
+
+
+  $("breakingWrap").style.display =
+    "block";
 }
 
-function renderMapList() {
-  const container = document.getElementById("mapIncidentList");
-  container.innerHTML = "";
-  if (!allIncidents.length) { container.innerHTML = '<div class="empty-state">No confirmed incident locations available.</div>'; return; }
-  [...allIncidents].sort((a,b) => b.timestamp-a.timestamp).forEach(i => {
-    if (!i.location) return;
-    const a = getAssignmentStatus(i), d = getIncidentDistance(i);
-    const card = document.createElement("div"); card.className = "map-list-card";
-    card.innerHTML = `<div class="map-list-title">${escapeHTML(i.type)}</div><div class="assignment-badge ${a.className}">${a.label}</div>${d !== null ? `<div class="distance-line">📍 ${escapeHTML(formatDistance(d))}</div>` : ''}<div class="map-list-location">✅ Confirmed<br>📍 ${escapeHTML(i.location)}<br>${escapeHTML(getAgeText(i.timestamp))}</div><a class="action-btn blue" style="display:inline-block;margin-top:10px" href="${escapeHTML(getMapURL(i))}" target="_blank" rel="noopener noreferrer">VIEW SCENE AREA</a>`;
-    container.appendChild(card);
-  });
+
+function renderLive() {
+
+  if (
+    CITY[city].mode !==
+    "INTEGRATED"
+  ) {
+    return;
+  }
+
+
+  const list =
+    ordered(
+      filtered()
+    );
+
+
+  const newest =
+    [...items]
+      .sort(
+        (a, b) =>
+          b.ts -
+          a.ts
+      )[0];
+
+
+  $("incidentList").innerHTML =
+    list.length
+      ? list
+          .map(
+            item => {
+
+              const assign =
+                assignment(item);
+
+              const distance =
+                dist(item);
+
+              return `
+                <article class="incident-card priority-p${item.priority}">
+
+                  <div class="incident-topline">
+
+                    ${
+                      newest &&
+                      item.id ===
+                        newest.id
+                        ? '<span class="badge badge-new">🔥 NEWEST</span>'
+                        : ""
+                    }
+
+                    <span class="badge badge-p${item.priority}">
+                      P${item.priority} — ${pLabel(item.priority)}
+                    </span>
+
+                    <span class="confirmed-badge">
+                      ✅ CONFIRMED
+                    </span>
+
+                  </div>
+
+
+                  <div class="incident-title">
+                    ${esc(item.type)}
+                  </div>
+
+
+                  <span class="assignment-badge ${assign[2]}">
+                    ${assign[1]}
+                  </span>
+
+
+                  ${
+                    distance !== null
+                      ? `
+                        <div class="distance-line">
+                          📍 ${distText(distance)}
+                        </div>
+                      `
+                      : ""
+                  }
+
+
+                  <div class="incident-meta">
+                    ${age(item.ts)}
+                    ·
+                    ${fmt(item.ts)}
+                  </div>
+
+
+                  ${
+                    item.location
+                      ? `
+                        <div class="incident-location">
+                          📍 ${esc(item.location)}
+                        </div>
+                      `
+                      : ""
+                  }
+
+
+                  <div class="action-row">
+
+                    ${
+                      item.location
+                        ? `
+                          <a
+                            class="action-btn blue"
+                            href="${esc(mapURL(item))}"
+                            target="_blank"
+                          >
+                            🗺 MAP
+                          </a>
+                        `
+                        : ""
+                    }
+
+
+                    ${
+                      item.category ===
+                        "FIRE" &&
+                      CITY[city].radio
+                        ? `
+                          <a
+                            class="action-btn red"
+                            href="${CITY[city].radio[2]}"
+                            target="_blank"
+                          >
+                            🎧 RADIO
+                          </a>
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+                </article>
+              `;
+            }
+          )
+          .join("")
+      : `
+        <div class="empty-state">
+          No incidents match this filter.
+        </div>
+      `;
 }
 
-function loadSavedLeads() { try { const saved = localStorage.getItem("breakingNewsRadioLeads"); const parsed = saved ? JSON.parse(saved) : []; return Array.isArray(parsed) ? parsed : []; } catch (_) { return []; } }
-function saveLeads() { try { localStorage.setItem("breakingNewsRadioLeads", JSON.stringify(radioLeads)); } catch (_) {} }
-function addRadioLead() {
-  const type = document.getElementById("leadType").value.trim();
-  if (!type) { alert("Enter what you heard first."); return; }
-  radioLeads.unshift({ id:String(Date.now()), type, area:document.getElementById("leadArea").value.trim(), source:document.getElementById("leadSource").value, notes:document.getElementById("leadNotes").value.trim(), timestamp:Date.now(), cityCode:activeCityCode });
-  saveLeads(); document.getElementById("leadType").value=""; document.getElementById("leadArea").value=""; document.getElementById("leadNotes").value=""; renderRadioLeads();
-}
-function deleteRadioLead(id) { if (!window.confirm("Delete this radio lead?")) return; radioLeads = radioLeads.filter(x => x.id !== id); saveLeads(); renderRadioLeads(); }
-function getSafeLeadWording(lead) { return `Radio or app activity indicates a possible ${lead.type}${lead.area ? ` in the ${lead.area} area` : ""}. I have not independently confirmed the details yet.`; }
-function renderRadioLeads() {
-  const container = document.getElementById("leadList"); container.innerHTML = "";
-  if (!radioLeads.length) { container.innerHTML = '<div class="empty-state">No unconfirmed leads saved.</div>'; return; }
-  radioLeads.forEach(lead => {
-    const safe = getSafeLeadWording(lead); const card = document.createElement("article"); card.className="radio-lead-card";
-    card.innerHTML = `<span class="unconfirmed-badge">⚠️ UNCONFIRMED RADIO ACTIVITY</span><div class="assignment-badge assignment-verify">🟡 VERIFY BEFORE REPORTING DETAILS</div><div class="assignment-note">Treat this as an early lead only.</div><div class="lead-title">${escapeHTML(lead.type)}</div><div class="lead-meta">Heard: ${escapeHTML(getAgeText(lead.timestamp))}<br>Source: ${escapeHTML(lead.source)}${lead.area ? `<br>General area: ${escapeHTML(lead.area)}` : ''}</div>${lead.notes ? `<div class="lead-note">${escapeHTML(lead.notes)}</div>` : ''}<div class="safe-language"><div class="safe-title">Safer wording for live/video</div><div class="safe-copy">“${escapeHTML(safe)}”</div></div><div class="action-row"><button class="action-btn copy-safe" type="button">📋 COPY WORDING</button><button class="action-btn delete-lead" type="button">DELETE</button></div>`;
-    card.querySelector(".copy-safe").addEventListener("click", () => copyText(safe)); card.querySelector(".delete-lead").addEventListener("click", () => deleteRadioLead(lead.id)); container.appendChild(card);
-  });
+
+function renderMap() {
+
+  if (
+    CITY[city].mode !==
+    "INTEGRATED"
+  ) {
+
+    $("mapIncidentList").innerHTML =
+      `
+        <div class="empty-state">
+          Map cards will appear after this city gets a full incident adapter.
+        </div>
+      `;
+
+    return;
+  }
+
+
+  $("mapIncidentList").innerHTML =
+    items.length
+      ? items
+          .map(
+            item => `
+              <div class="map-list-card">
+
+                <b>
+                  ${esc(item.type)}
+                </b>
+
+                <div class="incident-meta">
+                  ✅ Confirmed · ${age(item.ts)}
+                </div>
+
+                ${
+                  item.location
+                    ? `
+                      <div class="incident-location">
+                        📍 ${esc(item.location)}
+                      </div>
+
+                      <a
+                        class="action-btn blue"
+                        href="${esc(mapURL(item))}"
+                        target="_blank"
+                      >
+                        VIEW SCENE AREA
+                      </a>
+                    `
+                    : ""
+                }
+
+              </div>
+            `
+          )
+          .join("")
+      : `
+        <div class="empty-state">
+          No confirmed incident locations.
+        </div>
+      `;
 }
 
-function playAlertSound(force=false) {
-  if (!alertsEnabled && !force) return;
-  try { const AC = window.AudioContext || window.webkitAudioContext; const ctx = new AC(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value=880; gain.gain.value=.15; osc.start(); osc.stop(ctx.currentTime+.35); } catch (_) {}
-}
-function enableAlerts() { alertsEnabled=true; const b=document.getElementById("enableAlertsButton"); b.textContent="🔊 ALERTS ENABLED"; b.style.background="#29964f"; document.getElementById("alertsStatus").textContent="Alerts are enabled for new P1 official incidents."; playAlertSound(true); }
-function checkForNewP1(list) { const ids = new Set(); list.forEach(i => { ids.add(i.id); if (!firstLoad && !previousIncidentIds.has(i.id) && getPriority(i).level === 1) playAlertSound(); }); previousIncidentIds=ids; firstLoad=false; }
 
-function renderUnknownTypes() {
-  const el = document.getElementById("unknownTypesList");
-  const values = [...unknownCallTypes].sort();
-  el.innerHTML = values.length ? values.map(v => `• ${escapeHTML(v)}`).join("<br>") : "None yet.";
+function renderNearby() {
+
+  if (!userLoc) {
+
+    $("nearbySummary").textContent =
+      "Enable location to calculate distance.";
+
+    $("nearbyList").innerHTML =
+      `
+        <div class="empty-state">
+          Location has not been enabled yet.
+        </div>
+      `;
+
+    return;
+  }
+
+
+  if (
+    !CITY[city].nearby
+  ) {
+
+    $("nearbySummary").textContent =
+      CITY[city].name +
+      " does not currently provide coordinates to this dashboard.";
+
+    $("nearbyList").innerHTML =
+      `
+        <div class="empty-state">
+          Nearby distance is not available for this city yet.
+        </div>
+      `;
+
+    return;
+  }
+
+
+  const radius =
+    Number(
+      $("nearbyRadius").value
+    );
+
+
+  const sort =
+    $("nearbySort").value;
+
+
+  let nearby =
+    items
+      .map(
+        item => ({
+          item,
+          distance:
+            dist(item)
+        })
+      )
+      .filter(
+        row =>
+          row.distance !== null &&
+          (
+            radius >= 999 ||
+            row.distance <= radius
+          )
+      );
+
+
+  if (
+    sort === "DISTANCE"
+  ) {
+
+    nearby.sort(
+      (a, b) =>
+        a.distance -
+        b.distance
+    );
+  }
+
+
+  else if (
+    sort === "PRIORITY"
+  ) {
+
+    nearby.sort(
+      (a, b) =>
+        a.item.priority -
+          b.item.priority ||
+        a.distance -
+          b.distance
+    );
+  }
+
+
+  else {
+
+    nearby.sort(
+      (a, b) =>
+        b.item.ts -
+        a.item.ts
+    );
+  }
+
+
+  $("nearbySummary").textContent =
+    nearby.length +
+    " confirmed incident" +
+    (
+      nearby.length === 1
+        ? ""
+        : "s"
+    ) +
+    " in this view.";
+
+
+  $("nearbyList").innerHTML =
+    nearby.length
+      ? nearby
+          .map(
+            (row, index) => `
+              <div class="nearby-card">
+
+                <b>
+                  #${index + 1} NEAREST
+                </b>
+
+                <div class="nearby-title">
+                  ${esc(row.item.type)}
+                </div>
+
+                <div class="distance-line">
+                  📍 ${distText(row.distance)}
+                </div>
+
+                <div class="nearby-meta">
+
+                  P${row.item.priority}
+                  ·
+                  ${age(row.item.ts)}
+
+                  ${
+                    row.item.location
+                      ? `
+                        <br>
+                        📍 ${esc(row.item.location)}
+                      `
+                      : ""
+                  }
+
+                </div>
+
+                <a
+                  class="action-btn blue"
+                  href="${esc(mapURL(row.item))}"
+                  target="_blank"
+                >
+                  🗺 MAP
+                </a>
+
+              </div>
+            `
+          )
+          .join("")
+      : `
+        <div class="empty-state">
+          No confirmed incidents inside this radius.
+        </div>
+      `;
 }
 
-function renderRadioPanel() {
-  const profile = CITY_PROFILES[activeCityCode];
-  const title = document.getElementById("radioTitle"), copy = document.getElementById("radioCopy"), button = document.getElementById("radioButton");
-  if (profile.radio) { title.textContent = profile.radio.title; copy.textContent = profile.radio.copy; button.href = profile.radio.url; button.style.display = "inline-block"; }
-  else { title.textContent = `${profile.name} Radio`; copy.textContent = "No verified radio link has been connected for this city profile yet. The official incident feed remains available."; button.style.display = "none"; }
-}
 
-function renderEverything() {
-  updateSummary(); updateBreakingStory(); renderLiveFeed(); renderNearby(); renderMapList(); renderRadioLeads(); renderUnknownTypes(); renderRadioPanel();
-  document.getElementById("incidentCount").textContent = `${allIncidents.length} ${allIncidents.length === 1 ? "incident" : "incidents"}`;
-  document.getElementById("confirmedSourceLabel").textContent = CITY_PROFILES[activeCityCode].confirmedLabel;
-  document.getElementById("mapPanelNote").textContent = `Locations below come from ${CITY_PROFILES[activeCityCode].confirmedLabel}.`;
-}
+function renderRadio() {
 
-function setStatus(status) {
-  const text=document.getElementById("statusText"), dot=document.getElementById("statusDot");
-  if (status === "LIVE") { text.textContent="LIVE"; dot.style.background="#39c96a"; return; }
-  if (status === "CHECKING") { text.textContent="CHECKING"; dot.style.background="#ffb723"; return; }
-  text.textContent="FEED ERROR"; dot.style.background="#e73b33";
-}
+  const radio =
+    CITY[city].radio;
 
-async function loadIncidents() {
-  setStatus("CHECKING");
-  try {
-    unknownCallTypes = new Set();
-    const data = await fetchCityIncidents(activeCityCode);
-    allIncidents = filterRecentIncidents(data);
-    checkForNewP1(allIncidents);
-    renderEverything();
-    setStatus("LIVE");
-    document.getElementById("lastChecked").textContent = `${CITY_PROFILES[activeCityCode].shortName} feed checked: ${new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
-  } catch (error) {
-    console.error(error); setStatus("ERROR"); document.getElementById("lastChecked").textContent = `Unable to refresh ${CITY_PROFILES[activeCityCode].name}: ${error.message}`;
+
+  $("radioTitle").textContent =
+    radio
+      ? radio[0]
+      : CITY[city].name +
+        " Radio";
+
+
+  $("radioCopy").textContent =
+    radio
+      ? radio[1]
+      : "No verified public radio feed connected.";
+
+
+  $("radioButton").style.display =
+    radio
+      ? "inline-block"
+      : "none";
+
+
+  if (
+    radio
+  ) {
+
+    $("radioButton").href =
+      radio[2];
   }
 }
 
-function nearestCityCode(lat, lon) {
-  let best = "OKC", bestMiles = Infinity;
-  Object.entries(CITY_PROFILES).forEach(([code,p]) => { const d=calculateDistanceMiles(lat,lon,p.center.latitude,p.center.longitude); if (d < bestMiles) { bestMiles=d; best=code; } });
+
+function externalLanding() {
+
+  const profile =
+    CITY[city];
+
+
+  let html = `
+    <div class="empty-state">
+
+      <strong>
+        ${esc(profile.name)}
+      </strong>
+
+      <br><br>
+  `;
+
+
+  if (
+    profile.mode ===
+    "EXTERNAL"
+  ) {
+
+    html += `
+      Official live source verified,
+      but not yet converted into dashboard cards.
+
+      <br><br>
+
+      <a
+        class="action-btn blue"
+        href="${profile.official}"
+        target="_blank"
+      >
+        🚨 OPEN OFFICIAL LIVE SOURCE
+      </a>
+    `;
+
+
+    if (
+      profile.secondary
+    ) {
+
+      html += `
+        <br><br>
+
+        <a
+          class="action-btn blue"
+          href="${profile.secondary}"
+          target="_blank"
+        >
+          🚗 OPEN SECONDARY SOURCE
+        </a>
+      `;
+    }
+
+  } else {
+
+    html += `
+      Live radio is connected;
+      incident-card source is not connected yet.
+    `;
+  }
+
+
+  if (
+    profile.radio
+  ) {
+
+    html += `
+      <br><br>
+
+      <a
+        class="action-btn red"
+        href="${profile.radio[2]}"
+        target="_blank"
+      >
+        🎧 LISTEN LIVE
+      </a>
+    `;
+  }
+
+
+  html +=
+    "</div>";
+
+
+  $("incidentList").innerHTML =
+    html;
+}
+
+
+async function load() {
+
+  const profile =
+    CITY[city];
+
+
+  if (
+    profile.mode !==
+    "INTEGRATED"
+  ) {
+
+    items = [];
+
+    summary();
+
+    breaking();
+
+    externalLanding();
+
+    renderMap();
+
+    renderNearby();
+
+
+    $("incidentCount").textContent =
+      profile.mode ===
+      "RADIO"
+        ? "radio connected"
+        : "external live source";
+
+
+    setStatus(
+      profile.mode ===
+      "RADIO"
+        ? "RADIO LIVE"
+        : "LIVE SOURCE",
+
+      "#39c96a"
+    );
+
+
+    $("lastChecked").textContent =
+      "Use the source buttons for this city.";
+
+    return;
+  }
+
+
+  setStatus(
+    "CHECKING",
+    "#ffb723"
+  );
+
+
+  try {
+
+    const rows =
+      city === "OKC"
+        ? await fetchOKC()
+        : await fetchDallas();
+
+
+    checkAlerts(
+      rows
+    );
+
+
+    items =
+      rows;
+
+
+    summary();
+
+    updateUnknown();
+
+    breaking();
+
+    renderLive();
+
+    renderMap();
+
+    renderNearby();
+
+
+    $("incidentCount").textContent =
+      rows.length +
+      " incident" +
+      (
+        rows.length === 1
+          ? ""
+          : "s"
+      );
+
+
+    setStatus(
+      "LIVE",
+      "#39c96a"
+    );
+
+
+    $("lastChecked").textContent =
+      "Official feed checked: " +
+      new Date()
+        .toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit"
+          }
+        );
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    setStatus(
+      "FEED ERROR",
+      "#e73b33"
+    );
+
+
+    $("lastChecked").textContent =
+      error.message;
+
+
+    $("incidentList").innerHTML =
+      `
+        <div class="empty-state">
+          Unable to load ${esc(profile.name)} incidents right now.
+        </div>
+      `;
+  }
+}
+
+
+function nearest(
+  latitude,
+  longitude
+) {
+
+  let best =
+    "OKC";
+
+  let bestDistance =
+    Infinity;
+
+
+  Object.entries(
+    CITY
+  ).forEach(
+    ([code, profile]) => {
+
+      const distance =
+        miles(
+
+          {
+            lat:
+              latitude,
+
+            lon:
+              longitude
+          },
+
+          {
+            lat:
+              profile.center[0],
+
+            lon:
+              profile.center[1]
+          }
+        );
+
+
+      if (
+        distance <
+        bestDistance
+      ) {
+
+        bestDistance =
+          distance;
+
+        best =
+          code;
+      }
+    }
+  );
+
+
   return best;
 }
 
-async function applyCityMode() {
-  const select = document.getElementById("citySelect"); selectedCityMode = select.value;
-  if (selectedCityMode !== "AUTO") { activeCityCode = selectedCityMode; document.getElementById("cityModeNote").textContent = `${CITY_PROFILES[activeCityCode].name} official source selected.`; await loadIncidents(); return; }
-  if (userLocation) { activeCityCode = nearestCityCode(userLocation.latitude,userLocation.longitude); document.getElementById("cityModeNote").textContent = `AUTO detected nearest supported city: ${CITY_PROFILES[activeCityCode].name}.`; await loadIncidents(); return; }
-  activeCityCode = "OKC";
-  document.getElementById("cityModeNote").textContent = "AUTO needs location for city switching. Using Oklahoma City until location is enabled.";
-  await loadIncidents();
+
+async function changeCity() {
+
+  mode =
+    $("citySelect").value;
+
+
+  if (
+    mode ===
+    "AUTO"
+  ) {
+
+    city =
+      userLoc
+        ? nearest(
+            userLoc.lat,
+            userLoc.lon
+          )
+        : "OKC";
+
+
+    $("cityModeNote").textContent =
+      userLoc
+        ? "AUTO detected nearest supported city: " +
+          CITY[city].name +
+          "."
+        : "AUTO needs location. Using Oklahoma City until location is enabled.";
+
+  } else {
+
+    city =
+      mode;
+
+
+    $("cityModeNote").textContent =
+      CITY[city].name +
+      " selected.";
+  }
+
+
+  $("confirmedSourceLabel").textContent =
+    CITY[city].source;
+
+
+  renderRadio();
+
+
+  await load();
 }
 
-function updateLocationStatus(message) { document.getElementById("locationStatus").textContent = message; }
+
 function startLocation() {
-  if (!navigator.geolocation) { updateLocationStatus("Location is not supported by this browser."); return; }
-  updateLocationStatus("Requesting your location…");
-  locationWatchId = navigator.geolocation.watchPosition(async position => {
-    userLocation = { latitude:position.coords.latitude, longitude:position.coords.longitude, accuracy:position.coords.accuracy };
-    updateLocationStatus(`📍 Location active · accuracy approximately ${Math.round(position.coords.accuracy*3.28084)} ft · distances update as you move.`);
-    document.getElementById("stopLocationButton").disabled=false; document.getElementById("useLocationButton").textContent="📍 LOCATION ACTIVE";
-    if (selectedCityMode === "AUTO") {
-      const detected = nearestCityCode(userLocation.latitude,userLocation.longitude);
-      if (detected !== activeCityCode) { activeCityCode = detected; document.getElementById("cityModeNote").textContent = `AUTO detected nearest supported city: ${CITY_PROFILES[activeCityCode].name}.`; await loadIncidents(); return; }
+
+  if (
+    !navigator.geolocation
+  ) {
+
+    $("locationStatus").textContent =
+      "Location is not supported by this browser.";
+
+    return;
+  }
+
+
+  $("locationStatus").textContent =
+    "Requesting location…";
+
+
+  watchId =
+    navigator.geolocation
+      .watchPosition(
+
+        async position => {
+
+          userLoc = {
+
+            lat:
+              position.coords.latitude,
+
+            lon:
+              position.coords.longitude
+
+          };
+
+
+          $("locationStatus").textContent =
+            "📍 Location active · accuracy about " +
+            Math.round(
+              position.coords.accuracy *
+              3.28084
+            ) +
+            " ft.";
+
+
+          $("stopLocationButton").disabled =
+            false;
+
+
+          $("useLocationButton").textContent =
+            "📍 LOCATION ACTIVE";
+
+
+          if (
+            mode ===
+            "AUTO"
+          ) {
+
+            await changeCity();
+
+          } else {
+
+            renderNearby();
+
+            renderLive();
+
+            breaking();
+          }
+        },
+
+
+        error => {
+
+          $("locationStatus").textContent =
+            error.code === 1
+              ? "Location permission denied."
+              : "Unable to determine location.";
+        },
+
+
+        {
+          enableHighAccuracy:
+            true,
+
+          timeout:
+            15000,
+
+          maximumAge:
+            15000
+        }
+      );
+}
+
+
+function stopLocation() {
+
+  if (
+    watchId !== null
+  ) {
+
+    navigator.geolocation
+      .clearWatch(
+        watchId
+      );
+  }
+
+
+  watchId =
+    null;
+
+  userLoc =
+    null;
+
+
+  $("stopLocationButton").disabled =
+    true;
+
+
+  $("useLocationButton").textContent =
+    "📍 USE MY LOCATION";
+
+
+  $("locationStatus").textContent =
+    "Location is off.";
+
+
+  renderNearby();
+
+  renderLive();
+
+  breaking();
+}
+
+
+function loadLeads() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        "bnmLeads"
+      ) ||
+      "[]"
+    );
+
+  } catch {
+
+    return [];
+  }
+}
+
+
+function saveLeads() {
+
+  localStorage.setItem(
+    "bnmLeads",
+    JSON.stringify(
+      leads
+    )
+  );
+}
+
+
+function renderLeads() {
+
+  if (
+    !leads.length
+  ) {
+
+    $("leadList").innerHTML =
+      `
+        <div class="empty-state">
+          No unconfirmed leads saved.
+        </div>
+      `;
+
+    return;
+  }
+
+
+  $("leadList").innerHTML =
+    leads
+      .map(
+        lead => `
+          <article class="radio-lead-card">
+
+            <span class="unconfirmed-badge">
+              ⚠️ UNCONFIRMED
+            </span>
+
+            <div class="incident-title">
+              ${esc(lead.type)}
+            </div>
+
+            <div class="lead-meta">
+
+              ${esc(lead.source)}
+
+              ·
+
+              ${age(lead.ts)}
+
+              ${
+                lead.area
+                  ? `
+                    <br>
+                    ${esc(lead.area)}
+                  `
+                  : ""
+              }
+
+            </div>
+
+            ${
+              lead.notes
+                ? `
+                  <div class="lead-note">
+                    ${esc(lead.notes)}
+                  </div>
+                `
+                : ""
+            }
+
+            <div class="safe-language">
+
+              <div class="safe-title">
+                SAFER WORDING
+              </div>
+
+              <div class="safe-copy">
+
+                Radio/app information indicates a possible
+                ${esc(lead.type)}
+
+                ${
+                  lead.area
+                    ? `
+                      in the
+                      ${esc(lead.area)}
+                      area
+                    `
+                    : ""
+                }.
+
+                I have not independently confirmed the details yet.
+
+              </div>
+
+            </div>
+
+            <button
+              class="action-btn delete-lead"
+              data-id="${lead.id}"
+            >
+              DELETE
+            </button>
+
+          </article>
+        `
+      )
+      .join("");
+
+
+  document
+    .querySelectorAll(
+      ".delete-lead"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () => {
+
+            leads =
+              leads.filter(
+                lead =>
+                  lead.id !==
+                  button.dataset.id
+              );
+
+            saveLeads();
+
+            renderLeads();
+          };
+      }
+    );
+}
+
+
+function addLead() {
+
+  const type =
+    $("leadType")
+      .value
+      .trim();
+
+
+  if (!type) {
+
+    alert(
+      "Enter what you heard first."
+    );
+
+    return;
+  }
+
+
+  leads.unshift({
+
+    id:
+      String(
+        Date.now()
+      ),
+
+    type,
+
+    area:
+      $("leadArea")
+        .value
+        .trim(),
+
+    source:
+      $("leadSource")
+        .value,
+
+    notes:
+      $("leadNotes")
+        .value
+        .trim(),
+
+    ts:
+      Date.now()
+
+  });
+
+
+  saveLeads();
+
+
+  $("leadType").value =
+    "";
+
+  $("leadArea").value =
+    "";
+
+  $("leadNotes").value =
+    "";
+
+
+  renderLeads();
+}
+
+
+function beep() {
+
+  try {
+
+    const AudioContextClass =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+
+    const context =
+      new AudioContextClass();
+
+
+    const oscillator =
+      context.createOscillator();
+
+
+    const gain =
+      context.createGain();
+
+
+    oscillator.connect(
+      gain
+    );
+
+
+    gain.connect(
+      context.destination
+    );
+
+
+    oscillator.frequency.value =
+      880;
+
+
+    gain.gain.value =
+      0.15;
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+      context.currentTime +
+      0.35
+    );
+
+  } catch {
+  }
+}
+
+
+function checkAlerts(rows) {
+
+  const ids =
+    new Set(
+      rows.map(
+        row =>
+          row.id
+      )
+    );
+
+
+  if (
+    !firstLoad &&
+    alerts
+  ) {
+
+    rows.forEach(
+      row => {
+
+        if (
+          !known.has(
+            row.id
+          ) &&
+          row.priority === 1
+        ) {
+
+          beep();
+        }
+      }
+    );
+  }
+
+
+  known =
+    ids;
+
+
+  firstLoad =
+    false;
+}
+
+
+function tab(name) {
+
+  document
+    .querySelectorAll(
+      ".nav-btn"
+    )
+    .forEach(
+      button =>
+        button.classList
+          .toggle(
+            "active",
+            button.dataset.tab ===
+              name
+          )
+    );
+
+
+  document
+    .querySelectorAll(
+      ".tab-panel"
+    )
+    .forEach(
+      panel =>
+        panel.classList
+          .remove(
+            "active"
+          )
+    );
+
+
+  $(
+    "panel-" +
+    name
+  ).classList
+    .add(
+      "active"
+    );
+
+
+  if (
+    name ===
+    "nearby"
+  ) {
+
+    renderNearby();
+  }
+
+
+  window.scrollTo({
+
+    top:
+      0,
+
+    behavior:
+      "smooth"
+
+  });
+}
+
+
+$("citySelect").onchange =
+  changeCity;
+
+
+document
+  .querySelectorAll(
+    ".filter-btn"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () => {
+
+          document
+            .querySelectorAll(
+              ".filter-btn"
+            )
+            .forEach(
+              other =>
+                other.classList
+                  .remove(
+                    "active"
+                  )
+            );
+
+
+          button.classList
+            .add(
+              "active"
+            );
+
+
+          filter =
+            button.dataset.filter;
+
+
+          renderLive();
+        };
     }
-    renderNearby(); renderLiveFeed(); updateBreakingStory();
-  }, error => {
-    const msg = error.code===1 ? "Location permission was denied. Allow location access and try again." : error.code===2 ? "Your location is temporarily unavailable." : "Location request timed out. Try again."; updateLocationStatus(msg);
-  }, { enableHighAccuracy:true, timeout:15000, maximumAge:15000 });
-}
-function stopLocation() { if (locationWatchId !== null) navigator.geolocation.clearWatch(locationWatchId); locationWatchId=null; userLocation=null; document.getElementById("stopLocationButton").disabled=true; document.getElementById("useLocationButton").textContent="📍 USE MY LOCATION"; updateLocationStatus("Location is off. Your position is no longer being used."); renderNearby(); renderLiveFeed(); updateBreakingStory(); }
+  );
 
-function switchTab(tab) {
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab===tab));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-  document.getElementById(`panel-${tab}`)?.classList.add("active");
-  if (tab === "nearby") renderNearby();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
 
-document.querySelectorAll(".filter-btn").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); button.classList.add("active"); currentFilter=button.dataset.filter; renderLiveFeed(); }));
-document.getElementById("sortSelect").addEventListener("change", e => { currentSort=e.target.value; if (currentSort==="DISTANCE" && !userLocation) { switchTab("nearby"); updateLocationStatus("Enable location first to sort incidents by distance."); return; } renderLiveFeed(); });
-document.getElementById("citySelect").addEventListener("change", applyCityMode);
-document.getElementById("useLocationButton").addEventListener("click", startLocation);
-document.getElementById("stopLocationButton").addEventListener("click", stopLocation);
-document.getElementById("nearbyRadius").addEventListener("change", renderNearby);
-document.getElementById("nearbySort").addEventListener("change", renderNearby);
-document.getElementById("addLeadButton").addEventListener("click", addRadioLead);
-document.getElementById("enableAlertsButton").addEventListener("click", enableAlerts);
-document.getElementById("testAlertButton").addEventListener("click", () => { alertsEnabled=true; playAlertSound(true); alert("P1 alert test played. This did not create a real incident."); });
-document.querySelectorAll(".nav-btn").forEach(button => button.addEventListener("click", () => switchTab(button.dataset.tab)));
+$("sortSelect").onchange =
+  event => {
 
-renderRadioLeads();
-renderNearby();
-applyCityMode();
-setInterval(loadIncidents, REFRESH_INTERVAL);
+    sortMode =
+      event.target.value;
+
+
+    if (
+      sortMode ===
+        "DISTANCE" &&
+      !userLoc
+    ) {
+
+      tab(
+        "nearby"
+      );
+
+
+      $("locationStatus").textContent =
+        "Enable location first to sort by distance.";
+
+    } else {
+
+      renderLive();
+    }
+  };
+
+
+$("useLocationButton").onclick =
+  startLocation;
+
+
+$("stopLocationButton").onclick =
+  stopLocation;
+
+
+$("nearbyRadius").onchange =
+  renderNearby;
+
+
+$("nearbySort").onchange =
+  renderNearby;
+
+
+$("addLeadButton").onclick =
+  addLead;
+
+
+$("enableAlertsButton").onclick =
+  () => {
+
+    alerts =
+      true;
+
+
+    $("enableAlertsButton").textContent =
+      "🔊 ALERTS ENABLED";
+
+
+    $("alertsStatus").textContent =
+      "Alerts are enabled for new P1 incidents while this page is open.";
+
+
+    beep();
+  };
+
+
+$("testAlertButton").onclick =
+  () => {
+
+    beep();
+
+
+    $("alertsStatus").textContent =
+      "Test alert played. No real incident was created.";
+  };
+
+
+document
+  .querySelectorAll(
+    ".nav-btn"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () =>
+          tab(
+            button.dataset.tab
+          );
+    }
+  );
+
+
+renderLeads();
+
+renderRadio();
+
+changeCity();
+
+
+setInterval(
+  () => {
+
+    if (
+      CITY[city].mode ===
+      "INTEGRATED"
+    ) {
+
+      load();
+    }
+
+  },
+
+  REFRESH_MS
+);
